@@ -1,0 +1,77 @@
+{
+  "common": {
+    "localGoods": "Local Goods",
+    "welcome": "Benvenuto",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "add": "Aggiungi",
+    "search": "Cerca",
+    "actions": "Azioni"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "products": "Prodotti",
+    "analytics": "Analistica",
+    "information": "Informazioni",
+    "profile": "Profilo",
+    "settings": "Impostazioni",
+    "logout": "Disconnetti"
+  },
+  "languages": {
+    "it": "Italiano",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español"
+  },
+  "dashboard": {
+    "title": "Console Produttori Agricoli",
+    "subtitle": "Gestisci i tuoi prodotti e monitora le vendite",
+    "welcome": "Benvenuto nella Console Local Goods",
+    "welcomeMessage": "Benvenuto nella tua console di gestione. Seleziona una sezione dal menu per iniziare.",
+    "quickActions": "Azioni Rapide",
+    "recentActivity": "Attività Recente",
+    "statistics": "Statistiche"
+  },
+  "products": {
+    "title": "Gestione Prodotti",
+    "subtitle": "Gestisci il tuo catalogo di prodotti agricoli",
+    "addProduct": "Aggiungi Prodotto",
+    "editProduct": "Modifica Prodotto",
+    "deleteProduct": "Elimina Prodotto",
+    "productName": "Nome Prodotto",
+    "productDescription": "Descrizione",
+    "productPrice": "Prezzo",
+    "productCategory": "Categoria",
+    "productStatus": "Stato",
+    "active": "Attivo",
+    "inactive": "Inattivo"
+  },
+  "analytics": {
+    "title": "Analisi Vendite",
+    "subtitle": "Monitora le performance delle tue vendite",
+    "totalSales": "Vendite Totali",
+    "monthlyRevenue": "Fatturato Mensile",
+    "topProducts": "Prodotti Più Venduti",
+    "salesTrend": "Tendenza Vendite",
+    "period": "Periodo",
+    "thisMonth": "Questo Mese",
+    "lastMonth": "Mese Scorso",
+    "thisYear": "Quest'Anno"
+  },
+  "information": {
+    "title": "Informazioni",
+    "subtitle": "Informazioni sul tuo account e sulla piattaforma",
+    "accountInfo": "Informazioni Account",
+    "companyInfo": "Informazioni Azienda",
+    "supportInfo": "Supporto",
+    "documentation": "Documentazione",
+    "contactSupport": "Contatta il Supporto",
+    "version": "Versione",
+    "lastUpdate": "Ultimo Aggiornamento"
+  }
+} 

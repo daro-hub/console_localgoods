@@ -1,0 +1,77 @@
+{
+  "common": {
+    "localGoods": "Local Goods",
+    "welcome": "Bienvenido",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "add": "Agregar",
+    "search": "Buscar",
+    "actions": "Acciones"
+  },
+  "navigation": {
+    "dashboard": "Panel de Control",
+    "products": "Productos",
+    "analytics": "Análisis",
+    "information": "Información",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar Sesión"
+  },
+  "languages": {
+    "it": "Italiano",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español"
+  },
+  "dashboard": {
+    "title": "Consola de Productores Agrícolas",
+    "subtitle": "Gestiona tus productos y monitorea las ventas",
+    "welcome": "Bienvenido a la Consola Local Goods",
+    "welcomeMessage": "Bienvenido a tu consola de gestión. Selecciona una sección del menú para comenzar.",
+    "quickActions": "Acciones Rápidas",
+    "recentActivity": "Actividad Reciente",
+    "statistics": "Estadísticas"
+  },
+  "products": {
+    "title": "Gestión de Productos",
+    "subtitle": "Gestiona tu catálogo de productos agrícolas",
+    "addProduct": "Agregar Producto",
+    "editProduct": "Editar Producto",
+    "deleteProduct": "Eliminar Producto",
+    "productName": "Nombre del Producto",
+    "productDescription": "Descripción",
+    "productPrice": "Precio",
+    "productCategory": "Categoría",
+    "productStatus": "Estado",
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "analytics": {
+    "title": "Análisis de Ventas",
+    "subtitle": "Monitorea el rendimiento de tus ventas",
+    "totalSales": "Ventas Totales",
+    "monthlyRevenue": "Ingresos Mensuales",
+    "topProducts": "Productos Más Vendidos",
+    "salesTrend": "Tendencia de Ventas",
+    "period": "Período",
+    "thisMonth": "Este Mes",
+    "lastMonth": "Mes Pasado",
+    "thisYear": "Este Año"
+  },
+  "information": {
+    "title": "Información",
+    "subtitle": "Información sobre tu cuenta y la plataforma",
+    "accountInfo": "Información de la Cuenta",
+    "companyInfo": "Información de la Empresa",
+    "supportInfo": "Soporte",
+    "documentation": "Documentación",
+    "contactSupport": "Contactar Soporte",
+    "version": "Versión",
+    "lastUpdate": "Última Actualización"
+  }
+} 

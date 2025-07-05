@@ -1,0 +1,77 @@
+{
+  "common": {
+    "localGoods": "Local Goods",
+    "welcome": "Bienvenue",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "actions": "Actions"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "products": "Produits",
+    "analytics": "Analyse",
+    "information": "Informations",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion"
+  },
+  "languages": {
+    "it": "Italiano",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español"
+  },
+  "dashboard": {
+    "title": "Console des Producteurs Agricoles",
+    "subtitle": "Gérez vos produits et surveillez les ventes",
+    "welcome": "Bienvenue dans la Console Local Goods",
+    "welcomeMessage": "Bienvenue dans votre console de gestion. Sélectionnez une section dans le menu pour commencer.",
+    "quickActions": "Actions Rapides",
+    "recentActivity": "Activité Récente",
+    "statistics": "Statistiques"
+  },
+  "products": {
+    "title": "Gestion des Produits",
+    "subtitle": "Gérez votre catalogue de produits agricoles",
+    "addProduct": "Ajouter un Produit",
+    "editProduct": "Modifier le Produit",
+    "deleteProduct": "Supprimer le Produit",
+    "productName": "Nom du Produit",
+    "productDescription": "Description",
+    "productPrice": "Prix",
+    "productCategory": "Catégorie",
+    "productStatus": "Statut",
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
+  "analytics": {
+    "title": "Analyse des Ventes",
+    "subtitle": "Surveillez les performances de vos ventes",
+    "totalSales": "Ventes Totales",
+    "monthlyRevenue": "Revenus Mensuels",
+    "topProducts": "Produits les Plus Vendus",
+    "salesTrend": "Tendance des Ventes",
+    "period": "Période",
+    "thisMonth": "Ce Mois",
+    "lastMonth": "Mois Dernier",
+    "thisYear": "Cette Année"
+  },
+  "information": {
+    "title": "Informations",
+    "subtitle": "Informations sur votre compte et la plateforme",
+    "accountInfo": "Informations sur le Compte",
+    "companyInfo": "Informations sur l'Entreprise",
+    "supportInfo": "Support",
+    "documentation": "Documentation",
+    "contactSupport": "Contacter le Support",
+    "version": "Version",
+    "lastUpdate": "Dernière Mise à Jour"
+  }
+} 

@@ -11,7 +11,10 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.5"
+    "next": "15.3.5",
+    "next-intl": "^3.22.0",
+    "lucide-react": "^0.525.0",
+    "clsx": "^2.1.0"
   },
   "devDependencies": {
     "typescript": "^5",
