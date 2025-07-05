@@ -1,7 +1,10 @@
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { locales } from '@/i18n';
+
+const locales = ['it', 'en', 'fr', 'es'];
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
 
 export default async function LocaleLayout({
   children,
@@ -12,17 +15,10 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
   
-  // Valida che la lingua sia supportata
-  if (!locales.includes(locale as (typeof locales)[number])) {
+  // Validate that the incoming `locale` parameter is valid
+  if (!locales.includes(locale as any)) {
     notFound();
   }
 
-  // Carica le traduzioni per la lingua corrente
-  const messages = await getMessages();
-
-  return (
-    <NextIntlClientProvider messages={messages}>
-      {children}
-    </NextIntlClientProvider>
-  );
+  return <>{children}</>;
 } 

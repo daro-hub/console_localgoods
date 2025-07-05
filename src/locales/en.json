@@ -1,7 +1,57 @@
 {
+  "navigation": {
+    "title": "LocalGoods",
+    "tagline": "Fresh. Handmade. Sustainable.",
+    "products": "Products",
+    "orders": "Orders",
+    "analytics": "Analytics",
+    "information": "Information",
+    "profile": "Profile",
+    "language": "Language"
+  },
+  "pages": {
+    "home": {
+      "title": "Welcome to LocalGoods",
+      "subtitle": "Console for agricultural producers",
+      "description": "Manage your products and monitor sales in one place.",
+      "getStarted": "Get Started",
+      "features": {
+        "title": "Key Features",
+        "products": {
+          "title": "Product Management",
+          "description": "Add, edit and manage your agricultural products"
+        },
+        "analytics": {
+          "title": "Sales Analytics",
+          "description": "Monitor performance and statistics of your sales"
+        },
+        "information": {
+          "title": "Information",
+          "description": "Access your account information and settings"
+        }
+      }
+    },
+    "products": {
+      "title": "Products",
+      "description": "Manage your agricultural products",
+      "addProduct": "Add Product",
+      "noProducts": "No products found",
+      "createFirst": "Create your first product"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "description": "View your sales statistics",
+      "noData": "No data available",
+      "comingSoon": "Feature coming soon"
+    },
+    "information": {
+      "title": "Information",
+      "description": "Manage your account information",
+      "accountInfo": "Account Information",
+      "settings": "Settings"
+    }
+  },
   "common": {
-    "localGoods": "Local Goods",
-    "welcome": "Welcome",
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
@@ -10,68 +60,14 @@
     "edit": "Edit",
     "delete": "Delete",
     "add": "Add",
-    "search": "Search",
-    "actions": "Actions"
-  },
-  "navigation": {
-    "dashboard": "Dashboard",
-    "products": "Products",
-    "analytics": "Analytics",
-    "information": "Information",
-    "profile": "Profile",
-    "settings": "Settings",
-    "logout": "Logout"
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
   },
   "languages": {
     "it": "Italiano",
     "en": "English",
     "fr": "Français",
     "es": "Español"
-  },
-  "dashboard": {
-    "title": "Agricultural Producers Console",
-    "subtitle": "Manage your products and monitor sales",
-    "welcome": "Welcome to Local Goods Console",
-    "welcomeMessage": "Welcome to your management console. Select a section from the menu to get started.",
-    "quickActions": "Quick Actions",
-    "recentActivity": "Recent Activity",
-    "statistics": "Statistics"
-  },
-  "products": {
-    "title": "Product Management",
-    "subtitle": "Manage your agricultural product catalog",
-    "addProduct": "Add Product",
-    "editProduct": "Edit Product",
-    "deleteProduct": "Delete Product",
-    "productName": "Product Name",
-    "productDescription": "Description",
-    "productPrice": "Price",
-    "productCategory": "Category",
-    "productStatus": "Status",
-    "active": "Active",
-    "inactive": "Inactive"
-  },
-  "analytics": {
-    "title": "Sales Analytics",
-    "subtitle": "Monitor your sales performance",
-    "totalSales": "Total Sales",
-    "monthlyRevenue": "Monthly Revenue",
-    "topProducts": "Top Products",
-    "salesTrend": "Sales Trend",
-    "period": "Period",
-    "thisMonth": "This Month",
-    "lastMonth": "Last Month",
-    "thisYear": "This Year"
-  },
-  "information": {
-    "title": "Information",
-    "subtitle": "Information about your account and platform",
-    "accountInfo": "Account Information",
-    "companyInfo": "Company Information",
-    "supportInfo": "Support",
-    "documentation": "Documentation",
-    "contactSupport": "Contact Support",
-    "version": "Version",
-    "lastUpdate": "Last Update"
   }
 } 

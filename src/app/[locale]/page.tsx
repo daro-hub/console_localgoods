@@ -1,99 +1,169 @@
-import { getTranslations } from 'next-intl/server';
+'use client';
+import { use } from 'react';
+import Link from 'next/link';
+import { useTranslations } from '@/hooks/useTranslations';
 import { DashboardLayout } from '@/components/DashboardLayout';
-import { Package, BarChart3, TrendingUp, Users } from 'lucide-react';
+import { Package, BarChart3, Info, ChevronRight, TrendingUp, Users, ShoppingBag } from 'lucide-react';
 
-export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
-  await params; // Validate params exist
-  const t = await getTranslations('dashboard');
+export default function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params);
+  const { t, loading } = useTranslations(locale);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  const features = [
+    {
+      icon: Package,
+      title: t('pages.home.features.products.title'),
+      description: t('pages.home.features.products.description'),
+      href: `/${locale}/products`,
+      gradient: 'from-blue-500 to-blue-600'
+    },
+    {
+      icon: BarChart3,
+      title: t('pages.home.features.analytics.title'),
+      description: t('pages.home.features.analytics.description'),
+      href: `/${locale}/analytics`,
+      gradient: 'from-green-500 to-green-600'
+    },
+    {
+      icon: Info,
+      title: t('pages.home.features.information.title'),
+      description: t('pages.home.features.information.description'),
+      href: `/${locale}/information`,
+      gradient: 'from-purple-500 to-purple-600'
+    }
+  ];
+
+  const stats = [
+    {
+      name: 'Prodotti Gestiti',
+      value: '250+',
+      icon: ShoppingBag,
+      color: 'text-blue-400'
+    },
+    {
+      name: 'Vendite Monitorate',
+      value: '1.2K+',
+      icon: TrendingUp,
+      color: 'text-green-400'
+    },
+    {
+      name: 'Produttori Attivi',
+      value: '150+',
+      icon: Users,
+      color: 'text-purple-400'
+    }
+  ];
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t('title')}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            {t('subtitle')}
-          </p>
-        </div>
-
-        {/* Welcome Message */}
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 dark:bg-green-800 rounded-lg flex items-center justify-center">
-              <Package className="h-5 w-5 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-green-900 dark:text-green-100">
-                {t('welcome')}
-              </h2>
-              <p className="text-green-700 dark:text-green-300">
-                {t('welcomeMessage')}
-              </p>
+    <DashboardLayout 
+      locale={locale} 
+      title={t('pages.home.title')}
+    >
+      <div className="space-y-12">
+        {/* Hero Section */}
+        <div className="text-center py-12 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-800">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              {t('pages.home.title')}
+            </h1>
+            <p className="text-xl text-gray-300 mb-8">
+              {t('pages.home.description')}
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link
+                href={`/${locale}/products`}
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <Package className="h-5 w-5 mr-2" />
+                Inizia Ora
+              </Link>
+              <Link
+                href={`/${locale}/analytics`}
+                className="inline-flex items-center px-6 py-3 bg-gray-800 text-gray-200 font-medium rounded-lg hover:bg-gray-700 transition-all duration-200 border border-gray-700"
+              >
+                <BarChart3 className="h-5 w-5 mr-2" />
+                Visualizza Report
+              </Link>
             </div>
           </div>
         </div>
 
-        {/* Quick Statistics */}
+        {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Prodotti Attivi</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">24</p>
+          {stats.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <div key={stat.name} className="bg-gray-900 rounded-xl p-6 border border-gray-800">
+                <div className="flex items-center">
+                  <Icon className={`h-8 w-8 ${stat.color}`} />
+                  <div className="ml-4">
+                    <p className="text-2xl font-bold text-white">{stat.value}</p>
+                    <p className="text-gray-400">{stat.name}</p>
+                  </div>
+                </div>
               </div>
-              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                <Package className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-            </div>
-          </div>
+            );
+          })}
+        </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Vendite del Mese</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">€1,234</p>
-              </div>
-              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Clienti Attivi</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">142</p>
-              </div>
-              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
-                <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              </div>
-            </div>
+        {/* Features Grid */}
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-8 text-center">
+            {t('pages.home.features.title')}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <Link
+                  key={feature.href}
+                  href={feature.href}
+                  className="group relative bg-gray-900 rounded-xl p-8 hover:bg-gray-800 transition-all duration-300 border border-gray-800 hover:border-gray-700 hover:shadow-xl"
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className={`inline-flex p-4 rounded-xl bg-gradient-to-r ${feature.gradient} mb-6`}>
+                      <Icon className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-white mb-4 group-hover:text-blue-400 transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-400 mb-6 leading-relaxed">
+                      {feature.description}
+                    </p>
+                    <span className="inline-flex items-center text-blue-400 font-medium group-hover:text-blue-300 transition-colors">
+                      Scopri di più
+                      <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            {t('quickActions')}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <button className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              <Package className="h-5 w-5 text-green-600 dark:text-green-400" />
-              <span className="text-gray-700 dark:text-gray-300">Aggiungi Prodotto</span>
-            </button>
-            <button className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              <span className="text-gray-700 dark:text-gray-300">Visualizza Report</span>
-            </button>
-            <button className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              <span className="text-gray-700 dark:text-gray-300">Gestisci Clienti</span>
-            </button>
-          </div>
+        {/* Call to Action */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-center">
+          <h3 className="text-2xl font-bold text-white mb-4">
+            Pronto per iniziare?
+          </h3>
+          <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
+            Unisciti a centinaia di produttori agricoli che stanno già utilizzando LocalGoods per gestire i loro prodotti e monitorare le vendite.
+          </p>
+          <Link
+            href={`/${locale}/products`}
+            className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            <Package className="h-5 w-5 mr-2" />
+            Aggiungi il tuo primo prodotto
+          </Link>
         </div>
       </div>
     </DashboardLayout>

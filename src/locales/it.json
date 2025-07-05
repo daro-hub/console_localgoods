@@ -1,7 +1,57 @@
 {
+  "navigation": {
+    "title": "LocalGoods",
+    "tagline": "Fresco. Fatto a mano. Sostenibile.",
+    "products": "Prodotti",
+    "orders": "Ordini",
+    "analytics": "Analistica",
+    "information": "Informazioni",
+    "profile": "Profilo",
+    "language": "Lingua"
+  },
+  "pages": {
+    "home": {
+      "title": "Benvenuto in LocalGoods",
+      "subtitle": "Console per produttori agricoli",
+      "description": "Gestisci i tuoi prodotti e monitora le vendite in un unico posto.",
+      "getStarted": "Inizia",
+      "features": {
+        "title": "Funzionalità principali",
+        "products": {
+          "title": "Gestione Prodotti",
+          "description": "Aggiungi, modifica e gestisci i tuoi prodotti agricoli"
+        },
+        "analytics": {
+          "title": "Analisi Vendite",
+          "description": "Monitora le performance e le statistiche delle tue vendite"
+        },
+        "information": {
+          "title": "Informazioni",
+          "description": "Accedi alle informazioni del tuo account e impostazioni"
+        }
+      }
+    },
+    "products": {
+      "title": "Prodotti",
+      "description": "Gestisci i tuoi prodotti agricoli",
+      "addProduct": "Aggiungi Prodotto",
+      "noProducts": "Nessun prodotto trovato",
+      "createFirst": "Crea il tuo primo prodotto"
+    },
+    "analytics": {
+      "title": "Analistica",
+      "description": "Visualizza le statistiche delle tue vendite",
+      "noData": "Nessun dato disponibile",
+      "comingSoon": "Funzionalità in arrivo"
+    },
+    "information": {
+      "title": "Informazioni",
+      "description": "Gestisci le informazioni del tuo account",
+      "accountInfo": "Informazioni Account",
+      "settings": "Impostazioni"
+    }
+  },
   "common": {
-    "localGoods": "Local Goods",
-    "welcome": "Benvenuto",
     "loading": "Caricamento...",
     "error": "Errore",
     "success": "Successo",
@@ -10,68 +60,14 @@
     "edit": "Modifica",
     "delete": "Elimina",
     "add": "Aggiungi",
-    "search": "Cerca",
-    "actions": "Azioni"
-  },
-  "navigation": {
-    "dashboard": "Dashboard",
-    "products": "Prodotti",
-    "analytics": "Analistica",
-    "information": "Informazioni",
-    "profile": "Profilo",
-    "settings": "Impostazioni",
-    "logout": "Disconnetti"
+    "back": "Indietro",
+    "next": "Avanti",
+    "previous": "Precedente"
   },
   "languages": {
     "it": "Italiano",
     "en": "English",
     "fr": "Français",
     "es": "Español"
-  },
-  "dashboard": {
-    "title": "Console Produttori Agricoli",
-    "subtitle": "Gestisci i tuoi prodotti e monitora le vendite",
-    "welcome": "Benvenuto nella Console Local Goods",
-    "welcomeMessage": "Benvenuto nella tua console di gestione. Seleziona una sezione dal menu per iniziare.",
-    "quickActions": "Azioni Rapide",
-    "recentActivity": "Attività Recente",
-    "statistics": "Statistiche"
-  },
-  "products": {
-    "title": "Gestione Prodotti",
-    "subtitle": "Gestisci il tuo catalogo di prodotti agricoli",
-    "addProduct": "Aggiungi Prodotto",
-    "editProduct": "Modifica Prodotto",
-    "deleteProduct": "Elimina Prodotto",
-    "productName": "Nome Prodotto",
-    "productDescription": "Descrizione",
-    "productPrice": "Prezzo",
-    "productCategory": "Categoria",
-    "productStatus": "Stato",
-    "active": "Attivo",
-    "inactive": "Inattivo"
-  },
-  "analytics": {
-    "title": "Analisi Vendite",
-    "subtitle": "Monitora le performance delle tue vendite",
-    "totalSales": "Vendite Totali",
-    "monthlyRevenue": "Fatturato Mensile",
-    "topProducts": "Prodotti Più Venduti",
-    "salesTrend": "Tendenza Vendite",
-    "period": "Periodo",
-    "thisMonth": "Questo Mese",
-    "lastMonth": "Mese Scorso",
-    "thisYear": "Quest'Anno"
-  },
-  "information": {
-    "title": "Informazioni",
-    "subtitle": "Informazioni sul tuo account e sulla piattaforma",
-    "accountInfo": "Informazioni Account",
-    "companyInfo": "Informazioni Azienda",
-    "supportInfo": "Supporto",
-    "documentation": "Documentazione",
-    "contactSupport": "Contatta il Supporto",
-    "version": "Versione",
-    "lastUpdate": "Ultimo Aggiornamento"
   }
 } 

@@ -13,17 +13,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Local Goods - Console Produttori",
-  description: "Console di gestione per produttori agricoli",
+  title: "LocalGoods - Console Produttori",
+  description: "Console web per produttori agricoli - Gestisci i tuoi prodotti e monitora le vendite",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="it">
+    <html>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
