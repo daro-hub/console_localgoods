@@ -2,12 +2,20 @@
   "navigation": {
     "title": "LocalGoods",
     "tagline": "Fresco. Artesanal. Sostenible.",
+    "companies": "Empresas",
     "products": "Productos",
     "orders": "Pedidos",
     "analytics": "Analítica",
     "information": "Información",
     "profile": "Perfil",
-    "language": "Idioma"
+    "language": "Idioma",
+    "expand": "Expandir",
+    "collapse": "Contraer",
+    "sections": {
+      "management": "Gestión",
+      "reports": "Informes",
+      "info": "Información"
+    }
   },
   "pages": {
     "home": {
@@ -30,6 +38,13 @@
           "description": "Accede a la información de tu cuenta y configuraciones"
         }
       }
+    },
+    "companies": {
+      "title": "Empresas",
+      "description": "Gestiona tus empresas asociadas",
+      "addCompany": "Agregar empresa",
+      "noCompanies": "No se encontraron empresas",
+      "createFirst": "Crea tu primera empresa"
     },
     "products": {
       "title": "Productos",

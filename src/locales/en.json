@@ -2,12 +2,20 @@
   "navigation": {
     "title": "LocalGoods",
     "tagline": "Fresh. Handmade. Sustainable.",
+    "companies": "Companies",
     "products": "Products",
     "orders": "Orders",
     "analytics": "Analytics",
     "information": "Information",
     "profile": "Profile",
-    "language": "Language"
+    "language": "Language",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "sections": {
+      "management": "Management",
+      "reports": "Reports",
+      "info": "Information"
+    }
   },
   "pages": {
     "home": {
@@ -30,6 +38,13 @@
           "description": "Access your account information and settings"
         }
       }
+    },
+    "companies": {
+      "title": "Companies",
+      "description": "Manage your partner companies",
+      "addCompany": "Add Company",
+      "noCompanies": "No companies found",
+      "createFirst": "Create your first company"
     },
     "products": {
       "title": "Products",

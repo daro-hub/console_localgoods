@@ -2,12 +2,20 @@
   "navigation": {
     "title": "LocalGoods",
     "tagline": "Frais. Fait main. Durable.",
+    "companies": "Entreprises",
     "products": "Produits",
     "orders": "Commandes",
     "analytics": "Analytique",
     "information": "Informations",
     "profile": "Profil",
-    "language": "Langue"
+    "language": "Langue",
+    "expand": "Développer",
+    "collapse": "Réduire",
+    "sections": {
+      "management": "Gestion",
+      "reports": "Rapports",
+      "info": "Informations"
+    }
   },
   "pages": {
     "home": {
@@ -30,6 +38,13 @@
           "description": "Accédez aux informations de votre compte et aux paramètres"
         }
       }
+    },
+    "companies": {
+      "title": "Entreprises",
+      "description": "Gérez vos entreprises partenaires",
+      "addCompany": "Ajouter une entreprise",
+      "noCompanies": "Aucune entreprise trouvée",
+      "createFirst": "Créez votre première entreprise"
     },
     "products": {
       "title": "Produits",

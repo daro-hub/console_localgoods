@@ -2,12 +2,20 @@
   "navigation": {
     "title": "LocalGoods",
     "tagline": "Fresco. Fatto a mano. Sostenibile.",
+    "companies": "Aziende",
     "products": "Prodotti",
     "orders": "Ordini",
     "analytics": "Analistica",
     "information": "Informazioni",
     "profile": "Profilo",
-    "language": "Lingua"
+    "language": "Lingua",
+    "expand": "Espandi",
+    "collapse": "Comprimi",
+    "sections": {
+      "management": "Gestione",
+      "reports": "Report",
+      "info": "Informazioni"
+    }
   },
   "pages": {
     "home": {
@@ -30,6 +38,13 @@
           "description": "Accedi alle informazioni del tuo account e impostazioni"
         }
       }
+    },
+    "companies": {
+      "title": "Aziende",
+      "description": "Gestisci le tue aziende partner",
+      "addCompany": "Aggiungi Azienda",
+      "noCompanies": "Nessuna azienda trovata",
+      "createFirst": "Crea la tua prima azienda"
     },
     "products": {
       "title": "Prodotti",

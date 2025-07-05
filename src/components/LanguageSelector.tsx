@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronDown, Globe } from 'lucide-react';
 
@@ -12,12 +12,13 @@ interface LanguageSelectorProps {
 export function LanguageSelector({ locale, collapsed = false }: LanguageSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const languages = [
-    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'it', name: 'Italiano', flag: 'IT' },
+    { code: 'en', name: 'English', flag: 'US' },
+    { code: 'fr', name: 'Français', flag: 'FR' },
+    { code: 'es', name: 'Español', flag: 'ES' },
   ];
 
   const currentLanguage = languages.find(lang => lang.code === locale) || languages[0];
@@ -29,12 +30,29 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
     setIsOpen(false);
   };
 
+  // Chiude il menu quando si clicca fuori dal componente
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   if (collapsed) {
     return (
-      <div className="relative">
+      <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-3 rounded-xl hover:bg-gray-800 transition-colors text-gray-400 hover:text-gray-200"
+          className="p-2 rounded-xl hover:bg-gray-800 transition-colors text-gray-400 hover:text-gray-200"
           title="Lingua"
         >
           <Globe className="h-6 w-6" />
@@ -55,7 +73,7 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
                     }
                   `}
                 >
-                  <span className="text-lg">{language.flag}</span>
+                  <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded">{language.flag}</span>
                   <span className="font-medium">{language.name}</span>
                 </button>
               ))}
@@ -67,14 +85,14 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-4 text-base font-medium rounded-xl transition-all duration-200 text-gray-300 hover:bg-gray-800 hover:text-white"
+        className="w-full flex items-center justify-between px-3 py-2 text-base font-medium rounded-xl transition-all duration-200 text-gray-300 hover:bg-gray-800 hover:text-white"
       >
         <div className="flex items-center space-x-4">
           <Globe className="h-6 w-6 text-gray-400" />
-          <span className="text-lg">{currentLanguage.flag}</span>
+          <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded">{currentLanguage.flag}</span>
           <span className="font-medium">{currentLanguage.name}</span>
         </div>
         <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -94,10 +112,10 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
                     : 'text-gray-200'
                   }
                 `}
-              >
-                <span className="text-lg">{language.flag}</span>
-                <span className="font-medium">{language.name}</span>
-              </button>
+                              >
+                  <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded">{language.flag}</span>
+                  <span className="font-medium">{language.name}</span>
+                </button>
             ))}
           </div>
         </div>
