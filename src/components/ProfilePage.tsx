@@ -247,7 +247,7 @@ export function ProfilePage({ locale }: ProfilePageProps) {
       case 'artisanal':
         return <Hammer className="h-6 w-6 text-orange-600" />;
       default:
-        return <Building2 className="h-6 w-6 text-gray-600" />;
+        return <Building2 className="h-6 w-6 text-gray-400" />;
     }
   };
 
@@ -483,7 +483,7 @@ export function ProfilePage({ locale }: ProfilePageProps) {
 
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="h-5 w-5 text-gray-600" />
+                  <Calendar className="h-5 w-5 text-gray-400" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-300">{t('profile.fields.memberSince')}</p>

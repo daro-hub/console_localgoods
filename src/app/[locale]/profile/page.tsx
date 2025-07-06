@@ -1,4 +1,3 @@
-import { useTranslations } from '@/hooks/useTranslations';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { ProfilePage } from '@/components/ProfilePage';
 

@@ -99,7 +99,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
             <h3 className="text-xl font-semibold text-white mb-3">
               Nessun ordine trovato
             </h3>
-            <p className="text-gray-400 mb-6 leading-relaxed">
+            <p className="text-gray-300 mb-6 leading-relaxed">
               Inizia gestendo i tuoi primi ordini dei clienti.
             </p>
             <button className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">

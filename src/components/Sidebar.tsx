@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   User,
+  Users,
   Building2,
   LogOut
 } from 'lucide-react';
@@ -35,6 +36,11 @@ export function Sidebar({ locale }: SidebarProps) {
           name: t('navigation.companies'),
           href: `/${locale}/companies`,
           icon: Building2,
+        },
+        {
+          name: t('navigation.users'),
+          href: `/${locale}/users`,
+          icon: Users,
         },
         {
           name: t('navigation.products'),
