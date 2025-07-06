@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from '@/hooks/useTranslations';
 import { LanguageSelector } from './LanguageSelector';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Package, 
   ShoppingCart,
@@ -12,7 +13,8 @@ import {
   ChevronLeft,
   ChevronRight,
   User,
-  Building2
+  Building2,
+  LogOut
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -23,6 +25,7 @@ export function Sidebar({ locale }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
   const { t } = useTranslations(locale);
+  const { logout, user } = useAuth();
 
   const navigationSections = [
     {
@@ -165,7 +168,7 @@ export function Sidebar({ locale }: SidebarProps) {
         ))}
       </nav>
 
-      {/* Footer con Language Selector e User */}
+      {/* Footer con Language Selector, User e Logout */}
       <div className="px-3 py-6 border-t border-gray-800 space-y-2">
         {/* Language Selector */}
         <div className={isCollapsed ? 'flex justify-center' : ''}>
@@ -175,18 +178,46 @@ export function Sidebar({ locale }: SidebarProps) {
         {/* User Button */}
         <div className={isCollapsed ? 'flex justify-center' : ''}>
           {isCollapsed ? (
-            <button 
+            <Link
+              href={`/${locale}/profile`}
               className="p-2 rounded-xl hover:bg-gray-800 transition-colors text-gray-400 hover:text-gray-200"
-              title={t('navigation.profile')}
+              title={user?.email || t('navigation.profile')}
             >
               <User className="h-6 w-6" />
-            </button>
+            </Link>
           ) : (
-            <button 
+            <Link
+              href={`/${locale}/profile`}
               className="flex items-center px-3 py-2 text-base font-medium rounded-xl transition-all duration-200 text-gray-300 hover:bg-gray-800 hover:text-white w-full"
             >
               <User className="h-6 w-6 text-gray-400 mr-4" />
-              {t('navigation.profile')}
+              <div className="flex flex-col items-start">
+                <span className="text-sm">{t('navigation.profile')}</span>
+                {user?.email && (
+                  <span className="text-xs text-gray-500 truncate max-w-[150px]">{user.email}</span>
+                )}
+              </div>
+            </Link>
+          )}
+        </div>
+
+        {/* Logout Button */}
+        <div className={isCollapsed ? 'flex justify-center' : ''}>
+          {isCollapsed ? (
+            <button 
+              onClick={logout}
+              className="p-2 rounded-xl hover:bg-red-600 transition-colors text-gray-400 hover:text-white"
+              title={t('navigation.logout')}
+            >
+              <LogOut className="h-6 w-6" />
+            </button>
+          ) : (
+            <button 
+              onClick={logout}
+              className="flex items-center px-3 py-2 text-base font-medium rounded-xl transition-all duration-200 text-gray-300 hover:bg-red-600 hover:text-white w-full"
+            >
+              <LogOut className="h-6 w-6 text-gray-400 mr-4" />
+              {t('navigation.logout')}
             </button>
           )}
         </div>

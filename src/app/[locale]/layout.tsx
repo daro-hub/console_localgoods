@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 const locales = ['it', 'en', 'fr', 'es'];
 
@@ -20,5 +21,9 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  return <>{children}</>;
+  return (
+    <ProtectedRoute>
+      {children}
+    </ProtectedRoute>
+  );
 } 

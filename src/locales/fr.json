@@ -11,6 +11,7 @@
     "language": "Langue",
     "expand": "Développer",
     "collapse": "Réduire",
+    "logout": "Déconnexion",
     "sections": {
       "management": "Gestion",
       "reports": "Rapports",
@@ -65,6 +66,49 @@
       "accountInfo": "Informations du compte",
       "settings": "Paramètres"
     }
+  },
+  "profile": {
+    "title": "Profil",
+    "description": "Gérez les informations de votre compte et les paramètres",
+    "loading": "Chargement du profil...",
+    "refresh": "Actualiser",
+    "personalInfo": "Informations Personnelles",
+    "accountInfo": "Informations du Compte",
+    "companies": "Entreprises",
+    "notProvided": "Non fourni",
+    "fields": {
+      "name": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "password": "Mot de passe",
+      "role": "Rôle",
+      "memberSince": "Membre depuis"
+    },
+    "roles": {
+      "superadmin": "Super Admin",
+      "admin": "Administrateur",
+      "manager": "Manager",
+      "user": "Utilisateur"
+    },
+    "companyTypes": {
+      "agriculture": "Agriculture",
+      "livestock": "Élevage",
+      "artisanal": "Artisanal"
+    },
+    "companiesMore": {
+      "single": "autre entreprise",
+      "plural": "autres entreprises"
+    },
+    "accountActions": "Actions du Compte",
+    "changePassword": "Changer le Mot de Passe",
+    "logoutAccount": "Déconnexion",
+    "confirmLogout": "Êtes-vous sûr de vouloir vous déconnecter de votre compte?",
+    "changePasswordComingSoon": "Fonctionnalité de changement de mot de passe à venir",
+    "securityNote": "Gardez votre compte sécurisé. Changez votre mot de passe régulièrement et ne le partagez jamais.",
+    "saving": "Enregistrement...",
+    "saved": "Modifications enregistrées avec succès",
+    "saveError": "Erreur lors de l'enregistrement des modifications"
   },
   "common": {
     "loading": "Chargement...",

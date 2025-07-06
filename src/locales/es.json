@@ -11,6 +11,7 @@
     "language": "Idioma",
     "expand": "Expandir",
     "collapse": "Contraer",
+    "logout": "Cerrar sesión",
     "sections": {
       "management": "Gestión",
       "reports": "Informes",
@@ -65,6 +66,49 @@
       "accountInfo": "Información de la cuenta",
       "settings": "Configuraciones"
     }
+  },
+  "profile": {
+    "title": "Perfil",
+    "description": "Gestiona la información de tu cuenta y configuraciones",
+    "loading": "Cargando perfil...",
+    "refresh": "Actualizar",
+    "personalInfo": "Información Personal",
+    "accountInfo": "Información de la Cuenta",
+    "companies": "Empresas",
+    "notProvided": "No proporcionado",
+    "fields": {
+      "name": "Nombre",
+      "email": "Email",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "password": "Contraseña",
+      "role": "Rol",
+      "memberSince": "Miembro desde"
+    },
+    "roles": {
+      "superadmin": "Super Admin",
+      "admin": "Administrador",
+      "manager": "Manager",
+      "user": "Usuario"
+    },
+    "companyTypes": {
+      "agriculture": "Agricultura",
+      "livestock": "Ganadería",
+      "artisanal": "Artesanal"
+    },
+    "companiesMore": {
+      "single": "otra empresa",
+      "plural": "otras empresas"
+    },
+    "accountActions": "Acciones de Cuenta",
+    "changePassword": "Cambiar Contraseña",
+    "logoutAccount": "Cerrar Sesión",
+    "confirmLogout": "¿Estás seguro de que quieres cerrar sesión?",
+    "changePasswordComingSoon": "Funcionalidad de cambio de contraseña próximamente",
+    "securityNote": "Mantén tu cuenta segura. Cambia tu contraseña regularmente y nunca la compartas.",
+    "saving": "Guardando...",
+    "saved": "Cambios guardados exitosamente",
+    "saveError": "Error al guardar los cambios"
   },
   "common": {
     "loading": "Cargando...",

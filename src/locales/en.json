@@ -11,6 +11,7 @@
     "language": "Language",
     "expand": "Expand",
     "collapse": "Collapse",
+    "logout": "Logout",
     "sections": {
       "management": "Management",
       "reports": "Reports",
@@ -65,6 +66,49 @@
       "accountInfo": "Account Information",
       "settings": "Settings"
     }
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Manage your account information and settings",
+    "loading": "Loading profile...",
+    "refresh": "Refresh",
+    "personalInfo": "Personal Information",
+    "accountInfo": "Account Information",
+    "companies": "Companies",
+    "notProvided": "Not provided",
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "password": "Password",
+      "role": "Role",
+      "memberSince": "Member since"
+    },
+    "roles": {
+      "superadmin": "Super Admin",
+      "admin": "Administrator",
+      "manager": "Manager",
+      "user": "User"
+    },
+    "companyTypes": {
+      "agriculture": "Agriculture",
+      "livestock": "Livestock",
+      "artisanal": "Artisanal"
+    },
+    "companiesMore": {
+      "single": "other company",
+      "plural": "other companies"
+    },
+    "accountActions": "Account Actions",
+    "changePassword": "Change Password",
+    "logoutAccount": "Logout Account",
+    "confirmLogout": "Are you sure you want to logout from your account?",
+    "changePasswordComingSoon": "Change password functionality coming soon",
+    "securityNote": "Keep your account secure. Change your password regularly and never share it.",
+    "saving": "Saving...",
+    "saved": "Changes saved successfully",
+    "saveError": "Error saving changes"
   },
   "common": {
     "loading": "Loading...",
