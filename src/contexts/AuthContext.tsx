@@ -45,10 +45,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         // Ricarica i dati utente per assicurarsi che siano aggiornati
         try {
-          await fetchUserDataWithToken(savedToken);
+          const userData = await fetchUserDataWithToken(savedToken);
+          setUser(userData);
+          localStorage.setItem('auth_user', JSON.stringify(userData));
         } catch (error) {
-          console.error('Error refreshing user data:', error);
-          // Se fallisce, mantieni i dati salvati
+          console.warn('Impossibile aggiornare i dati utente dal server, usando i dati salvati localmente:', error);
+          // Verifica se il token è ancora valido
+          if (error instanceof Error && error.message.includes('401')) {
+            // Token scaduto, effettua logout
+            console.log('Token scaduto, effettuando logout automatico');
+            setUser(null);
+            setToken(null);
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('auth_user');
+            router.push('/login');
+            return;
+          }
+          // Se fallisce per altri motivi, mantieni i dati salvati
         }
       }
       
@@ -60,20 +73,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Funzione per ottenere i dati utente con un token specifico
   const fetchUserDataWithToken = async (authToken: string): Promise<User> => {
-    const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/auth/me', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    try {
+      const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/auth/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch user data');
+      if (!response.ok) {
+        const errorMessage = response.status === 401 ? '401 Unauthorized' : `HTTP Error ${response.status}`;
+        throw new Error(`Failed to fetch user data: ${errorMessage}`);
+      }
+
+      const userData = await response.json();
+      return userData;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Rilancia l'errore con informazioni aggiuntive
+        throw new Error(`Network error: ${error.message}`);
+      }
+      throw new Error('Unknown error occurred while fetching user data');
     }
-
-    const userData = await response.json();
-    return userData;
   };
 
   // Funzione per ottenere i dati utente con il token corrente
