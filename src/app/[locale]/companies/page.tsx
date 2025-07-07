@@ -3,8 +3,17 @@
 import { use, useEffect, useState } from 'react';
 import { useTranslations } from '@/hooks/useTranslations';
 import { DashboardLayout } from '@/components/DashboardLayout';
-import { Building2, Plus, MapPin, Clock, Loader2, X } from 'lucide-react';
+import { Building2, Plus, MapPin, Clock, Loader2, X, Trash2, Wheat, Hammer, Beef } from 'lucide-react';
 import Link from 'next/link';
+
+interface Translation {
+  id: number;
+  name: string;
+  description: string;
+  language_id: number;
+  language_code: string;
+  language_name: string;
+}
 
 interface Company {
   id: number;
@@ -15,6 +24,7 @@ interface Company {
   description: string;
   cover: string | null;
   gallery: string[];
+  translations?: Translation[];
 }
 
 export default function CompaniesPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -28,6 +38,11 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newCompanyName, setNewCompanyName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  
+  // Stati per il dialog di eliminazione azienda
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [companyToDelete, setCompanyToDelete] = useState<Company | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -67,6 +82,32 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
     });
   };
 
+  const getCompanyTypeIcon = (type: string) => {
+    switch (type) {
+      case 'agriculture':
+        return <Wheat className="h-3 w-3 text-green-400" />;
+      case 'artisanal':
+        return <Hammer className="h-3 w-3 text-orange-400" />;
+      case 'livestock':
+        return <Beef className="h-3 w-3 text-red-400" />;
+      default:
+        return <Building2 className="h-3 w-3 text-gray-400" />;
+    }
+  };
+
+  const getCompanyTypeStyles = (type: string) => {
+    switch (type) {
+      case 'agriculture':
+        return 'bg-green-900/20 border-green-600/30 text-green-400';
+      case 'artisanal':
+        return 'bg-orange-900/20 border-orange-600/30 text-orange-400';
+      case 'livestock':
+        return 'bg-red-900/20 border-red-600/30 text-red-400';
+      default:
+        return 'bg-gray-800/50 border-gray-600/30 text-gray-400';
+    }
+  };
+
   const createCompany = async () => {
     if (!newCompanyName.trim()) return;
     
@@ -83,7 +124,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
           cover: null,
           gallery: [],
           Location: "",
-          type: ""
+          type: "agricolture"
         })
       });
 
@@ -92,9 +133,25 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
       }
 
       const newCompany = await response.json();
+      console.log('Nuova azienda creata:', newCompany);
+      
+      // Assicurati che l'oggetto abbia tutti i campi necessari
+      const mappedCompany: Company = {
+        id: newCompany.id,
+        created_at: newCompany.created_at || Date.now(),
+        Location: newCompany.Location || "",
+        type: newCompany.type || "agricolture",
+        name: newCompany.name || newCompanyName.trim(),
+        description: newCompany.description || "",
+        cover: newCompany.cover || null,
+        gallery: newCompany.gallery || [],
+        translations: newCompany.translations || []
+      };
+      
+      console.log('Azienda mappata:', mappedCompany);
       
       // Aggiungi la nuova azienda alla lista
-      setCompanies(prevCompanies => [newCompany, ...prevCompanies]);
+      setCompanies(prevCompanies => [mappedCompany, ...prevCompanies]);
       
       // Chiudi il dialog e resetta il form
       setIsDialogOpen(false);
@@ -117,6 +174,53 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setNewCompanyName('');
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, company: Company) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCompanyToDelete(company);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+    setCompanyToDelete(null);
+  };
+
+  const deleteCompany = async () => {
+    if (!companyToDelete || isDeleting) return;
+    
+    try {
+      setIsDeleting(true);
+      const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/company/${companyToDelete.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          company_id: companyToDelete.id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore nell\'eliminazione dell\'azienda');
+      }
+
+      // Rimuovi l'azienda dalla lista
+      setCompanies(prevCompanies => 
+        prevCompanies.filter(company => company.id !== companyToDelete.id)
+      );
+      
+      // Chiudi il dialog
+      setIsDeleteDialogOpen(false);
+      setCompanyToDelete(null);
+      
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Errore sconosciuto');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -196,7 +300,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
         {!loading && !error && companies.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {companies.map((company) => (
-              <div key={company.id} className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 hover:border-gray-700 transition-colors overflow-hidden aspect-square flex flex-col">
+              <div key={company.id} className="group relative bg-gray-900 rounded-xl shadow-sm border border-gray-800 hover:border-gray-700 transition-colors overflow-hidden aspect-square flex flex-col">
                 {/* Immagine dell'azienda - 3/4 dell'altezza */}
                 <div className="flex-1 relative bg-gray-800">
                   {company.cover ? (
@@ -218,11 +322,21 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                     {company.name}
                   </h3>
                   {company.type && (
-                    <span className="text-sm text-gray-400 truncate">
-                      {company.type}
-                    </span>
+                    <div className={`inline-flex items-center space-x-1 text-xs font-medium rounded-full px-2 py-1 border self-start ${getCompanyTypeStyles(company.type)}`}>
+                      {getCompanyTypeIcon(company.type)}
+                      <span className="capitalize">{company.type}</span>
+                    </div>
                   )}
                 </div>
+                
+                {/* Pulsante di eliminazione - visibile solo al hover */}
+                <button
+                  onClick={(e) => handleDeleteClick(e, company)}
+                  className="absolute top-2 right-2 z-20 bg-red-600/60 hover:bg-red-600/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg"
+                  title="Elimina azienda"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
                 
                 {/* Overlay per il link */}
                 <Link 
@@ -274,6 +388,8 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                 />
               </div>
               
+
+              
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"
@@ -298,6 +414,70 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                     <>
                       <Plus className="h-4 w-4" />
                       <span>Aggiungi</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dialog di conferma eliminazione */}
+      {isDeleteDialogOpen && companyToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-xl border border-gray-800 w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-800">
+              <h2 className="text-xl font-semibold text-white">
+                Conferma Eliminazione
+              </h2>
+              <button
+                type="button"
+                onClick={handleCloseDeleteDialog}
+                className="text-gray-400 hover:text-white transition-colors"
+                disabled={isDeleting}
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="mb-6">
+                <p className="text-white mb-2">
+                  Sei sicuro di voler eliminare l'azienda:
+                </p>
+                <p className="text-lg font-semibold text-blue-400">
+                  {companyToDelete.name}
+                </p>
+                <p className="text-sm text-gray-400 mt-2">
+                  Questa azione non può essere annullata.
+                </p>
+              </div>
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={handleCloseDeleteDialog}
+                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                  disabled={isDeleting}
+                >
+                  Annulla
+                </button>
+                <button
+                  type="button"
+                  onClick={deleteCompany}
+                  disabled={isDeleting}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Eliminazione...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4" />
+                      <span>Elimina</span>
                     </>
                   )}
                 </button>

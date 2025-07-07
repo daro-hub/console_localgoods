@@ -15,10 +15,10 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const languages = [
-    { code: 'it', name: 'Italiano', flag: 'IT' },
-    { code: 'en', name: 'English', flag: 'US' },
-    { code: 'fr', name: 'Français', flag: 'FR' },
-    { code: 'es', name: 'Español', flag: 'ES' },
+    { code: 'it', name: 'Italiano', flag: 'it' },
+    { code: 'en', name: 'English', flag: 'us' },
+    { code: 'fr', name: 'Français', flag: 'fr' },
+    { code: 'es', name: 'Español', flag: 'es' },
   ];
 
   const currentLanguage = languages.find(lang => lang.code === locale) || languages[0];
@@ -73,7 +73,17 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
                     }
                   `}
                 >
-                  <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded">{language.flag}</span>
+                  <img 
+                    src={`https://flagcdn.com/w40/${language.flag}.png`} 
+                    alt={`Bandiera ${language.name}`}
+                    className="w-6 h-4 object-cover rounded-sm"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                  <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded hidden">{language.flag.toUpperCase()}</span>
                   <span className="font-medium">{language.name}</span>
                 </button>
               ))}
@@ -92,7 +102,17 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
       >
         <div className="flex items-center space-x-4">
           <Globe className="h-6 w-6 text-gray-400" />
-          <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded">{currentLanguage.flag}</span>
+          <img 
+            src={`https://flagcdn.com/w40/${currentLanguage.flag}.png`} 
+            alt={`Bandiera ${currentLanguage.name}`}
+            className="w-6 h-4 object-cover rounded-sm"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              target.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+          <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded hidden">{currentLanguage.flag.toUpperCase()}</span>
           <span className="font-medium">{currentLanguage.name}</span>
         </div>
         <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -113,7 +133,17 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
                   }
                 `}
                               >
-                  <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded">{language.flag}</span>
+                  <img 
+                    src={`https://flagcdn.com/w40/${language.flag}.png`} 
+                    alt={`Bandiera ${language.name}`}
+                    className="w-6 h-4 object-cover rounded-sm"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                  <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded hidden">{language.flag.toUpperCase()}</span>
                   <span className="font-medium">{language.name}</span>
                 </button>
             ))}

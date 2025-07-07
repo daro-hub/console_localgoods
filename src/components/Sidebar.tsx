@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -27,6 +27,21 @@ export function Sidebar({ locale }: SidebarProps) {
   const pathname = usePathname();
   const { t } = useTranslations(locale);
   const { logout, user } = useAuth();
+
+  // Carica lo stato della sidebar dal localStorage all'avvio
+  useEffect(() => {
+    const savedState = localStorage.getItem('sidebar-collapsed');
+    if (savedState !== null) {
+      setIsCollapsed(JSON.parse(savedState));
+    }
+  }, []);
+
+  // Salva lo stato della sidebar nel localStorage quando cambia
+  const toggleSidebar = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('sidebar-collapsed', JSON.stringify(newState));
+  };
 
   const navigationSections = [
     {
@@ -94,7 +109,7 @@ export function Sidebar({ locale }: SidebarProps) {
         </Link>
         
         <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={toggleSidebar}
           className="p-2 rounded-xl hover:bg-gray-800 transition-colors text-gray-400 hover:text-gray-200"
           title={isCollapsed ? t('navigation.expand') : t('navigation.collapse')}
         >
