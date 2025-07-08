@@ -13,6 +13,10 @@
     "expand": "Espandi",
     "collapse": "Comprimi",
     "logout": "Esci",
+    "searchProducts": "Cerca prodotti...",
+    "searchNoResults": "Nessun prodotto trovato per la ricerca:",
+    "clearSearch": "Cancella ricerca",
+    "viewDetails": "Visualizza dettagli di",
     "sections": {
       "management": "Gestione",
       "reports": "Report",
@@ -53,7 +57,19 @@
       "description": "Gestisci i tuoi prodotti agricoli",
       "addProduct": "Aggiungi Prodotto",
       "noProducts": "Nessun prodotto trovato",
-      "createFirst": "Crea il tuo primo prodotto"
+      "createFirst": "Crea il tuo primo prodotto",
+      "deleteProduct": "Elimina prodotto",
+      "confirmDelete": "Conferma Eliminazione",
+      "confirmDeleteMessage": "Sei sicuro di voler eliminare il prodotto:",
+      "deleteWarning": "Questa azione non può essere annullata.",
+      "deleting": "Eliminazione...",
+      "deleteSuccess": "Prodotto eliminato con successo",
+      "deleteError": "Errore nell'eliminazione del prodotto",
+      "selectCompany": "Seleziona un'azienda per visualizzare i suoi prodotti",
+      "companyProducts": "Prodotti dell'azienda",
+      "changeCompany": "Cambia azienda",
+      "createSuccess": "Prodotto creato con successo",
+      "createError": "Errore durante la creazione del prodotto"
     },
     "analytics": {
       "title": "Analistica",
@@ -66,6 +82,95 @@
       "description": "Gestisci le informazioni del tuo account",
       "accountInfo": "Informazioni Account",
       "settings": "Impostazioni"
+    },
+    "productDetail": {
+      "title": "Dettagli Prodotto",
+      "backToProducts": "Torna ai prodotti",
+      "loading": "Caricamento dettagli prodotto...",
+      "pleaseWait": "Attendere prego",
+      "error": "Errore",
+      "productNotFound": "Prodotto non trovato",
+      "sections": {
+        "description": "Descrizione",
+        "priceAndUnit": "Prezzo e unità di misura",
+        "gallery": "Galleria immagini",
+        "translations": "Traduzioni",
+        "technicalDetails": "Dettagli tecnici"
+      },
+      "fields": {
+        "price": "Prezzo",
+        "unitOfMeasure": "Unità di misura",
+        "category": "Categoria",
+        "companyId": "ID Azienda",
+        "createdAt": "Data di creazione",
+        "name": "Nome",
+        "description": "Descrizione"
+      },
+      "placeholders": {
+        "productName": "Nome del prodotto...",
+        "productDescription": "Inserisci la descrizione del prodotto...",
+        "selectCategory": "Seleziona categoria",
+        "selectUnit": "Seleziona unità",
+        "price": "0.00"
+      },
+      "categories": {
+        "vegetable": "Vegetali",
+        "meat": "Carne", 
+        "cheese": "Formaggi",
+        "bread": "Pane"
+      },
+      "units": {
+        "unit": "Unità",
+        "g": "Grammi (g)",
+        "kg": "Chilogrammi (kg)",
+        "ml": "Millilitri (ml)",
+        "l": "Litri (l)"
+      },
+      "states": {
+        "priceSet": "Prezzo definito",
+        "freeOrUnset": "Gratuito o prezzo non definito",
+        "unitSpecified": "Unità specificata",
+        "unitNotSpecified": "Unità non specificata",
+        "categoryNotSpecified": "Categoria non specificata"
+      },
+      "gallery": {
+        "noImages": "Nessuna immagine nella galleria"
+      },
+      "translations": {
+        "addTranslation": "Aggiungi",
+        "addWithAI": "AI",
+        "addTranslationManually": "Aggiungi traduzione manualmente",
+        "addTranslationWithAI": "Aggiungi traduzione con AI",
+        "noTranslations": "Nessuna traduzione disponibile",
+        "editTranslation": "Modifica Traduzione Prodotto",
+        "selectLanguage": "Seleziona lingua per la nuova traduzione",
+        "allLanguagesUsed": "Tutte le lingue disponibili sono già state tradotte",
+        "creating": "Creazione...",
+        "saving": "Salvando...",
+        "autoSaveNote": "💡 Le modifiche vengono salvate automaticamente mentre scrivi",
+        "productNameIn": "Nome prodotto (in {language})",
+        "descriptionIn": "Descrizione (in {language})",
+        "namePlaceholder": "Nome del prodotto in {language}...",
+        "descriptionPlaceholder": "Descrizione del prodotto in {language}...",
+        "notFilled": "Non compilato",
+        "notFilledDesc": "Non compilata",
+        "deleteTranslation": "Elimina traduzione",
+        "confirmDelete": "Conferma Eliminazione",
+        "confirmDeleteMessage": "Sei sicuro di voler eliminare la traduzione per:",
+        "deleteWarning": "Questa azione non può essere annullata.",
+        "deleting": "Eliminazione..."
+      },
+      "messages": {
+        "translationSaved": "Traduzione salvata con successo",
+        "translationSaveError": "Errore durante il salvataggio della traduzione",
+        "translationCreated": "Traduzione creata con successo",
+        "translationCreateError": "Errore durante la creazione della traduzione",
+        "languagesLoadError": "Errore nel caricamento delle lingue disponibili",
+        "changesSaved": "Modifiche salvate automaticamente",
+        "saveError": "Errore nel salvataggio",
+        "translationDeleted": "Traduzione eliminata con successo",
+        "translationDeleteError": "Errore durante l'eliminazione della traduzione"
+      }
     }
   },
   "profile": {

@@ -5,7 +5,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { useDebounce } from '@/hooks/useDebounce';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Toast } from '@/components/Toast';
-import { Package, Plus, Search, Filter, Building2, Loader2, ChevronDown, X } from 'lucide-react';
+import { Package, Plus, Search, Filter, Building2, Loader2, ChevronDown, X, Wheat, Hammer, Beef, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 interface Product {
@@ -28,6 +28,8 @@ interface Company {
   Location: string;
   type: string;
   created_at: number;
+  cover: string | null;
+  gallery: string[];
 }
 
 export default function ProductsPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -56,6 +58,11 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
   const [isAddProductDialogOpen, setIsAddProductDialogOpen] = useState(false);
   const [newProductName, setNewProductName] = useState('');
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+
+  // Stati per l'eliminazione prodotti
+  const [isDeleteProductDialogOpen, setIsDeleteProductDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [isDeletingProduct, setIsDeletingProduct] = useState(false);
 
   // Stati per i toast
   const [toast, setToast] = useState({
@@ -155,6 +162,32 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
       month: 'short',
       day: 'numeric'
     });
+  };
+
+  const getCompanyTypeIcon = (type: string) => {
+    switch (type) {
+      case 'agriculture':
+        return <Wheat className="h-3 w-3 text-green-400" />;
+      case 'artisanal':
+        return <Hammer className="h-3 w-3 text-orange-400" />;
+      case 'livestock':
+        return <Beef className="h-3 w-3 text-red-400" />;
+      default:
+        return <Building2 className="h-3 w-3 text-gray-400" />;
+    }
+  };
+
+  const getCompanyTypeStyles = (type: string) => {
+    switch (type) {
+      case 'agriculture':
+        return 'bg-green-900/20 border-green-600/30 text-green-400';
+      case 'artisanal':
+        return 'bg-orange-900/20 border-orange-600/30 text-orange-400';
+      case 'livestock':
+        return 'bg-red-900/20 border-red-600/30 text-red-400';
+      default:
+        return 'bg-gray-800/50 border-gray-600/30 text-gray-400';
+    }
   };
 
   const getProductCategoryStyles = (category: string) => {
@@ -286,13 +319,61 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
       // Chiudi il dialog
       handleCloseProductDialog();
       
-      showToast('Prodotto creato con successo', 'success');
+      showToast(t('pages.products.createSuccess') || 'Prodotto creato con successo', 'success');
       
     } catch (err) {
       setProductsError(err instanceof Error ? err.message : 'Errore sconosciuto');
-      showToast('Errore durante la creazione del prodotto', 'error');
+      showToast(t('pages.products.createError') || 'Errore durante la creazione del prodotto', 'error');
     } finally {
       setIsAddingProduct(false);
+    }
+  };
+
+  // Funzioni per l'eliminazione prodotti
+  const handleDeleteProductClick = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+    setProductToDelete(product);
+    setIsDeleteProductDialogOpen(true);
+  };
+
+  const handleCloseDeleteProductDialog = () => {
+    setIsDeleteProductDialogOpen(false);
+    setProductToDelete(null);
+  };
+
+  const deleteProduct = async () => {
+    if (!productToDelete || isDeletingProduct) return;
+    
+    try {
+      setIsDeletingProduct(true);
+      const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/product/${productToDelete.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(t('pages.products.deleteError'));
+      }
+
+      // Rimuovi il prodotto dalla lista
+      setProducts(prevProducts => 
+        prevProducts.filter(product => product.id !== productToDelete.id)
+      );
+      
+      // Chiudi il dialog
+      setIsDeleteProductDialogOpen(false);
+      setProductToDelete(null);
+      
+      showToast(t('pages.products.deleteSuccess'), 'success');
+      
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : t('pages.products.deleteError'), 'error');
+    } finally {
+      setIsDeletingProduct(false);
     }
   };
 
@@ -321,13 +402,13 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
           <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6 mb-8">
             <h2 className="text-xl font-semibold text-white mb-4 flex items-center space-x-2">
               <Building2 className="h-5 w-5" />
-              <span>Seleziona un&apos;azienda per visualizzare i suoi prodotti</span>
+              <span>{t('pages.products.selectCompany') || 'Seleziona un\'azienda per visualizzare i suoi prodotti'}</span>
             </h2>
             
             {loadingCompanies && (
               <div className="text-center py-8">
                 <Loader2 className="h-8 w-8 text-blue-500 mx-auto mb-2 animate-spin" />
-                <p className="text-gray-400">Caricamento aziende...</p>
+                <p className="text-gray-400">{t('common.loading')}</p>
               </div>
             )}
 
@@ -338,25 +419,49 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
             )}
 
             {!loadingCompanies && !companiesError && companies.length > 0 && (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {companies.map((company) => (
-                  <button
-                    key={company.id}
+                  <div 
+                    key={company.id} 
+                    className="group relative bg-gray-900 rounded-xl shadow-sm border border-gray-800 hover:border-gray-700 transition-colors overflow-hidden aspect-square flex flex-col cursor-pointer"
                     onClick={() => handleCompanySelect(company.id)}
-                    className="bg-gray-800 border border-gray-700 rounded-xl p-4 hover:border-gray-600 hover:bg-gray-800/80 transition-all duration-200 text-left"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleCompanySelect(company.id);
+                      }
+                    }}
                   >
-                    <h3 className="text-white font-medium text-sm mb-1 truncate">
-                      {company.name}
-                    </h3>
-                    {company.Location && (
-                      <p className="text-gray-400 text-xs mb-2">
-                        {company.Location}
-                      </p>
-                    )}
-                    <div className="text-xs text-gray-500">
-                      ID: #{company.id}
+                    {/* Immagine dell'azienda - 3/4 dell'altezza */}
+                    <div className="flex-1 relative bg-gray-800">
+                      {company.cover ? (
+                        <img 
+                          src={company.cover} 
+                          alt={company.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Building2 className="h-12 w-12 text-gray-400" />
+                        </div>
+                      )}
                     </div>
-                  </button>
+                    
+                    {/* Informazioni azienda - 1/4 dell'altezza */}
+                    <div className="p-4 flex flex-col justify-center min-h-0">
+                      <h3 className="text-lg font-semibold text-white truncate mb-1">
+                        {company.name}
+                      </h3>
+                      {company.type && (
+                        <div className={`inline-flex items-center space-x-1 text-xs font-medium rounded-full px-2 py-1 border self-start ${getCompanyTypeStyles(company.type)}`}>
+                          {getCompanyTypeIcon(company.type)}
+                          <span className="capitalize">{company.type}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
@@ -364,7 +469,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
             {!loadingCompanies && !companiesError && companies.length === 0 && (
               <div className="text-center py-8">
                 <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-400">Nessuna azienda trovata</p>
+                <p className="text-gray-400">{t('pages.companies.noCompanies')}</p>
               </div>
             )}
           </div>
@@ -381,7 +486,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
                     {selectedCompany ? selectedCompany.name : `Azienda #${selectedCompanyId}`}
                   </h2>
                   <p className="text-sm text-gray-400">
-                    Prodotti dell&apos;azienda
+                    {t('pages.products.companyProducts') || 'Prodotti dell\'azienda'}
                   </p>
                 </div>
               </div>
@@ -392,7 +497,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
                 }}
                 className="text-sm text-gray-400 hover:text-white transition-colors"
               >
-                Cambia azienda
+                {t('pages.products.changeCompany') || 'Cambia azienda'}
               </button>
             </div>
           </div>
@@ -404,34 +509,34 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-white flex items-center space-x-2">
                 <Package className="h-5 w-5" />
-                <span>Prodotti</span>
+                <span>{t('pages.products.title')}</span>
               </h2>
               
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2">
-                  <Search className="h-5 w-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Cerca prodotti..."
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              <Search className="h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder={t('navigation.searchProducts') || 'Cerca prodotti...'}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+                className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
                 <button 
                   onClick={handleAddProductClick}
                   className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
                   <Plus className="h-4 w-4" />
-                  <span>Aggiungi</span>
-                </button>
-              </div>
+                  <span>{t('common.add')}</span>
+            </button>
+          </div>
             </div>
             
             {loadingProducts && (
               <div className="text-center py-8">
                 <Loader2 className="h-8 w-8 text-blue-500 mx-auto mb-2 animate-spin" />
-                <p className="text-gray-400">Caricamento prodotti...</p>
+                <p className="text-gray-400">{t('common.loading')}</p>
               </div>
             )}
 
@@ -444,49 +549,33 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
             {!loadingProducts && !productsError && products.length === 0 && (
               <div className="text-center py-8">
                 <Package className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-400 mb-4">Nessun prodotto trovato per questa azienda</p>
+                <p className="text-gray-400 mb-4">{t('pages.products.noProducts')}</p>
               </div>
             )}
 
             {!loadingProducts && !productsError && products.length > 0 && filteredProducts.length === 0 && debouncedSearchTerm.trim() && (
               <div className="text-center py-8">
                 <Search className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-400 mb-2">Nessun prodotto trovato per la ricerca:</p>
+                <p className="text-gray-400 mb-2">{t('navigation.searchNoResults') || 'Nessun prodotto trovato per la ricerca:'}</p>
                 <p className="text-white font-medium mb-4">&quot;{debouncedSearchTerm}&quot;</p>
                 <button
                   onClick={() => setSearchTerm('')}
                   className="text-blue-400 hover:text-blue-300 transition-colors text-sm"
                 >
-                  Cancella ricerca
-                </button>
-              </div>
+                  {t('navigation.clearSearch') || 'Cancella ricerca'}
+          </button>
+        </div>
             )}
 
             {!loadingProducts && !productsError && filteredProducts.length > 0 && (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredProducts.map((product) => (
-                  <Link
+                  <div
                     key={product.id}
-                    href={`/${locale}/products/${product.id}`}
-                    className="bg-gray-800 border border-gray-700 rounded-xl p-4 hover:border-gray-600 hover:bg-gray-800/80 transition-all duration-200 cursor-pointer block"
-                    title={`Visualizza dettagli di ${product.name.trim() || `Prodotto #${product.id}`}`}
+                    className="group relative bg-gray-900 rounded-xl shadow-sm border border-gray-800 hover:border-gray-700 transition-colors overflow-hidden aspect-square flex flex-col"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <span className="text-gray-500 text-xs font-mono bg-gray-900 px-2 py-1 rounded">
-                        #{product.id}
-                      </span>
-                      {(product.price > 0 || (product.uom && product.uom.trim())) && (
-                        <div className="flex items-center space-x-1">
-                          <span className="bg-green-900/20 border border-green-600/30 text-green-400 text-xs px-2 py-1 rounded-full">
-                            {product.price > 0 ? `€${product.price.toFixed(2)}` : '€0,00'}
-                            {product.uom && product.uom.trim() && ` per ${product.uom}`}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Immagine prodotto */}
-                    <div className="mb-3 aspect-square bg-gray-700 rounded-lg overflow-hidden">
+                    {/* Immagine del prodotto - 3/4 dell'altezza */}
+                    <div className="flex-1 relative bg-gray-800">
                       {product.cover ? (
                         <img 
                           src={product.cover} 
@@ -495,38 +584,60 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Package className="h-8 w-8 text-gray-400" />
+                          <Package className="h-12 w-12 text-gray-400" />
                         </div>
                       )}
-                    </div>
-                    
-                    {/* Informazioni prodotto */}
-                    <div>
-                      <h3 className="text-white font-medium text-sm mb-1 truncate">
-                        {product.name.trim() || `Prodotto #${product.id}`}
-                      </h3>
                       
-                      {/* Categoria prodotto */}
+                      {/* ID del prodotto in basso a sinistra */}
+                      <div className="absolute bottom-2 left-2 z-10">
+                        <span className="bg-gray-900/90 text-gray-300 text-xs px-2 py-1 rounded font-mono backdrop-blur-sm">
+                          #{product.id}
+                        </span>
+                      </div>
+                      
+                      {/* Pulsante di eliminazione - in alto a destra, visibile solo al hover */}
+                      <button
+                        onClick={(e) => handleDeleteProductClick(e, product)}
+                        className="absolute top-2 right-2 z-30 bg-red-600/60 hover:bg-red-600/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg"
+                        title={t('pages.products.deleteProduct')}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                      
+                      {/* Categoria in overlay se presente - in alto a sinistra */}
                       {product.category && product.category.trim() && (
-                        <div className="mb-2">
-                          <span className={`inline-flex items-center text-xs font-medium rounded-full px-2 py-1 border ${getProductCategoryStyles(product.category)}`}>
+                        <div className="absolute top-2 left-2 z-10">
+                          <span className={`inline-flex items-center text-xs font-medium rounded-full px-2 py-1 border backdrop-blur-sm ${getProductCategoryStyles(product.category)}`}>
                             {product.category}
                           </span>
                         </div>
                       )}
+            </div>
+                    
+                    {/* Informazioni prodotto - 1/4 dell'altezza */}
+                    <div className="p-4 flex flex-col justify-center min-h-0">
+                      <h3 className="text-lg font-semibold text-white truncate mb-1">
+                        {product.name.trim() || `${t('pages.products.title')} #${product.id}`}
+                      </h3>
                       
-                      {product.description && product.description.trim() && (
-                        <p className="text-gray-400 text-xs line-clamp-2 mb-2">
-                          {product.description}
-                        </p>
-                      )}
-                      {product.created_at && (
-                        <div className="text-xs text-gray-400 text-center">
-                          {formatDate(product.created_at)}
+                      {/* Prezzo se presente */}
+                      {product.price > 0 && (
+                        <div className="mt-1">
+                          <span className="text-green-400 text-sm font-medium">
+                            €{product.price.toFixed(2)}
+                            {product.uom && product.uom.trim() && ` per ${product.uom}`}
+                          </span>
                         </div>
                       )}
                     </div>
-                  </Link>
+
+                    {/* Overlay per il link */}
+                    <Link 
+                      href={`/${locale}/products/${product.id}`}
+                      className="absolute inset-0 z-10"
+                      title={`${t('navigation.viewDetails') || 'Visualizza dettagli di'} ${product.name.trim() || `${t('pages.products.title')} #${product.id}`}`}
+                    />
+                  </div>
                 ))}
               </div>
             )}
@@ -542,9 +653,9 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
               <div className="flex items-center space-x-3">
                 <Package className="h-6 w-6 text-blue-400" />
                 <h2 className="text-xl font-semibold text-white">
-                  Aggiungi Nuovo Prodotto
+                  {t('pages.products.addProduct')}
                 </h2>
-              </div>
+            </div>
               <button
                 type="button"
                 onClick={handleCloseProductDialog}
@@ -557,14 +668,14 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
             <div className="p-6">
               <div className="mb-6">
                 <label htmlFor="product-name" className="block text-sm font-medium text-white mb-2">
-                  Nome del prodotto
+                  {t('pages.productDetail.fields.name')}
                 </label>
                 <input
                   id="product-name"
                   type="text"
                   value={newProductName}
                   onChange={(e) => setNewProductName(e.target.value)}
-                  placeholder="Inserisci il nome del prodotto"
+                  placeholder={t('pages.productDetail.placeholders.productName')}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isAddingProduct}
                   onKeyPress={(e) => {
@@ -588,7 +699,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
                   className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
                   disabled={isAddingProduct}
                 >
-                  Annulla
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="button"
@@ -599,12 +710,76 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
                   {isAddingProduct ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Creazione...</span>
+                      <span>{t('pages.productDetail.translations.creating')}</span>
                     </>
                   ) : (
                     <>
                       <Plus className="h-4 w-4" />
-                      <span>Aggiungi</span>
+                      <span>{t('common.add')}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dialog di conferma eliminazione prodotto */}
+      {isDeleteProductDialogOpen && productToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-xl border border-gray-800 w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-800">
+              <h2 className="text-xl font-semibold text-white">
+                {t('pages.products.confirmDelete')}
+              </h2>
+              <button
+                type="button"
+                onClick={handleCloseDeleteProductDialog}
+                className="text-gray-400 hover:text-white transition-colors"
+                disabled={isDeletingProduct}
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="mb-6">
+                <p className="text-white mb-2">
+                  {t('pages.products.confirmDeleteMessage')}
+                </p>
+                                 <p className="text-lg font-semibold text-blue-400">
+                   {productToDelete.name.trim() || `${t('pages.products.title')} #${productToDelete.id}`}
+                 </p>
+                <p className="text-sm text-gray-400 mt-2">
+                  {t('pages.products.deleteWarning')}
+                </p>
+              </div>
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={handleCloseDeleteProductDialog}
+                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                  disabled={isDeletingProduct}
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  type="button"
+                  onClick={deleteProduct}
+                  disabled={isDeletingProduct}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeletingProduct ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>{t('pages.products.deleting')}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4" />
+                      <span>{t('common.delete')}</span>
                     </>
                   )}
                 </button>

@@ -843,13 +843,18 @@ export default function CompanyDetailsPage({
 
               {/* Company Info */}
               <div className="flex-1">
-                <input
-                  type="text"
-                  value={editableFields.name}
-                  onChange={(e) => handleFieldChange('name', e.target.value)}
-                  className="text-3xl font-bold text-white bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 w-full"
-                  placeholder="Nome azienda"
-                />
+                <div className="flex items-center space-x-3 mb-2">
+                  <span className="text-lg font-mono text-gray-400 bg-gray-800 px-3 py-1 rounded-lg">
+                    #{company.id}
+                  </span>
+                  <input
+                    type="text"
+                    value={editableFields.name}
+                    onChange={(e) => handleFieldChange('name', e.target.value)}
+                    className="text-3xl font-bold text-white bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 flex-1"
+                    placeholder="Nome azienda"
+                  />
+                </div>
                 <div className="mt-2 mb-3 flex items-center space-x-2">
                   <MapPin className="h-5 w-5 text-gray-400" />
                   <input
@@ -1118,30 +1123,14 @@ export default function CompanyDetailsPage({
               )}
 
               {!productsLoading && !productsError && products.length > 0 && (
-                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {products.map((product) => (
-                    <Link 
-                      key={product.id} 
-                      href={`/${locale}/products/${product.id}`}
-                      className="flex-shrink-0 w-64 bg-gray-800 border border-gray-700 rounded-xl p-4 hover:border-gray-600 hover:bg-gray-800/80 transition-all duration-200 cursor-pointer"
-                      title={`Visualizza dettagli di ${product.name.trim() || `Prodotto #${product.id}`}`}
+                    <div
+                      key={product.id}
+                      className="group relative bg-gray-900 rounded-xl shadow-sm border border-gray-800 hover:border-gray-700 transition-colors overflow-hidden aspect-square flex flex-col"
                     >
-                      <div className="flex items-start justify-between mb-3">
-                        <span className="text-gray-500 text-xs font-mono bg-gray-900 px-2 py-1 rounded">
-                          #{product.id}
-                        </span>
-                        {(product.price > 0 || (product.uom && product.uom.trim())) && (
-                          <div className="flex items-center space-x-1">
-                            <span className="bg-green-900/20 border border-green-600/30 text-green-400 text-xs px-2 py-1 rounded-full">
-                              {product.price > 0 ? `€${product.price.toFixed(2)}` : '€0,00'}
-                              {product.uom && product.uom.trim() && ` per ${product.uom}`}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Immagine prodotto */}
-                      <div className="mb-3 aspect-square bg-gray-700 rounded-lg overflow-hidden">
+                      {/* Immagine del prodotto - 3/4 dell'altezza */}
+                      <div className="flex-1 relative bg-gray-800">
                         {product.cover ? (
                           <img 
                             src={product.cover} 
@@ -1150,61 +1139,66 @@ export default function CompanyDetailsPage({
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <Package className="h-8 w-8 text-gray-400" />
+                            <Package className="h-12 w-12 text-gray-400" />
+                          </div>
+                        )}
+                        
+                        {/* ID del prodotto in alto a sinistra */}
+                        <div className="absolute top-2 left-2 z-10">
+                          <span className="bg-gray-900/90 text-gray-300 text-xs px-2 py-1 rounded font-mono backdrop-blur-sm">
+                            #{product.id}
+                          </span>
+                        </div>
+                        
+                        {/* Prezzo in overlay se presente */}
+                        {product.price > 0 && (
+                          <div className="absolute top-2 right-2 z-10">
+                            <span className="bg-green-600/90 text-white text-xs px-2 py-1 rounded-full font-medium backdrop-blur-sm">
+                              €{product.price.toFixed(2)}
+                              {product.uom && product.uom.trim() && ` per ${product.uom}`}
+                            </span>
                           </div>
                         )}
                       </div>
                       
-                      {/* Informazioni prodotto */}
-                      <div>
-                        <h3 className="text-white font-medium text-sm mb-1 truncate">
+                      {/* Informazioni prodotto - 1/4 dell'altezza */}
+                      <div className="p-4 flex flex-col justify-center min-h-0">
+                        <h3 className="text-lg font-semibold text-white truncate mb-1">
                           {product.name.trim() || `Prodotto #${product.id}`}
                         </h3>
                         
                         {/* Categoria prodotto */}
                         {product.category && product.category.trim() && (
-                          <div className="mb-2">
-                            <span className={`inline-flex items-center text-xs font-medium rounded-full px-2 py-1 border ${getProductCategoryStyles(product.category)}`}>
-                              {product.category}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {product.description && product.description.trim() && (
-                          <p className="text-gray-400 text-xs line-clamp-2 mb-2">
-                            {product.description}
-                          </p>
-                        )}
-                        {product.created_at && (
-                          <div className="text-xs text-gray-400 text-center">
-                            {formatDate(product.created_at)}
+                          <div className={`inline-flex items-center text-xs font-medium rounded-full px-2 py-1 border self-start ${getProductCategoryStyles(product.category)}`}>
+                            <span>{product.category}</span>
                           </div>
                         )}
                       </div>
-                    </Link>
+
+                      {/* Overlay per il link */}
+                      <Link 
+                        href={`/${locale}/products/${product.id}`}
+                        className="absolute inset-0 z-20"
+                        title={`Visualizza dettagli di ${product.name.trim() || `Prodotto #${product.id}`}`}
+                      />
+                    </div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Informazioni aggiuntive */}
+            {/* Dettagli tecnici */}
             <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Informazioni aggiuntive
+              <h2 className="text-xl font-semibold text-white mb-6">
+                Dettagli tecnici
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center space-x-3">
-                  <Calendar className="h-5 w-5 text-gray-400" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Data di creazione */}
+                <div className="flex items-start space-x-3">
+                  <Calendar className="h-5 w-5 text-indigo-400 mt-1" />
                   <div>
-                    <p className="text-sm text-gray-400">Data di creazione</p>
-                    <p className="text-gray-300">{formatDate(company.created_at)}</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Building2 className="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-400">ID Azienda</p>
-                    <p className="text-gray-300">#{company.id}</p>
+                    <p className="text-sm font-medium text-gray-400">Data di creazione</p>
+                    <p className="text-white">{formatDate(company.created_at)}</p>
                   </div>
                 </div>
               </div>

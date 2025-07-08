@@ -247,19 +247,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
           </div>
         </div>
 
-        {loading && (
-          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-8">
-            <div className="text-center py-12">
-              <Loader2 className="h-16 w-16 text-blue-500 mx-auto mb-4 animate-spin" />
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Caricamento aziende...
-              </h3>
-              <p className="text-gray-300">
-                Attendere prego
-              </p>
-            </div>
-          </div>
-        )}
+
 
         {error && (
           <div className="bg-red-900/20 border border-red-800 rounded-xl p-4 mb-6">

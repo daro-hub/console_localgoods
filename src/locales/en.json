@@ -13,6 +13,10 @@
     "expand": "Expand",
     "collapse": "Collapse",
     "logout": "Logout",
+    "searchProducts": "Search products...",
+    "searchNoResults": "No products found for search:",
+    "clearSearch": "Clear search",
+    "viewDetails": "View details of",
     "sections": {
       "management": "Management",
       "reports": "Reports",
@@ -53,7 +57,19 @@
       "description": "Manage your agricultural products",
       "addProduct": "Add Product",
       "noProducts": "No products found",
-      "createFirst": "Create your first product"
+      "createFirst": "Create your first product",
+      "deleteProduct": "Delete product",
+      "confirmDelete": "Confirm Deletion",
+      "confirmDeleteMessage": "Are you sure you want to delete the product:",
+      "deleteWarning": "This action cannot be undone.",
+      "deleting": "Deleting...",
+      "deleteSuccess": "Product deleted successfully",
+      "deleteError": "Error deleting product",
+      "selectCompany": "Select a company to view its products",
+      "companyProducts": "Company products",
+      "changeCompany": "Change company",
+      "createSuccess": "Product created successfully",
+      "createError": "Error creating product"
     },
     "analytics": {
       "title": "Analytics",
@@ -66,6 +82,95 @@
       "description": "Manage your account information",
       "accountInfo": "Account Information",
       "settings": "Settings"
+    },
+    "productDetail": {
+      "title": "Product Details",
+      "backToProducts": "Back to products",
+      "loading": "Loading product details...",
+      "pleaseWait": "Please wait",
+      "error": "Error",
+      "productNotFound": "Product not found",
+      "sections": {
+        "description": "Description",
+        "priceAndUnit": "Price and unit of measure",
+        "gallery": "Image gallery",
+        "translations": "Translations",
+        "technicalDetails": "Technical details"
+      },
+      "fields": {
+        "price": "Price",
+        "unitOfMeasure": "Unit of measure",
+        "category": "Category",
+        "companyId": "Company ID",
+        "createdAt": "Creation date",
+        "name": "Name",
+        "description": "Description"
+      },
+      "placeholders": {
+        "productName": "Product name...",
+        "productDescription": "Enter product description...",
+        "selectCategory": "Select category",
+        "selectUnit": "Select unit",
+        "price": "0.00"
+      },
+      "categories": {
+        "vegetable": "Vegetables",
+        "meat": "Meat",
+        "cheese": "Cheese",
+        "bread": "Bread"
+      },
+      "units": {
+        "unit": "Unit",
+        "g": "Grams (g)",
+        "kg": "Kilograms (kg)",
+        "ml": "Milliliters (ml)",
+        "l": "Liters (l)"
+      },
+      "states": {
+        "priceSet": "Price set",
+        "freeOrUnset": "Free or price not set",
+        "unitSpecified": "Unit specified",
+        "unitNotSpecified": "Unit not specified",
+        "categoryNotSpecified": "Category not specified"
+      },
+      "gallery": {
+        "noImages": "No images in gallery"
+      },
+      "translations": {
+        "addTranslation": "Add",
+        "addWithAI": "AI",
+        "addTranslationManually": "Add translation manually",
+        "addTranslationWithAI": "Add translation with AI",
+        "noTranslations": "No translations available",
+        "editTranslation": "Edit Product Translation",
+        "selectLanguage": "Select language for new translation",
+        "allLanguagesUsed": "All available languages have been translated",
+        "creating": "Creating...",
+        "saving": "Saving...",
+        "autoSaveNote": "💡 Changes are saved automatically as you type",
+        "productNameIn": "Product name (in {language})",
+        "descriptionIn": "Description (in {language})",
+        "namePlaceholder": "Product name in {language}...",
+        "descriptionPlaceholder": "Product description in {language}...",
+        "notFilled": "Not filled",
+        "notFilledDesc": "Not filled",
+        "deleteTranslation": "Delete translation",
+        "confirmDelete": "Confirm Deletion",
+        "confirmDeleteMessage": "Are you sure you want to delete the translation for:",
+        "deleteWarning": "This action cannot be undone.",
+        "deleting": "Deleting..."
+      },
+      "messages": {
+        "translationSaved": "Translation saved successfully",
+        "translationSaveError": "Error saving translation",
+        "translationCreated": "Translation created successfully",
+        "translationCreateError": "Error creating translation",
+        "languagesLoadError": "Error loading available languages",
+        "changesSaved": "Changes saved automatically",
+        "saveError": "Error saving",
+        "translationDeleted": "Translation deleted successfully",
+        "translationDeleteError": "Error deleting translation"
+      }
     }
   },
   "profile": {
