@@ -1043,7 +1043,7 @@ export default function ProductDetailsPage({
             <div className="p-6 space-y-6">
               <div>
                 <label htmlFor="translation-name" className="block text-sm font-medium text-white mb-2">
-                  {t('pages.productDetail.translations.productNameIn', { language: selectedTranslation.language_name })}
+                  {t('pages.productDetail.translations.productNameIn').replace('{language}', selectedTranslation.language_name)}
                 </label>
                 <input
                   id="translation-name"
@@ -1051,20 +1051,20 @@ export default function ProductDetailsPage({
                   value={translationFields.name}
                   onChange={(e) => handleTranslationFieldChange('name', e.target.value)}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t('pages.productDetail.translations.namePlaceholder', { language: selectedTranslation.language_name })}
+                  placeholder={t('pages.productDetail.translations.namePlaceholder').replace('{language}', selectedTranslation.language_name)}
                 />
               </div>
               
               <div>
                 <label htmlFor="translation-description" className="block text-sm font-medium text-white mb-2">
-                  {t('pages.productDetail.translations.descriptionIn', { language: selectedTranslation.language_name })}
+                  {t('pages.productDetail.translations.descriptionIn').replace('{language}', selectedTranslation.language_name)}
                 </label>
                 <textarea
                   id="translation-description"
                   value={translationFields.description}
                   onChange={(e) => handleTranslationFieldChange('description', e.target.value)}
                   className="w-full h-32 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  placeholder={t('pages.productDetail.translations.descriptionPlaceholder', { language: selectedTranslation.language_name })}
+                  placeholder={t('pages.productDetail.translations.descriptionPlaceholder').replace('{language}', selectedTranslation.language_name)}
                 />
               </div>
               

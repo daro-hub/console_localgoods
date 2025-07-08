@@ -31,7 +31,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
   const { locale } = use(params);
   const { t } = useTranslations(locale);
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
   
   // Stati per il dialog di aggiunta azienda
@@ -47,7 +47,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        setLoading(true);
+
         const url = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/companies');
         url.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
         
@@ -67,7 +67,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Errore sconosciuto');
       } finally {
-        setLoading(false);
+
       }
     };
 
@@ -263,7 +263,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
           </div>
         )}
 
-        {!loading && !error && companies.length === 0 && (
+        {!error && companies.length === 0 && (
           <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-8">
             <div className="text-center py-12">
               <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -285,7 +285,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
           </div>
         )}
 
-        {!loading && !error && companies.length > 0 && (
+        {!error && companies.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {companies.map((company) => (
               <div key={company.id} className="group relative bg-gray-900 rounded-xl shadow-sm border border-gray-800 hover:border-gray-700 transition-colors overflow-hidden aspect-square flex flex-col">
