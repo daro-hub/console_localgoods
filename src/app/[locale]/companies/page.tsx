@@ -370,14 +370,14 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
             <div className="p-6">
               <div className="mb-4">
                 <label htmlFor="company-name" className="block text-sm font-medium text-white mb-2">
-                  Nome dell'azienda
+                  Nome dell&apos;azienda
                 </label>
                 <input
                   id="company-name"
                   type="text"
                   value={newCompanyName}
                   onChange={(e) => setNewCompanyName(e.target.value)}
-                  placeholder="Inserisci il nome dell'azienda"
+                  placeholder="Inserisci il nome dell&apos;azienda"
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isCreating}
                   onKeyPress={(e) => {
@@ -444,13 +444,13 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
             <div className="p-6">
               <div className="mb-6">
                 <p className="text-white mb-2">
-                  Sei sicuro di voler eliminare l'azienda:
+                  Sei sicuro di voler eliminare l&apos;azienda:
                 </p>
                 <p className="text-lg font-semibold text-blue-400">
                   {companyToDelete.name}
                 </p>
                 <p className="text-sm text-gray-400 mt-2">
-                  Questa azione non può essere annullata.
+                  Questa azione non pu&ograve; essere annullata.
                 </p>
               </div>
               
