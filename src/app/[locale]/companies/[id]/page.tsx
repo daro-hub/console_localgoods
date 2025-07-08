@@ -1041,7 +1041,6 @@ export default function CompanyDetailsPage({
                            language.language_code === 'es' ? '🇪🇸' : '🌐'}
                         </span>
                         <span className="text-white font-medium">{language.language_name}</span>
-                        <span className="text-gray-400 text-sm">({language.language_code})</span>
                       </label>
                     ))}
                   </div>
