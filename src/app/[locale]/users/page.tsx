@@ -162,8 +162,11 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
 
   // Filtra gli utenti in base al termine di ricerca e al filtro selezionato
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = (user.name?.toLowerCase() || '').includes(searchLower) ||
+                         (user.email?.toLowerCase() || '').includes(searchLower) ||
+                         (user.role?.toLowerCase() || '').includes(searchLower) ||
+                         (user.address?.toLowerCase() || '').includes(searchLower);
     
     const matchesFilter = selectedFilter === 'all' || user.role === selectedFilter;
     

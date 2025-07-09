@@ -117,7 +117,7 @@
     },
     "productDetail": {
       "title": "Product Details",
-      "backToProducts": "Back to products",
+      "backToProducts": "Back",
       "loading": "Loading product details...",
       "pleaseWait": "Please wait",
       "error": "Error",

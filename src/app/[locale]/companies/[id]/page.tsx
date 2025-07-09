@@ -6,7 +6,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { useDebounce } from '@/hooks/useDebounce';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Toast } from '@/components/Toast';
-import { Building2, MapPin, Loader2, ArrowLeft, Globe, Calendar, Wheat, Beef, Hammer, Image as ImageIcon, X, Plus, Sparkles, Trash2, ShoppingCart, Package } from 'lucide-react';
+import { Building2, MapPin, Loader2, ArrowLeft, Globe, Calendar, Wheat, Beef, Hammer, Image as ImageIcon, X, Plus, Sparkles, Trash2, ShoppingCart, Package, Users, Unlink, UserPlus, Search } from 'lucide-react';
 import Link from 'next/link';
 
 interface Translation {
@@ -48,6 +48,17 @@ interface EditableCompany {
   description: string;
   Location: string;
   type: string;
+}
+
+interface User {
+  id: string;
+  created_at: number;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  role: string;
+  profile: string | null;
 }
 
 export default function CompanyDetailsPage({ 
@@ -96,6 +107,25 @@ export default function CompanyDetailsPage({
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [productsError, setProductsError] = useState<string | null>(null);
+  
+  // Stati per gli utenti
+  const [users, setUsers] = useState<User[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [usersError, setUsersError] = useState<string | null>(null);
+  
+  // Stati per il dialog di scollegamento utente
+  const [isUnlinkUserDialogOpen, setIsUnlinkUserDialogOpen] = useState(false);
+  const [userToUnlink, setUserToUnlink] = useState<User | null>(null);
+  const [isUnlinkingUser, setIsUnlinkingUser] = useState(false);
+  
+  // Stati per il dialog di collegamento utente
+  const [isLinkUserDialogOpen, setIsLinkUserDialogOpen] = useState(false);
+  const [availableUsers, setAvailableUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [loadingAvailableUsers, setLoadingAvailableUsers] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isLinkingUser, setIsLinkingUser] = useState(false);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
   
   // Stati per il dialog di aggiunta prodotto
   const [isAddProductDialogOpen, setIsAddProductDialogOpen] = useState(false);
@@ -196,6 +226,41 @@ export default function CompanyDetailsPage({
     };
 
     fetchProducts();
+  }, [company]);
+
+  // Fetch utenti quando l'azienda viene caricata
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!company) return;
+      
+      try {
+        setUsersLoading(true);
+        setUsersError(null);
+        
+        const url = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/company_user');
+        url.searchParams.append('company_id', company.id.toString());
+        
+        const response = await fetch(url.toString(), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Errore nel recupero degli utenti');
+        }
+
+        const usersData = await response.json();
+        setUsers(usersData || []);
+      } catch (err) {
+        setUsersError(err instanceof Error ? err.message : 'Errore sconosciuto');
+      } finally {
+        setUsersLoading(false);
+      }
+    };
+
+    fetchUsers();
   }, [company]);
 
   // Salvataggio automatico
@@ -564,6 +629,155 @@ export default function CompanyDetailsPage({
     setNewProductName('');
   };
 
+  const handleUnlinkUserClick = (e: React.MouseEvent, user: User) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setUserToUnlink(user);
+    setIsUnlinkUserDialogOpen(true);
+  };
+
+  const handleCloseUnlinkUserDialog = () => {
+    setIsUnlinkUserDialogOpen(false);
+    setUserToUnlink(null);
+  };
+
+  const unlinkUser = async () => {
+    if (!userToUnlink || !company || isUnlinkingUser) return;
+    
+    try {
+      setIsUnlinkingUser(true);
+      const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user_company/${userToUnlink.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          company_id: company.id,
+          user_id: userToUnlink.id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore nello scollegamento dell\'utente');
+      }
+
+      // Rimuovi l'utente dalla lista
+      setUsers(prevUsers => 
+        prevUsers.filter(user => user.id !== userToUnlink.id)
+      );
+      
+      // Chiudi il dialog
+      setIsUnlinkUserDialogOpen(false);
+      setUserToUnlink(null);
+      
+      // Mostra messaggio di successo
+      showToast('Utente scollegato con successo', 'success');
+      
+    } catch (err) {
+      setUsersError(err instanceof Error ? err.message : 'Errore sconosciuto');
+      showToast('Errore nello scollegamento dell\'utente', 'error');
+    } finally {
+      setIsUnlinkingUser(false);
+    }
+  };
+
+  const handleLinkUserClick = async () => {
+    try {
+      setLoadingAvailableUsers(true);
+      setIsLinkUserDialogOpen(true);
+      
+      const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore nel recupero degli utenti disponibili');
+      }
+
+      const allUsers = await response.json();
+      
+      // Filtra gli utenti già collegati all'azienda
+      const currentUserIds = users.map(u => u.id);
+      const availableUsersFiltered = allUsers.filter((user: User) => 
+        !currentUserIds.includes(user.id)
+      );
+      
+      setAvailableUsers(availableUsersFiltered);
+      setFilteredUsers(availableUsersFiltered);
+      
+    } catch (err) {
+      setUsersError(err instanceof Error ? err.message : 'Errore sconosciuto');
+      showToast('Errore nel caricamento degli utenti', 'error');
+    } finally {
+      setLoadingAvailableUsers(false);
+    }
+  };
+
+  const handleCloseLinkUserDialog = () => {
+    setIsLinkUserDialogOpen(false);
+    setAvailableUsers([]);
+    setFilteredUsers([]);
+    setSelectedUserId(null);
+    setUserSearchQuery('');
+  };
+
+  const handleUserSearch = (query: string) => {
+    setUserSearchQuery(query);
+    if (query.trim() === '') {
+      setFilteredUsers(availableUsers);
+    } else {
+      const filtered = availableUsers.filter(user => 
+        user.name.toLowerCase().includes(query.toLowerCase()) ||
+        user.email?.toLowerCase().includes(query.toLowerCase()) ||
+        user.role.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }
+  };
+
+  const linkUser = async () => {
+    if (!selectedUserId || !company || isLinkingUser) return;
+    
+    try {
+      setIsLinkingUser(true);
+      const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user_company', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: selectedUserId,
+          company_id: company.id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore nel collegamento dell\'utente');
+      }
+
+      // Trova l'utente selezionato e aggiungilo alla lista degli utenti collegati
+      const selectedUser = availableUsers.find(user => user.id === selectedUserId);
+      if (selectedUser) {
+        setUsers(prevUsers => [selectedUser, ...prevUsers]);
+      }
+      
+      // Chiudi il dialog
+      handleCloseLinkUserDialog();
+      
+      // Mostra messaggio di successo
+      showToast('Utente collegato con successo', 'success');
+      
+    } catch (err) {
+      setUsersError(err instanceof Error ? err.message : 'Errore sconosciuto');
+      showToast('Errore nel collegamento dell\'utente', 'error');
+    } finally {
+      setIsLinkingUser(false);
+    }
+  };
+
   const getCurrentLanguageId = (): number => {
     // Cerca l'ID lingua dalle traduzioni esistenti
     const currentTranslation = company?.translations?.find(
@@ -586,14 +800,14 @@ export default function CompanyDetailsPage({
   };
 
   const createProduct = async () => {
-    if (!newProductName.trim() || !company || isAddingProduct) return;
+    if (!newProductName || !newProductName.trim() || !company || isAddingProduct) return;
     
     try {
       setIsAddingProduct(true);
       setProductsError(null);
       
       const payload = {
-        name: newProductName.trim(),
+        name: newProductName ? newProductName.trim() : "",
         description: "",
         lang: locale,
         cover: null,
@@ -624,7 +838,7 @@ export default function CompanyDetailsPage({
       // Mappa il prodotto per assicurarsi che abbia tutti i campi necessari
       const mappedProduct: Product = {
         id: newProduct.id,
-        name: newProduct.name.trim() || newProductName.trim(),
+        name: (newProduct.name && newProduct.name.trim()) || (newProductName ? newProductName.trim() : ""),
         description: newProduct.description || "",
         price: newProduct.price || 0,
         uom: newProduct.uom || "",
@@ -740,6 +954,20 @@ export default function CompanyDetailsPage({
     }
   };
 
+  const getRoleStyles = (role: string) => {
+    switch (role.toLowerCase()) {
+      case 'superadmin':
+        return 'bg-purple-900/20 border-purple-600/30 text-purple-400';
+      case 'admin':
+        return 'bg-blue-900/20 border-blue-600/30 text-blue-400';
+      case 'manager':
+        return 'bg-green-900/20 border-green-600/30 text-green-400';
+      case 'user':
+        return 'bg-gray-900/20 border-gray-600/30 text-gray-400';
+      default:
+        return 'bg-gray-800/50 border-gray-600/30 text-gray-400';
+    }
+  };
 
 
   if (error) {
@@ -752,7 +980,7 @@ export default function CompanyDetailsPage({
               className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>Torna alle aziende</span>
+              <span>Indietro</span>
             </button>
           </div>
           <div className="bg-red-900/20 border border-red-800 rounded-xl p-6">
@@ -786,7 +1014,7 @@ export default function CompanyDetailsPage({
               className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>Torna alle aziende</span>
+              <span>Indietro</span>
             </button>
             
             {/* Indicatore di salvataggio */}
@@ -1130,7 +1358,7 @@ export default function CompanyDetailsPage({
                           <div className="absolute top-2 right-2 z-10">
                             <span className="bg-green-600/90 text-white text-xs px-2 py-1 rounded-full font-medium backdrop-blur-sm">
                               €{product.price.toFixed(2)}
-                              {product.uom && product.uom.trim() && ` per ${product.uom}`}
+                              {product.uom && typeof product.uom === 'string' && product.uom.trim() && ` per ${product.uom}`}
                             </span>
                           </div>
                         )}
@@ -1139,11 +1367,11 @@ export default function CompanyDetailsPage({
                       {/* Informazioni prodotto - 1/4 dell'altezza */}
                       <div className="p-4 flex flex-col justify-center min-h-0">
                         <h3 className="text-lg font-semibold text-white truncate mb-1">
-                          {product.name.trim() || `Prodotto #${product.id}`}
+                          {(product.name && product.name.trim()) || `Prodotto #${product.id}`}
                         </h3>
                         
                         {/* Categoria prodotto */}
-                        {product.category && product.category.trim() && (
+                        {product.category && typeof product.category === 'string' && product.category.trim() && (
                           <div className={`inline-flex items-center text-xs font-medium rounded-full px-2 py-1 border self-start ${getProductCategoryStyles(product.category)}`}>
                             <span>{product.category}</span>
                           </div>
@@ -1154,12 +1382,130 @@ export default function CompanyDetailsPage({
                       <Link 
                         href={`/${locale}/products/${product.id}`}
                         className="absolute inset-0 z-20"
-                        title={`Visualizza dettagli di ${product.name.trim() || `Prodotto #${product.id}`}`}
+                        title={`Visualizza dettagli di ${(product.name && product.name.trim()) || `Prodotto #${product.id}`}`}
                       />
                     </div>
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Utenti */}
+            <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-white flex items-center space-x-2">
+                  <Users className="h-5 w-5" />
+                  <span>Utenti Collegati</span>
+                </h2>
+                <div className="flex items-center space-x-3">
+                  {usersLoading && (
+                    <div className="flex items-center space-x-2 text-sm text-blue-400">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Caricamento...</span>
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleLinkUserClick}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
+                    title="Collega nuovo collaboratore"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    <span>Collega Collaboratore</span>
+                  </button>
+                </div>
+              </div>
+
+              {usersError && (
+                <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="text-red-400">
+                      <Users className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-red-300 font-semibold">Errore</h3>
+                      <p className="text-red-200">{usersError}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!usersError && users.length === 0 && !usersLoading && (
+                <div className="text-center py-8">
+                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-400">Nessun utente collegato a questa azienda</p>
+                </div>
+              )}
+
+                             {!usersError && users.length > 0 && (
+                 <div className="space-y-4">
+                   {users.map((user) => (
+                     <div
+                       key={user.id}
+                       className="group relative bg-gray-800 border border-gray-700 rounded-xl p-4 hover:border-gray-600 hover:bg-gray-800/80 transition-all duration-200 cursor-pointer"
+                     >
+                       <div className="flex items-start justify-between">
+                         {/* Header con ID e Nome */}
+                         <div className="flex items-center space-x-4">
+                           <span className="text-gray-500 text-xs font-mono bg-gray-900 px-2 py-1 rounded">
+                             #{user.id.substring(0, 8)}...
+                           </span>
+                           <div className="flex items-center space-x-2">
+                             <span className="text-white font-medium">{user.name}</span>
+                             <div className={`inline-flex items-center text-xs font-medium rounded-full px-2 py-1 border ${getRoleStyles(user.role)}`}>
+                               <span className="capitalize">{user.role}</span>
+                             </div>
+                           </div>
+                         </div>
+                         
+                         {/* Data di creazione e pulsante scollegamento */}
+                         <div className="flex items-center space-x-3">
+                           <div className="text-xs text-gray-400">
+                             {formatDate(user.created_at)}
+                           </div>
+                           
+                           {/* Pulsante di scollegamento - visibile solo al hover */}
+                           <button
+                             onClick={(e) => handleUnlinkUserClick(e, user)}
+                             className="opacity-0 group-hover:opacity-100 bg-red-600/60 hover:bg-red-600/80 text-white p-2 rounded-lg transition-all duration-200 shadow-lg z-20 relative"
+                             title="Scollega utente dall'azienda"
+                           >
+                             <Unlink className="h-4 w-4" />
+                           </button>
+                         </div>
+                       </div>
+                       
+                       {/* Contenuto */}
+                       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                         {/* Email */}
+                         <div>
+                           <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Email</h4>
+                           <p className="text-gray-200 text-sm">{user.email}</p>
+                         </div>
+                         
+                         {/* Telefono */}
+                         <div>
+                           <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Telefono</h4>
+                           <p className="text-gray-200 text-sm">{user.phone || 'Non specificato'}</p>
+                         </div>
+                         
+                         {/* Indirizzo */}
+                         <div>
+                           <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Indirizzo</h4>
+                           <p className="text-gray-200 text-sm">{user.address || 'Non specificato'}</p>
+                         </div>
+                       </div>
+                       
+                       {/* Overlay per il link */}
+                       <Link 
+                         href={`/${locale}/users/${user.id}`}
+                         className="absolute inset-0 z-10"
+                         title={`Visualizza dettagli di ${user.name}`}
+                       />
+                     </div>
+                   ))}
+                 </div>
+               )}
             </div>
 
             {/* Dettagli tecnici */}
@@ -1529,6 +1875,241 @@ export default function CompanyDetailsPage({
           </div>
         </div>
       )}
+
+      {/* Dialog di scollegamento utente */}
+      {isUnlinkUserDialogOpen && userToUnlink && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-xl border border-gray-800 w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-800">
+              <div className="flex items-center space-x-3">
+                <Unlink className="h-6 w-6 text-red-400" />
+                <h2 className="text-xl font-semibold text-white">
+                  Scollega Utente
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={handleCloseUnlinkUserDialog}
+                className="text-gray-400 hover:text-white transition-colors"
+                disabled={isUnlinkingUser}
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+                         <div className="p-6">
+               <div className="mb-6">
+                 <div className="mb-4">
+                   <div className="flex items-center space-x-3 mb-2">
+                     <span className="text-white font-medium text-lg">{userToUnlink.name}</span>
+                     <div className={`inline-flex items-center text-xs font-medium rounded-full px-2 py-1 border ${getRoleStyles(userToUnlink.role)}`}>
+                       <span className="capitalize">{userToUnlink.role}</span>
+                     </div>
+                   </div>
+                   <p className="text-gray-400 text-sm">{userToUnlink.email}</p>
+                 </div>
+                 <p className="text-gray-300 mb-4">
+                   Sei sicuro di voler scollegare questo utente da questa azienda? Questa azione non può essere annullata.
+                 </p>
+                 <div className="bg-red-900/20 border border-red-800 rounded-lg p-4">
+                   <p className="text-red-200 text-sm">
+                     <strong>Attenzione:</strong> L&apos;utente perderà l&apos;accesso a tutti i dati e funzionalità relative a questa azienda.
+                   </p>
+                 </div>
+               </div>
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={handleCloseUnlinkUserDialog}
+                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                  disabled={isUnlinkingUser}
+                >
+                  Annulla
+                </button>
+                <button
+                  type="button"
+                  onClick={unlinkUser}
+                  disabled={isUnlinkingUser}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isUnlinkingUser ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Scollegamento...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Unlink className="h-4 w-4" />
+                      <span>Scollega</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+             {/* Dialog di collegamento utente */}
+       {isLinkUserDialogOpen && (
+         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+           <div className="bg-gray-900 rounded-xl border border-gray-800 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-gray-800">
+              <div className="flex items-center space-x-3">
+                <UserPlus className="h-6 w-6 text-blue-400" />
+                <h2 className="text-xl font-semibold text-white">
+                  Collega Utente
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={handleCloseLinkUserDialog}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+                         </div>
+             
+             <div className="flex-1 overflow-y-auto p-6">
+               <div className="mb-6">
+                 <label htmlFor="user-search" className="block text-sm font-medium text-white mb-2">
+                   Cerca utente per nome, email o ruolo
+                 </label>
+                 <div className="relative">
+                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                   <input
+                     id="user-search"
+                     type="text"
+                     value={userSearchQuery}
+                     onChange={(e) => handleUserSearch(e.target.value)}
+                     placeholder="Inserisci il nome, email o ruolo dell&apos;utente"
+                     className="w-full pl-10 pr-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   />
+                 </div>
+               </div>
+
+              {loadingAvailableUsers && (
+                <div className="text-center py-8">
+                  <Loader2 className="h-12 w-12 text-blue-400 mx-auto mb-2 animate-spin" />
+                  <p className="text-gray-400">Caricamento utenti...</p>
+                </div>
+              )}
+
+                             {!loadingAvailableUsers && availableUsers.length === 0 && !userSearchQuery.trim() && (
+                 <div className="text-center py-8 text-gray-400">
+                   <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                   <p>Tutti gli utenti sono già collegati a questa azienda.</p>
+                 </div>
+               )}
+
+               {!loadingAvailableUsers && filteredUsers.length === 0 && userSearchQuery.trim() && (
+                 <div className="text-center py-8 text-gray-400">
+                   <Search className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                   <p>Nessun utente trovato con questi criteri.</p>
+                 </div>
+               )}
+
+                              {!loadingAvailableUsers && filteredUsers.length > 0 && (
+                 <div className="space-y-2">
+                   {filteredUsers.map((user) => (
+                     <label
+                       key={user.id}
+                       className={`block cursor-pointer rounded-xl p-4 transition-all duration-200 ${
+                         selectedUserId === user.id
+                           ? 'bg-blue-900/30 border-blue-500 ring-2 ring-blue-500/20'
+                           : 'bg-gray-800 border border-gray-700 hover:border-gray-600 hover:bg-gray-800/80'
+                       }`}
+                     >
+                       <input
+                         type="radio"
+                         name="selectedUser"
+                         value={user.id}
+                         checked={selectedUserId === user.id}
+                         onChange={() => setSelectedUserId(user.id)}
+                         className="sr-only"
+                       />
+                       <div className="flex items-center justify-between">
+                         <div className="flex items-center space-x-3">
+                           <span className="text-gray-500 text-xs font-mono bg-gray-900 px-2 py-1 rounded">
+                             #{user.id.substring(0, 8)}...
+                           </span>
+                           <div>
+                             <div className="flex items-center space-x-2">
+                               <span className="text-white font-medium">{user.name}</span>
+                               <div className={`inline-flex items-center text-xs font-medium rounded-full px-2 py-1 border ${getRoleStyles(user.role)}`}>
+                                 <span className="capitalize">{user.role}</span>
+                               </div>
+                             </div>
+                             <p className="text-gray-400 text-sm mt-1">
+                               {user.email || 'Email non specificata'}
+                             </p>
+                             {user.phone && user.phone !== '0' && user.phone.trim() !== '' && (
+                               <p className="text-gray-400 text-xs">Tel: {user.phone}</p>
+                             )}
+                             {user.address && user.address.trim() && (
+                               <p className="text-gray-400 text-xs">📍 {user.address}</p>
+                             )}
+                           </div>
+                         </div>
+                         {selectedUserId === user.id && (
+                           <div className="text-blue-400">
+                             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                             </svg>
+                           </div>
+                         )}
+                       </div>
+                     </label>
+                   ))}
+                 </div>
+               )}
+
+               {selectedUserId && (
+                 <div className="mt-4 p-3 bg-blue-900/20 border border-blue-800 rounded-lg">
+                   <p className="text-blue-200 text-sm">
+                     ✓ Utente selezionato. Premi &quot;Collega&quot; per aggiungere questo utente all&apos;azienda.
+                   </p>
+                 </div>
+               )}
+             </div>
+
+             {/* Footer con pulsanti */}
+             {(availableUsers.length > 0 || selectedUserId) && (
+               <div className="border-t border-gray-800 p-6">
+                 <div className="flex justify-end space-x-3">
+                   <button
+                     type="button"
+                     onClick={handleCloseLinkUserDialog}
+                     className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                     disabled={isLinkingUser}
+                   >
+                     Annulla
+                   </button>
+                   <button
+                     type="button"
+                     onClick={linkUser}
+                     disabled={!selectedUserId || isLinkingUser}
+                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                   >
+                     {isLinkingUser ? (
+                       <>
+                         <Loader2 className="h-4 w-4 animate-spin" />
+                         <span>Collegamento...</span>
+                       </>
+                     ) : (
+                       <>
+                         <UserPlus className="h-4 w-4" />
+                         <span>Collega</span>
+                       </>
+                     )}
+                   </button>
+                 </div>
+               </div>
+             )}
+           </div>
+         </div>
+       )}
 
       {/* Toast notification */}
       <Toast

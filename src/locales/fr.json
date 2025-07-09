@@ -117,7 +117,7 @@
     },
     "productDetail": {
       "title": "Détails du produit",
-      "backToProducts": "Retour aux produits",
+      "backToProducts": "Retour",
       "loading": "Chargement des détails du produit...",
       "pleaseWait": "Veuillez patienter",
       "error": "Erreur",

@@ -432,7 +432,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
             className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="h-5 w-5" />
-            <span>Torna agli utenti</span>
+            <span>Indietro</span>
           </button>
           
           <div className="flex items-center justify-between">
