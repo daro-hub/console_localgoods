@@ -441,7 +441,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                 Profilo Utente
               </h1>
               <p className="text-gray-300">
-                Visualizza e gestisci le informazioni dell'utente
+                Visualizza e gestisci le informazioni dell&apos;utente
               </p>
             </div>
             <button
