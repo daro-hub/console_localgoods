@@ -409,7 +409,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
           <div className="text-center py-8">
             <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-white mb-2">Utente non trovato</h3>
-            <p className="text-gray-300 mb-4">L'utente richiesto non esiste o non è più disponibile.</p>
+            <p className="text-gray-300 mb-4">L&apos;utente richiesto non esiste o non è più disponibile.</p>
             <button
               onClick={() => goBack()}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"

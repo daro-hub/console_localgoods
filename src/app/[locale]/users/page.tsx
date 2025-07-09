@@ -567,7 +567,7 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
 
                 {/* Note */}
                 <p className="text-xs text-gray-400 mb-6">
-                  L'utente verrà creato con ruolo "customer" e potrà completare il profilo successivamente.
+                  L&apos;utente verrà creato con ruolo &quot;customer&quot; e potrà completare il profilo successivamente.
                 </p>
               </div>
 
@@ -629,7 +629,7 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
                       Sei sicuro di voler eliminare questo utente?
                     </h4>
                     <p className="text-gray-300 text-sm">
-                      L'utente <span className="font-semibold text-white">"{deleteConfirmation.userName}"</span> verrà eliminato definitivamente. 
+                      L&apos;utente <span className="font-semibold text-white">&quot;{deleteConfirmation.userName}&quot;</span> verrà eliminato definitivamente. 
                       Questa azione non può essere annullata.
                     </p>
                   </div>
