@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useDebounce } from '@/hooks/useDebounce';
 import { DashboardLayout } from '@/components/DashboardLayout';
@@ -56,6 +57,7 @@ export default function CompanyDetailsPage({
 }) {
   const { locale, id } = use(params);
   const { t } = useTranslations(locale);
+  const { goBack } = useNavigation();
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -198,7 +200,7 @@ export default function CompanyDetailsPage({
 
   // Salvataggio automatico
   useEffect(() => {
-    if (company && !loading && !isSaving) {
+    if (company && !isSaving) {
       const hasChanges = (
         editableFields.name !== company.name ||
         editableFields.description !== company.description ||
@@ -738,38 +740,20 @@ export default function CompanyDetailsPage({
     }
   };
 
-  if (loading) {
-    return (
-      <DashboardLayout locale={locale}>
-        <div className="p-8">
-          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-8">
-            <div className="text-center py-12">
-              <Loader2 className="h-16 w-16 text-blue-500 mx-auto mb-4 animate-spin" />
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Caricamento dettagli azienda...
-              </h3>
-              <p className="text-gray-300">
-                Attendere prego
-              </p>
-            </div>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
+
 
   if (error) {
     return (
       <DashboardLayout locale={locale}>
         <div className="p-8">
           <div className="mb-6">
-            <Link 
-              href={`/${locale}/companies`}
+            <button
+              onClick={() => goBack()}
               className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Torna alle aziende</span>
-            </Link>
+            </button>
           </div>
           <div className="bg-red-900/20 border border-red-800 rounded-xl p-6">
             <div className="flex items-center space-x-3">
@@ -797,13 +781,13 @@ export default function CompanyDetailsPage({
         {/* Header con breadcrumb */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <Link 
-              href={`/${locale}/companies`}
+            <button
+              onClick={() => goBack()}
               className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Torna alle aziende</span>
-            </Link>
+            </button>
             
             {/* Indicatore di salvataggio */}
             {isSaving && (
@@ -960,15 +944,11 @@ export default function CompanyDetailsPage({
                   <button
                     type="button"
                     onClick={handleAddTranslationClick}
-                    disabled={loadingLanguages}
+                                            disabled={false}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Aggiungi traduzione manualmente"
                   >
-                    {loadingLanguages ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Plus className="h-4 w-4" />
-                    )}
+                                          <Plus className="h-4 w-4" />
                     <span>Aggiungi</span>
                   </button>
                   <button
@@ -1086,12 +1066,7 @@ export default function CompanyDetailsPage({
                 </button>
               </div>
               
-              {productsLoading && (
-                <div className="text-center py-8">
-                  <Loader2 className="h-8 w-8 text-blue-500 mx-auto mb-2 animate-spin" />
-                  <p className="text-gray-400">Caricamento prodotti...</p>
-                </div>
-              )}
+
 
               {productsError && (
                 <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-4">
@@ -1107,7 +1082,7 @@ export default function CompanyDetailsPage({
                 </div>
               )}
 
-              {!productsLoading && !productsError && products.length === 0 && (
+              {!productsError && products.length === 0 && (
                 <div className="text-center py-8">
                   <Package className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-400 mb-4">Nessun prodotto trovato</p>
@@ -1122,7 +1097,7 @@ export default function CompanyDetailsPage({
                 </div>
               )}
 
-              {!productsLoading && !productsError && products.length > 0 && (
+              {!productsError && products.length > 0 && (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {products.map((product) => (
                     <div

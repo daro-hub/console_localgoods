@@ -34,7 +34,7 @@ interface Company {
 
 export default function ProductsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = use(params);
-  const { t, loading: translationsLoading } = useTranslations(locale);
+  const { t } = useTranslations(locale);
   
   // Stati per le aziende
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -377,14 +377,6 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
     }
   };
 
-  if (translationsLoading) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
   return (
     <DashboardLayout locale={locale}>
       <div className="p-8">
@@ -405,12 +397,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
               <span>{t('pages.products.selectCompany') || 'Seleziona un\'azienda per visualizzare i suoi prodotti'}</span>
             </h2>
             
-            {loadingCompanies && (
-              <div className="text-center py-8">
-                <Loader2 className="h-8 w-8 text-blue-500 mx-auto mb-2 animate-spin" />
-                <p className="text-gray-400">{t('common.loading')}</p>
-              </div>
-            )}
+
 
             {companiesError && (
               <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-4">
@@ -418,7 +405,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
               </div>
             )}
 
-            {!loadingCompanies && !companiesError && companies.length > 0 && (
+            {!companiesError && companies.length > 0 && (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {companies.map((company) => (
                   <div 
@@ -466,7 +453,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
               </div>
             )}
 
-            {!loadingCompanies && !companiesError && companies.length === 0 && (
+            {!companiesError && companies.length === 0 && (
               <div className="text-center py-8">
                 <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                 <p className="text-gray-400">{t('pages.companies.noCompanies')}</p>
@@ -533,12 +520,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
           </div>
             </div>
             
-            {loadingProducts && (
-              <div className="text-center py-8">
-                <Loader2 className="h-8 w-8 text-blue-500 mx-auto mb-2 animate-spin" />
-                <p className="text-gray-400">{t('common.loading')}</p>
-              </div>
-            )}
+
 
             {productsError && (
               <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-4">
@@ -546,14 +528,14 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
               </div>
             )}
 
-            {!loadingProducts && !productsError && products.length === 0 && (
+            {!productsError && products.length === 0 && (
               <div className="text-center py-8">
                 <Package className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                 <p className="text-gray-400 mb-4">{t('pages.products.noProducts')}</p>
               </div>
             )}
 
-            {!loadingProducts && !productsError && products.length > 0 && filteredProducts.length === 0 && debouncedSearchTerm.trim() && (
+            {!productsError && products.length > 0 && filteredProducts.length === 0 && debouncedSearchTerm.trim() && (
               <div className="text-center py-8">
                 <Search className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                 <p className="text-gray-400 mb-2">{t('navigation.searchNoResults') || 'Nessun prodotto trovato per la ricerca:'}</p>
@@ -567,7 +549,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
         </div>
             )}
 
-            {!loadingProducts && !productsError && filteredProducts.length > 0 && (
+            {!productsError && filteredProducts.length > 0 && (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredProducts.map((product) => (
                   <div

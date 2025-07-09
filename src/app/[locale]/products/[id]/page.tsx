@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useDebounce } from '@/hooks/useDebounce';
 import { DashboardLayout } from '@/components/DashboardLayout';
@@ -46,6 +47,7 @@ export default function ProductDetailsPage({
 }) {
   const { locale, id } = use(params);
   const { t } = useTranslations(locale);
+  const { goBack } = useNavigation();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -157,7 +159,7 @@ export default function ProductDetailsPage({
 
   // Salvataggio automatico
   useEffect(() => {
-    if (product && !loading && !isSaving) {
+    if (product && !isSaving) {
       const priceNumber = parseFloat(editableFields.price) || 0;
       const hasChanges = (
         editableFields.name !== product.name ||
@@ -576,38 +578,20 @@ export default function ProductDetailsPage({
     return null;
   };
 
-  if (loading) {
-    return (
-      <DashboardLayout locale={locale}>
-        <div className="p-8">
-          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-8">
-            <div className="text-center py-12">
-              <Loader2 className="h-16 w-16 text-blue-500 mx-auto mb-4 animate-spin" />
-              <h3 className="text-lg font-semibold text-white mb-2">
-                {t('pages.productDetail.loading')}
-              </h3>
-              <p className="text-gray-300">
-                {t('pages.productDetail.pleaseWait')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
+
 
   if (error) {
     return (
       <DashboardLayout locale={locale}>
         <div className="p-8">
           <div className="mb-6">
-            <Link 
-              href={`/${locale}/products`}
+            <button
+              onClick={() => goBack()}
               className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>{t('pages.productDetail.backToProducts')}</span>
-            </Link>
+            </button>
           </div>
           <div className="bg-red-900/20 border border-red-800 rounded-xl p-6">
             <div className="flex items-center space-x-3">
@@ -635,13 +619,13 @@ export default function ProductDetailsPage({
         {/* Header con breadcrumb */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <Link 
-              href={`/${locale}/products`}
+            <button
+              onClick={() => goBack()}
               className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>{t('pages.productDetail.backToProducts')}</span>
-            </Link>
+            </button>
           </div>
           
           <div className="max-w-4xl mx-auto">
@@ -864,15 +848,11 @@ export default function ProductDetailsPage({
                   <button
                     type="button"
                     onClick={handleAddTranslationClick}
-                    disabled={loadingLanguages}
+                                            disabled={false}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     title={t('pages.productDetail.translations.addTranslationManually')}
                   >
-                    {loadingLanguages ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Plus className="h-4 w-4" />
-                    )}
+                                          <Plus className="h-4 w-4" />
                     <span>{t('pages.productDetail.translations.addTranslation')}</span>
                   </button>
                   <button

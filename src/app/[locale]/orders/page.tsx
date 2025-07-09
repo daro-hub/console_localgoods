@@ -6,15 +6,7 @@ import { ShoppingCart, Plus, Search, Filter, Calendar, User, Package } from 'luc
 
 export default function OrdersPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = use(params);
-  const { t, loading } = useTranslations(locale);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  const { t } = useTranslations(locale);
 
   const stats = [
     {

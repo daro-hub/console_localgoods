@@ -83,6 +83,38 @@
       "accountInfo": "Account Information",
       "settings": "Settings"
     },
+    "users": {
+      "title": "Users",
+      "description": "Manage users and their permissions",
+      "addUser": "Add User",
+      "searchUsers": "Search users...",
+      "noUsersFound": "No users found",
+      "searchDifferentTerm": "Try a different search term",
+      "loadingUsers": "Loading users...",
+      "fetchingData": "Fetching data from server",
+      "table": {
+        "user": "User",
+        "email": "Email",
+        "phone": "Phone",
+        "role": "Role",
+        "createdDate": "Created Date",
+        "actions": "Actions",
+        "edit": "Edit"
+      },
+      "roles": {
+        "superadmin": "Super Admin",
+        "owner": "Owner",
+        "collaborator": "Collaborator",
+        "customer": "Customer"
+      },
+      "stats": {
+        "totalUsers": "Total Users",
+        "superAdmins": "Super Admins",
+        "owners": "Owners",
+        "collaborators": "Collaborators",
+        "customers": "Customers"
+      }
+    },
     "productDetail": {
       "title": "Product Details",
       "backToProducts": "Back to products",

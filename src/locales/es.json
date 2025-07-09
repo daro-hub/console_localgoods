@@ -83,6 +83,38 @@
       "accountInfo": "Información de la cuenta",
       "settings": "Configuraciones"
     },
+    "users": {
+      "title": "Usuarios",
+      "description": "Gestionar usuarios y sus permisos",
+      "addUser": "Agregar Usuario",
+      "searchUsers": "Buscar usuarios...",
+      "noUsersFound": "No se encontraron usuarios",
+      "searchDifferentTerm": "Prueba con un término de búsqueda diferente",
+      "loadingUsers": "Cargando usuarios...",
+      "fetchingData": "Obteniendo datos del servidor",
+      "table": {
+        "user": "Usuario",
+        "email": "Email",
+        "phone": "Teléfono",
+        "role": "Rol",
+        "createdDate": "Fecha de Creación",
+        "actions": "Acciones",
+        "edit": "Editar"
+      },
+      "roles": {
+        "superadmin": "Super Admin",
+        "owner": "Propietario",
+        "collaborator": "Colaborador",
+        "customer": "Cliente"
+      },
+      "stats": {
+        "totalUsers": "Usuarios Totales",
+        "superAdmins": "Super Admins",
+        "owners": "Propietarios",
+        "collaborators": "Colaboradores",
+        "customers": "Clientes"
+      }
+    },
     "productDetail": {
       "title": "Detalles del producto",
       "backToProducts": "Volver a productos",

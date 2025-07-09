@@ -32,6 +32,17 @@ interface ProfilePageProps {
   locale: string;
 }
 
+interface UserCompany {
+  id: number;
+  created_at: number;
+  Location: string;
+  type: string;
+  name: string;
+  description: string;
+  cover: string | null;
+  gallery: string[];
+}
+
 export function ProfilePage({ locale }: ProfilePageProps) {
   const { t } = useTranslations(locale);
   const { user, refreshUserData, logout } = useAuth();
@@ -40,27 +51,9 @@ export function ProfilePage({ locale }: ProfilePageProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isCompaniesExpanded, setIsCompaniesExpanded] = useState(false);
 
-  // Dati mock delle aziende (sarà sostituito con API)
-  const mockCompanies = [
-    {
-      id: 1,
-      name: 'Fattoria Verde',
-      type: 'agriculture' as const,
-      logo: null
-    },
-    {
-      id: 2,
-      name: 'Allevamento Rossi',
-      type: 'livestock' as const,
-      logo: null
-    },
-    {
-      id: 3,
-      name: 'Artigiani del Territorio',
-      type: 'artisanal' as const,
-      logo: null
-    }
-  ];
+  // Stati per le aziende
+  const [companies, setCompanies] = useState<UserCompany[]>([]);
+  const [loadingCompanies, setLoadingCompanies] = useState(false);
   
   // Stati per i campi editabili
   const [editableData, setEditableData] = useState({
@@ -85,6 +78,39 @@ export function ProfilePage({ locale }: ProfilePageProps) {
   // Debounce dei valori per l'autosave
   const debouncedData = useDebounce(editableData, 1000);
 
+  // Carica le aziende dell'utente
+  const fetchUserCompanies = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setLoadingCompanies(true);
+      
+      const params = new URLSearchParams({
+        user_id: user.id,
+        lang: locale
+      });
+
+      const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user_company?${params}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore nel recupero delle aziende');
+      }
+
+      const data = await response.json();
+      setCompanies(data || []);
+    } catch (err) {
+      console.error('Errore nel caricamento delle aziende:', err);
+      setCompanies([]);
+    } finally {
+      setLoadingCompanies(false);
+    }
+  };
+
   // Aggiorna i dati editabili quando l'utente cambia
   useEffect(() => {
     if (user) {
@@ -95,8 +121,10 @@ export function ProfilePage({ locale }: ProfilePageProps) {
         address: user.address || '',
         password: user.password || ''
       });
+      // Carica le aziende quando l'utente è disponibile
+      fetchUserCompanies();
     }
-  }, [user]);
+  }, [user, locale]);
 
   // Autosave quando i dati con debounce cambiano
   useEffect(() => {
@@ -181,7 +209,7 @@ export function ProfilePage({ locale }: ProfilePageProps) {
   const handleRefreshData = async () => {
     setIsRefreshing(true);
     try {
-      await refreshUserData();
+      await Promise.all([refreshUserData(), fetchUserCompanies()]);
     } catch (error) {
       console.error('Error refreshing user data:', error);
     } finally {
@@ -247,18 +275,18 @@ export function ProfilePage({ locale }: ProfilePageProps) {
       case 'artisanal':
         return <Hammer className="h-6 w-6 text-orange-600" />;
       default:
-        return <Building2 className="h-6 w-6 text-gray-400" />;
+        return <Building2 className="h-6 w-6 text-gray-600" />;
     }
   };
 
   const getCompanyTypeLabel = (type: string) => {
     switch (type) {
       case 'agriculture':
-        return t('profile.companyTypes.agriculture');
+        return 'Agricoltura';
       case 'livestock':
-        return t('profile.companyTypes.livestock');
+        return 'Allevamento';
       case 'artisanal':
-        return t('profile.companyTypes.artisanal');
+        return 'Artigianato';
       default:
         return type;
     }
@@ -267,27 +295,18 @@ export function ProfilePage({ locale }: ProfilePageProps) {
   const getCompanyTypeColor = (type: string) => {
     switch (type) {
       case 'agriculture':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 border-green-200';
       case 'livestock':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 border-red-200';
       case 'artisanal':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-orange-100 text-orange-800 border-orange-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   if (!user) {
-    return (
-      <div className="p-8">
-        <div className="text-center py-12">
-          <User className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-white mb-2">
-            {t('profile.loading')}
-          </h3>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -501,7 +520,7 @@ export function ProfilePage({ locale }: ProfilePageProps) {
               <h3 className="text-lg font-semibold text-white">
                 {t('profile.companies')}
               </h3>
-              {mockCompanies.length > 1 && (
+              {companies.length > 1 && (
                 <button
                   onClick={() => setIsCompaniesExpanded(!isCompaniesExpanded)}
                   className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors text-sm"
@@ -518,41 +537,57 @@ export function ProfilePage({ locale }: ProfilePageProps) {
               )}
             </div>
             
-            <div className={`space-y-3 flex-1 ${isCompaniesExpanded && mockCompanies.length > 4 ? 'overflow-y-auto' : ''}`}>
-              {(isCompaniesExpanded ? mockCompanies : mockCompanies.slice(0, 1)).map((company) => (
-                <div
-                  key={company.id}
-                  className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  {/* Logo/Icona azienda */}
-                  <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                    {company.logo ? (
-                      <img 
-                        src={company.logo} 
-                        alt={company.name}
-                        className="w-8 h-8 rounded object-cover"
-                      />
-                    ) : (
-                      getCompanyTypeIcon(company.type)
-                    )}
-                  </div>
-                  
-                  {/* Informazioni azienda */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium truncate">
-                      {company.name}
-                    </p>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCompanyTypeColor(company.type)}`}>
-                      {getCompanyTypeLabel(company.type)}
-                    </span>
-                  </div>
+            <div className={`space-y-3 flex-1 ${isCompaniesExpanded && companies.length > 4 ? 'overflow-y-auto' : ''}`}>
+              {loadingCompanies ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
                 </div>
-              ))}
+              ) : companies.length === 0 ? (
+                <div className="text-center py-8">
+                  <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-400 text-sm">
+                    Nessuna azienda associata
+                  </p>
+                </div>
+              ) : (
+                (isCompaniesExpanded ? companies : companies.slice(0, 1)).map((company) => (
+                  <div
+                    key={company.id}
+                    className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    {/* Logo/Icona azienda */}
+                    <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                      {company.cover ? (
+                        <img 
+                          src={company.cover} 
+                          alt={company.name}
+                          className="w-8 h-8 rounded object-cover"
+                        />
+                      ) : (
+                        getCompanyTypeIcon(company.type)
+                      )}
+                    </div>
+                    
+                    {/* Informazioni azienda */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-medium truncate">
+                        {company.name}
+                      </p>
+                      <p className="text-gray-400 text-xs truncate">
+                        {company.Location}
+                      </p>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCompanyTypeColor(company.type)}`}>
+                        {getCompanyTypeLabel(company.type)}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
 
-              {!isCompaniesExpanded && mockCompanies.length > 1 && (
+              {!isCompaniesExpanded && companies.length > 1 && (
                 <div className="text-center py-2">
                   <p className="text-gray-400 text-sm">
-                    +{mockCompanies.length - 1} {mockCompanies.length === 2 ? t('profile.companiesMore.single') : t('profile.companiesMore.plural')}
+                    +{companies.length - 1} {companies.length === 2 ? t('profile.companiesMore.single') : t('profile.companiesMore.plural')}
                   </p>
                 </div>
               )}
