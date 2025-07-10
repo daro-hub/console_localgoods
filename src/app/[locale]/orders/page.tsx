@@ -12,7 +12,6 @@ import {
   User,
   MapPin,
   Calendar,
-  Euro,
   Info,
   Loader2,
   Clock,
@@ -20,8 +19,7 @@ import {
   CheckCircle,
   Wheat,
   Hammer,
-  Beef,
-  FileCheck
+  Beef
 } from 'lucide-react';
 
 interface Order {
@@ -182,7 +180,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
     };
 
     fetchOrders();
-  }, [selectedCompanyId]);
+  }, [selectedCompanyId, locale]);
 
   const handleCompanySelect = (companyId: number) => {
     setSelectedCompanyId(companyId);
@@ -199,17 +197,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
     });
   };
 
-  const formatDateRange = (startDate: string, endDate: string) => {
-    const start = new Date(startDate).toLocaleDateString(locale, {
-      month: 'short',
-      day: 'numeric'
-    });
-    const end = new Date(endDate).toLocaleDateString(locale, {
-      month: 'short',
-      day: 'numeric'
-    });
-    return `${start} - ${end}`;
-  };
+
 
   const getCompanyTypeIcon = (type: string) => {
     switch (type) {
@@ -363,9 +351,9 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
           <h1 className="text-3xl font-bold text-white mb-2">
             {t('navigation.orders')}
           </h1>
-          <p className="text-gray-300">
-            Gestisci gli ordini e monitora l'impacchettamento
-          </p>
+                        <p className="text-gray-300">
+                Gestisci gli ordini e monitora l&apos;impacchettamento
+              </p>
         </div>
 
         {/* Selezione azienda */}
@@ -374,10 +362,10 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
             <div className="text-center mb-6">
               <Building2 className="h-12 w-12 text-blue-400 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-white mb-2">
-                Seleziona un'azienda
+                Seleziona un&apos;azienda
               </h2>
               <p className="text-gray-400">
-                Scegli un'azienda per visualizzare i suoi ordini
+                Scegli un&apos;azienda per visualizzare i suoi ordini
               </p>
             </div>
 
@@ -462,7 +450,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                     {selectedCompany ? selectedCompany.name : `Azienda #${selectedCompanyId}`}
                   </h2>
                   <p className="text-sm text-gray-400">
-                    Ordini dell'azienda
+                    Ordini dell&apos;azienda
                   </p>
                 </div>
               </div>
