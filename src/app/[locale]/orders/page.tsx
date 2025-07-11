@@ -19,7 +19,9 @@ import {
   CheckCircle,
   Wheat,
   Hammer,
-  Beef
+  Beef,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 
 interface Order {
@@ -32,11 +34,23 @@ interface Order {
   product_id: number;
   product_name: string;
   category: string;
-  cover: string | null;
+  cover: string | {
+    access: string;
+    path: string;
+    name: string;
+    type: string;
+    size: number;
+    mime: string;
+    meta: {
+      width: number;
+      height: number;
+    };
+    url: string;
+  } | null;
   informations: string;
   arrival_start: string;
   arrival_end: string;
-  state: 'sent' | 'processing' | 'delivering' | 'arrived';
+  state: 'processing' | 'delivering' | 'arrived';
 }
 
 interface Company {
@@ -71,6 +85,11 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
   
   // Stato per il filtro degli ordini
   const [selectedStateFilter, setSelectedStateFilter] = useState<string | null>(null);
+  
+  // Stati per il popup di conferma
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [selectedOrderForUpdate, setSelectedOrderForUpdate] = useState<Order | null>(null);
+  const [updatingOrder, setUpdatingOrder] = useState(false);
 
   // Carica l'ultima azienda visitata dal localStorage
   useEffect(() => {
@@ -227,8 +246,6 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
 
   const getOrderStateIcon = (state: string) => {
     switch (state) {
-      case 'sent':
-        return <Clock className="h-4 w-4 text-orange-400" />;
       case 'processing':
         return <Package className="h-4 w-4 text-yellow-400" />;
       case 'delivering':
@@ -242,8 +259,6 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
 
   const getOrderStateStyles = (state: string) => {
     switch (state) {
-      case 'sent':
-        return 'bg-orange-900/20 border-orange-600/30 text-orange-400';
       case 'processing':
         return 'bg-yellow-900/20 border-yellow-600/30 text-yellow-400';
       case 'delivering':
@@ -257,8 +272,6 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
 
   const getOrderStateName = (state: string) => {
     switch (state) {
-      case 'sent':
-        return 'In attesa';
       case 'processing':
         return 'In elaborazione';
       case 'delivering':
@@ -266,7 +279,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
       case 'arrived':
         return 'Arrivato';
       default:
-        return state;
+        return 'Sconosciuto';
     }
   };
 
@@ -287,6 +300,8 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
     }
   };
 
+
+
   const toggleOrderExpansion = (orderId: number) => {
     const newExpanded = new Set(expandedOrders);
     if (newExpanded.has(orderId)) {
@@ -305,10 +320,71 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
     }
   };
 
+  const handleCheckboxClick = (order: Order, e: React.MouseEvent) => {
+    e.stopPropagation(); // Previene l'espansione dell'ordine
+    setSelectedOrderForUpdate(order);
+    setShowConfirmPopup(true);
+  };
+
+  const handleConfirmUpdate = async () => {
+    if (!selectedOrderForUpdate) return;
+    
+    // Determina il nuovo stato in base allo stato attuale
+    const currentState = selectedOrderForUpdate.state;
+    const newState = (currentState === 'delivering' || currentState === 'arrived') ? 'processing' : 'delivering';
+    
+    try {
+      setUpdatingOrder(true);
+      
+      const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/order/${selectedOrderForUpdate.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order_id: selectedOrderForUpdate.id,
+          user_id: selectedOrderForUpdate.user_id,
+          address: selectedOrderForUpdate.address,
+          amount: selectedOrderForUpdate.amount,
+          product_id: selectedOrderForUpdate.product_id,
+          informations: selectedOrderForUpdate.informations,
+          arrival_start: selectedOrderForUpdate.arrival_start,
+          arrival_end: selectedOrderForUpdate.arrival_end,
+          state: newState
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore nell\'aggiornamento dell\'ordine');
+      }
+
+      // Aggiorna l'ordine nella lista locale
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.id === selectedOrderForUpdate.id 
+            ? { ...order, state: newState as 'processing' | 'delivering' | 'arrived' }
+            : order
+        )
+      );
+
+      setShowConfirmPopup(false);
+      setSelectedOrderForUpdate(null);
+    } catch (err) {
+      console.error('Errore nell\'aggiornamento dell\'ordine:', err);
+      alert('Errore nell\'aggiornamento dell\'ordine');
+    } finally {
+      setUpdatingOrder(false);
+    }
+  };
+
+  const handleCancelUpdate = () => {
+    setShowConfirmPopup(false);
+    setSelectedOrderForUpdate(null);
+  };
+
   // Statistiche ordini
   const orderStats = {
     total: orders.length,
-    sent: orders.filter(o => o.state === 'sent').length,
     processing: orders.filter(o => o.state === 'processing').length,
     delivering: orders.filter(o => o.state === 'delivering').length,
     arrived: orders.filter(o => o.state === 'arrived').length
@@ -319,9 +395,16 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
     ? orders.filter(order => order.state === selectedStateFilter)
     : orders;
 
-  // Raggruppa gli ordini per cliente (solo per stati 'sent' e 'processing')
-  const groupedOrders = filteredOrders.reduce((groups, order) => {
-    if (order.state === 'sent' || order.state === 'processing') {
+  // Ordina gli ordini: processing in alto, delivering in mezzo, arrived in fondo
+  const sortedOrders = [
+    ...filteredOrders.filter(order => order.state === 'processing'),
+    ...filteredOrders.filter(order => order.state === 'delivering'),
+    ...filteredOrders.filter(order => order.state === 'arrived')
+  ];
+
+  // Raggruppa gli ordini per cliente (solo per stato 'processing')
+  const groupedOrders = sortedOrders.reduce((groups, order) => {
+    if (order.state === 'processing') {
       const userId = order.user_id;
       if (!groups[userId]) {
         groups[userId] = [];
@@ -467,9 +550,9 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
           </div>
         )}
 
-        {/* Statistiche ordini */}
+                {/* Statistiche ordini */}
         {selectedCompanyId && orders.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
             <div 
               className={`bg-gray-900 rounded-xl p-6 border transition-colors cursor-pointer ${
                 selectedStateFilter === null 
@@ -488,22 +571,6 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
             </div>
             <div 
               className={`bg-gray-900 rounded-xl p-6 border transition-colors cursor-pointer ${
-                selectedStateFilter === 'sent' 
-                  ? 'border-orange-500 bg-orange-900/20' 
-                  : 'border-gray-800 hover:border-gray-700'
-              }`}
-              onClick={() => handleStateFilterClick('sent')}
-            >
-              <div className="flex items-center space-x-4">
-                <Clock className="h-8 w-8 text-orange-400" />
-                <div>
-                  <p className="text-2xl font-bold text-white">{orderStats.sent}</p>
-                  <p className="text-gray-400">In attesa</p>
-                </div>
-              </div>
-            </div>
-            <div 
-              className={`bg-gray-900 rounded-xl p-6 border transition-colors cursor-pointer ${
                 selectedStateFilter === 'processing' 
                   ? 'border-yellow-500 bg-yellow-900/20' 
                   : 'border-gray-800 hover:border-gray-700'
@@ -516,8 +583,8 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                   <p className="text-2xl font-bold text-white">{orderStats.processing}</p>
                   <p className="text-gray-400">In elaborazione</p>
                 </div>
-              </div>
-            </div>
+          </div>
+        </div>
             <div 
               className={`bg-gray-900 rounded-xl p-6 border transition-colors cursor-pointer ${
                 selectedStateFilter === 'delivering' 
@@ -528,7 +595,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
             >
               <div className="flex items-center space-x-4">
                 <Truck className="h-8 w-8 text-blue-400" />
-                <div>
+              <div>
                   <p className="text-2xl font-bold text-white">{orderStats.delivering}</p>
                   <p className="text-gray-400">In consegna</p>
                 </div>
@@ -635,45 +702,58 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                               >
                                 {/* Header dell'ordine - sempre visibile */}
                                 <div
-                                  className="p-4 cursor-pointer hover:bg-gray-700 transition-colors"
+                                  className="p-4 cursor-pointer hover:bg-gray-700 transition-colors group relative"
                                   onClick={() => toggleOrderExpansion(order.id)}
                                 >
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-4 flex-1">
-                                      {/* Cover del prodotto */}
-                                      <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-700">
-                                        {order.cover ? (
-                                          <img 
-                                            src={order.cover} 
-                                            alt={order.product_name}
-                                            className="w-full h-full object-cover"
-                                          />
-                                        ) : (
-                                          <div className="w-full h-full flex items-center justify-center">
-                                            <Package className="h-6 w-6 text-gray-400" />
-                                          </div>
-                                        )}
-                                      </div>
-                                      
-                                      {/* Nome del prodotto */}
-                                      <div className="flex-1 min-w-0">
-                                        <p className="text-white font-medium truncate">{order.product_name}</p>
-                                      </div>
-                                      
-                                      {/* Quantità e UOM */}
-                                      <div className="text-white font-semibold flex-shrink-0">
-                                        {order.amount} {formatUOM(order.uom)}
-                                      </div>
-                                      
-                                      {/* Data di creazione */}
-                                      <div className="text-sm text-gray-400 flex items-center space-x-1 flex-shrink-0">
-                                        <Calendar className="h-4 w-4" />
-                                        <span>{formatDate(order.created_at)}</span>
-                                      </div>
+                                  {/* Checkbox che appare on hover */}
+                                  {/* Checkbox sempre visibile */}
+                                  <div 
+                                    className="absolute left-6 top-1/2 transform -translate-y-1/2 transition-opacity z-10"
+                                    onClick={(e) => handleCheckboxClick(order, e)}
+                                  >
+                                    {order.state === 'delivering' || order.state === 'arrived' ? (
+                                      <CheckSquare className="h-8 w-8 text-green-400 cursor-pointer" />
+                                    ) : (
+                                      <Square className="h-8 w-8 text-gray-400 cursor-pointer hover:text-green-400" />
+                                    )}
+                                  </div>
+                                                              <div className="flex items-center justify-between">
+                              {/* Tutte le colonne raggruppate a sinistra */}
+                              <div className="flex items-center space-x-4">
+                                {/* Cover del prodotto - più grande e sovrapposto */}
+                                <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-700 text-left relative ml-12">
+                                  {(typeof order.cover === 'string' && order.cover) || (typeof order.cover === 'object' && order.cover?.url) ? (
+                                    <img 
+                                      src={typeof order.cover === 'string' ? order.cover : order.cover.url} 
+                                      alt={order.product_name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                      <Package className="h-8 w-8 text-gray-400" />
                                     </div>
+                                  )}
+                                </div>
+                                
+                                {/* Nome del prodotto - larghezza più stretta */}
+                                <div className="w-56 flex-shrink-0 text-left">
+                                  <p className="text-white font-medium truncate text-left">{order.product_name}</p>
+                                </div>
+                                
+                                {/* Quantità e UOM - 120px fissa */}
+                                <div className="w-30 text-white font-semibold flex-shrink-0 text-left">
+                                  {order.amount} {formatUOM(order.uom)}
+                                </div>
+                                
+                                {/* Data di creazione - 180px fissa */}
+                                <div className="w-45 text-sm text-gray-400 flex items-center space-x-1 flex-shrink-0 text-left">
+                                  <Calendar className="h-4 w-4" />
+                                  <span className="text-left">{formatDate(order.created_at)}</span>
+                                </div>
+                              </div>
                                     
                                     {/* Stato ordine - a destra */}
-                                    <div className="flex items-center space-x-3 ml-4">
+                                    <div className="flex items-center space-x-3 ml-4 justify-end">
                                       <div className={`inline-flex items-center space-x-2 text-sm font-medium rounded-full px-3 py-1 border ${getOrderStateStyles(order.state)}`}>
                                         {getOrderStateIcon(order.state)}
                                         <span className="truncate">{getOrderStateName(order.state)}</span>
@@ -695,87 +775,106 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                                 {isExpanded && (
                                   <div className="border-t border-gray-700 bg-gray-800">
                                     <div className="p-6 grid md:grid-cols-2 gap-6">
-                                      {/* Immagine prodotto e informazioni cliente */}
+                                      {/* Sezione 1: Prodotto e Informazioni */}
                                       <div className="space-y-4">
                                         {/* Immagine prodotto */}
-                                        {order.cover && (
+                                        {((typeof order.cover === 'string' && order.cover) || (typeof order.cover === 'object' && order.cover?.url)) && (
                                           <div className="mb-4">
                                             <img 
-                                              src={order.cover} 
+                                              src={typeof order.cover === 'string' ? order.cover : order.cover.url} 
                                               alt={order.product_name}
                                               className="w-full h-32 object-cover rounded-lg"
                                             />
                                           </div>
                                         )}
-                                        <h3 className="text-lg font-semibold text-white mb-3">Dettagli ordine</h3>
+                                        <h3 className="text-lg font-semibold text-white mb-3">
+                                          Prodotto e Informazioni
+                                        </h3>
                                         
                                         <div className="space-y-3">
+                                          {/* Nome prodotto */}
                                           <div className="flex items-start space-x-3">
-                                            <User className="h-5 w-5 text-gray-400 mt-0.5" />
+                                            <Package className="h-5 w-5 text-blue-400 mt-0.5" />
+                                            <div>
+                                              <p className="text-sm text-gray-400">Nome Prodotto</p>
+                                              <p className="text-white font-medium">{order.product_name}</p>
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Categoria */}
+                                          {order.category && (
+                                            <div className="flex items-start space-x-3">
+                                              <Wheat className="h-5 w-5 text-green-400 mt-0.5" />
+                                              <div>
+                                                <p className="text-sm text-gray-400">Categoria</p>
+                                                <p className="text-white">{order.category}</p>
+                                              </div>
+                                            </div>
+                                          )}
+                                          
+                                          {/* Informazioni aggiuntive */}
+                                          <div className="flex items-start space-x-3">
+                                            <Info className="h-5 w-5 text-yellow-400 mt-0.5" />
+                                            <div>
+                                              <p className="text-sm text-gray-400">Informazioni Aggiuntive</p>
+                                              <p className="text-white">{order.informations}</p>
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Quantità */}
+                                          <div className="flex items-start space-x-3">
+                                            <ShoppingCart className="h-5 w-5 text-purple-400 mt-0.5" />
+                                            <div>
+                                              <p className="text-sm text-gray-400">Quantità Ordinata</p>
+                                              <p className="text-lg font-semibold text-white">{order.amount} {formatUOM(order.uom)}</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      {/* Sezione 2: Cliente e Consegna */}
+                                      <div className="space-y-4">
+                                        <h3 className="text-lg font-semibold text-white mb-3">
+                                          Cliente e Consegna
+                                        </h3>
+                                        
+                                        <div className="space-y-3">
+                                          {/* Cliente */}
+                                          <div className="flex items-start space-x-3">
+                                            <User className="h-5 w-5 text-orange-400 mt-0.5" />
                                             <div>
                                               <p className="text-sm text-gray-400">Cliente</p>
                                               <p className="text-white font-mono text-sm">{order.user_id}</p>
                                             </div>
                                           </div>
                                           
+                                          {/* Data ordine */}
                                           <div className="flex items-start space-x-3">
-                                            <Package className="h-5 w-5 text-gray-400 mt-0.5" />
+                                            <Calendar className="h-5 w-5 text-red-400 mt-0.5" />
                                             <div>
-                                              <p className="text-sm text-gray-400">Prodotto</p>
-                                              <p className="text-white">{order.product_name}</p>
-                                              {order.category && (
-                                                <p className="text-sm text-gray-400">Categoria: {order.category}</p>
-                                              )}
-                                            </div>
-                                          </div>
-                                          
-                                          <div className="flex items-start space-x-3">
-                                            <Info className="h-5 w-5 text-gray-400 mt-0.5" />
-                                            <div>
-                                              <p className="text-sm text-gray-400">Informazioni aggiuntive</p>
-                                              <p className="text-white">{order.informations}</p>
-                                            </div>
-                                          </div>
-                                          
-                                          <div className="flex items-start space-x-3">
-                                            <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
-                                            <div>
-                                              <p className="text-sm text-gray-400">Data ordine</p>
+                                              <p className="text-sm text-gray-400">Data Ordine</p>
                                               <p className="text-white">{formatDate(order.created_at)}</p>
                                             </div>
                                           </div>
-                                        </div>
-                                      </div>
-                                      
-                                      {/* Indirizzo di consegna */}
-                                      <div className="space-y-4">
-                                        <h3 className="text-lg font-semibold text-white mb-3">Consegna</h3>
-                                        
-                                        <div className="space-y-3">
+                                          
+                                          {/* Indirizzo */}
                                           <div className="flex items-start space-x-3">
-                                            <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
+                                            <MapPin className="h-5 w-5 text-green-400 mt-0.5" />
                                             <div>
-                                              <p className="text-sm text-gray-400">Indirizzo</p>
+                                              <p className="text-sm text-gray-400">Indirizzo di Consegna</p>
                                               <p className="text-white">{order.address}</p>
                                             </div>
                                           </div>
                                           
+                                          {/* Finestra di consegna */}
                                           <div className="flex items-start space-x-3">
-                                            <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
+                                            <Clock className="h-5 w-5 text-blue-400 mt-0.5" />
                                             <div>
-                                              <p className="text-sm text-gray-400">Finestra di consegna</p>
+                                              <p className="text-sm text-gray-400">Finestra di Consegna</p>
                                               <p className="text-white">
                                                 Dal {new Date(order.arrival_start).toLocaleDateString(locale)} 
                                                 al {new Date(order.arrival_end).toLocaleDateString(locale)}
                                               </p>
-                                            </div>
-                                          </div>
-                                          
-                                          <div className="flex items-start space-x-3">
-                                            <Package className="h-5 w-5 text-gray-400 mt-0.5" />
-                                            <div>
-                                              <p className="text-sm text-gray-400">Quantità ordinata</p>
-                                              <p className="text-lg font-semibold text-white">{order.amount} {formatUOM(order.uom)}</p>
                                             </div>
                                           </div>
                                         </div>
@@ -800,45 +899,58 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                         >
                           {/* Header dell'ordine - sempre visibile */}
                           <div
-                            className="p-4 cursor-pointer hover:bg-gray-700 transition-colors"
+                            className="p-4 cursor-pointer hover:bg-gray-700 transition-colors group relative"
                             onClick={() => toggleOrderExpansion(order.id)}
                           >
+                            {/* Checkbox che appare on hover */}
+                            {/* Checkbox sempre visibile */}
+                            <div 
+                              className="absolute left-6 top-1/2 transform -translate-y-1/2 transition-opacity z-10"
+                              onClick={(e) => handleCheckboxClick(order, e)}
+                            >
+                              {order.state === 'delivering' || order.state === 'arrived' ? (
+                                <CheckSquare className="h-8 w-8 text-green-400 cursor-pointer" />
+                              ) : (
+                                <Square className="h-8 w-8 text-gray-400 cursor-pointer hover:text-green-400" />
+                              )}
+                            </div>
                             <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-4 flex-1">
-                                {/* Cover del prodotto */}
-                                <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-700">
-                                  {order.cover ? (
+                              {/* Tutte le colonne raggruppate a sinistra */}
+                              <div className="flex items-center space-x-4">
+                                {/* Cover del prodotto - più grande e spostato a destra */}
+                                <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-700 text-left relative ml-12">
+                                  {(typeof order.cover === 'string' && order.cover) || (typeof order.cover === 'object' && order.cover?.url) ? (
                                     <img 
-                                      src={order.cover} 
+                                      src={typeof order.cover === 'string' ? order.cover : order.cover.url} 
                                       alt={order.product_name}
                                       className="w-full h-full object-cover"
                                     />
                                   ) : (
                                     <div className="w-full h-full flex items-center justify-center">
-                                      <Package className="h-6 w-6 text-gray-400" />
+                                      <Package className="h-8 w-8 text-gray-400" />
                                     </div>
                                   )}
                                 </div>
                                 
-                                {/* Nome del prodotto */}
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-white font-medium truncate">{order.product_name}</p>
+                                {/* Nome del prodotto - larghezza più stretta */}
+                                <div className="w-56 flex-shrink-0 text-left">
+                                  <p className="text-white font-medium truncate text-left">{order.product_name}</p>
                                 </div>
                                 
-                                {/* Quantità e UOM */}
-                                <div className="text-white font-semibold flex-shrink-0">
+                                {/* Quantità e UOM - 120px fissa */}
+                                <div className="w-30 text-white font-semibold flex-shrink-0 text-left">
                                   {order.amount} {formatUOM(order.uom)}
                                 </div>
                                 
-                                {/* Data di creazione */}
-                                <div className="text-sm text-gray-400 flex items-center space-x-1 flex-shrink-0">
+                                {/* Data di creazione - 180px fissa */}
+                                <div className="w-45 text-sm text-gray-400 flex items-center space-x-1 flex-shrink-0 text-left">
                                   <Calendar className="h-4 w-4" />
-                                  <span>{formatDate(order.created_at)}</span>
+                                  <span className="text-left">{formatDate(order.created_at)}</span>
                                 </div>
                               </div>
                               
                               {/* Stato ordine - a destra */}
-                              <div className="flex items-center space-x-3 ml-4">
+                              <div className="flex items-center space-x-3 ml-4 justify-end">
                                 <div className={`inline-flex items-center space-x-2 text-sm font-medium rounded-full px-3 py-1 border ${getOrderStateStyles(order.state)}`}>
                                   {getOrderStateIcon(order.state)}
                                   <span className="truncate">{getOrderStateName(order.state)}</span>
@@ -860,87 +972,106 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                           {isExpanded && (
                             <div className="border-t border-gray-700 bg-gray-800">
                               <div className="p-6 grid md:grid-cols-2 gap-6">
-                                {/* Immagine prodotto e informazioni cliente */}
+                                {/* Sezione 1: Prodotto e Informazioni */}
                                 <div className="space-y-4">
                                   {/* Immagine prodotto */}
-                                  {order.cover && (
+                                  {((typeof order.cover === 'string' && order.cover) || (typeof order.cover === 'object' && order.cover?.url)) && (
                                     <div className="mb-4">
                                       <img 
-                                        src={order.cover} 
+                                        src={typeof order.cover === 'string' ? order.cover : order.cover.url}
                                         alt={order.product_name}
                                         className="w-full h-32 object-cover rounded-lg"
                                       />
                                     </div>
                                   )}
-                                  <h3 className="text-lg font-semibold text-white mb-3">Dettagli ordine</h3>
+                                  <h3 className="text-lg font-semibold text-white mb-3">
+                                    Prodotto e Informazioni
+                                  </h3>
                                   
                                   <div className="space-y-3">
+                                    {/* Nome prodotto */}
                                     <div className="flex items-start space-x-3">
-                                      <User className="h-5 w-5 text-gray-400 mt-0.5" />
+                                      <Package className="h-5 w-5 text-blue-400 mt-0.5" />
+                                      <div>
+                                        <p className="text-sm text-gray-400">Nome Prodotto</p>
+                                        <p className="text-white font-medium">{order.product_name}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Categoria */}
+                                    {order.category && (
+                                      <div className="flex items-start space-x-3">
+                                        <Wheat className="h-5 w-5 text-green-400 mt-0.5" />
+                                        <div>
+                                          <p className="text-sm text-gray-400">Categoria</p>
+                                          <p className="text-white">{order.category}</p>
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Informazioni aggiuntive */}
+                                    <div className="flex items-start space-x-3">
+                                      <Info className="h-5 w-5 text-yellow-400 mt-0.5" />
+                                      <div>
+                                        <p className="text-sm text-gray-400">Informazioni Aggiuntive</p>
+                                        <p className="text-white">{order.informations}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Quantità */}
+                                    <div className="flex items-start space-x-3">
+                                      <ShoppingCart className="h-5 w-5 text-purple-400 mt-0.5" />
+                                      <div>
+                                        <p className="text-sm text-gray-400">Quantità Ordinata</p>
+                                        <p className="text-lg font-semibold text-white">{order.amount} {formatUOM(order.uom)}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Sezione 2: Cliente e Consegna */}
+                                <div className="space-y-4">
+                                  <h3 className="text-lg font-semibold text-white mb-3">
+                                    Cliente e Consegna
+                                  </h3>
+                                  
+                                  <div className="space-y-3">
+                                    {/* Cliente */}
+                                    <div className="flex items-start space-x-3">
+                                      <User className="h-5 w-5 text-orange-400 mt-0.5" />
                                       <div>
                                         <p className="text-sm text-gray-400">Cliente</p>
                                         <p className="text-white font-mono text-sm">{order.user_id}</p>
                                       </div>
                                     </div>
                                     
+                                    {/* Data ordine */}
                                     <div className="flex items-start space-x-3">
-                                      <Package className="h-5 w-5 text-gray-400 mt-0.5" />
+                                      <Calendar className="h-5 w-5 text-red-400 mt-0.5" />
                                       <div>
-                                        <p className="text-sm text-gray-400">Prodotto</p>
-                                        <p className="text-white">{order.product_name}</p>
-                                        {order.category && (
-                                          <p className="text-sm text-gray-400">Categoria: {order.category}</p>
-                                        )}
-                                      </div>
-                                    </div>
-                                    
-                                    <div className="flex items-start space-x-3">
-                                      <Info className="h-5 w-5 text-gray-400 mt-0.5" />
-                                      <div>
-                                        <p className="text-sm text-gray-400">Informazioni aggiuntive</p>
-                                        <p className="text-white">{order.informations}</p>
-                                      </div>
-                                    </div>
-                                    
-                                    <div className="flex items-start space-x-3">
-                                      <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
-                                      <div>
-                                        <p className="text-sm text-gray-400">Data ordine</p>
+                                        <p className="text-sm text-gray-400">Data Ordine</p>
                                         <p className="text-white">{formatDate(order.created_at)}</p>
                                       </div>
                                     </div>
-                                  </div>
-                                </div>
-                                
-                                {/* Indirizzo di consegna */}
-                                <div className="space-y-4">
-                                  <h3 className="text-lg font-semibold text-white mb-3">Consegna</h3>
-                                  
-                                  <div className="space-y-3">
+                                    
+                                    {/* Indirizzo */}
                                     <div className="flex items-start space-x-3">
-                                      <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
+                                      <MapPin className="h-5 w-5 text-green-400 mt-0.5" />
                                       <div>
-                                        <p className="text-sm text-gray-400">Indirizzo</p>
+                                        <p className="text-sm text-gray-400">Indirizzo di Consegna</p>
                                         <p className="text-white">{order.address}</p>
                                       </div>
                                     </div>
                                     
+                                    {/* Finestra di consegna */}
                                     <div className="flex items-start space-x-3">
-                                      <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
+                                      <Clock className="h-5 w-5 text-blue-400 mt-0.5" />
                                       <div>
-                                        <p className="text-sm text-gray-400">Finestra di consegna</p>
+                                        <p className="text-sm text-gray-400">Finestra di Consegna</p>
                                         <p className="text-white">
                                           Dal {new Date(order.arrival_start).toLocaleDateString(locale)} 
                                           al {new Date(order.arrival_end).toLocaleDateString(locale)}
                                         </p>
-                                      </div>
-                                    </div>
-                                    
-                                    <div className="flex items-start space-x-3">
-                                      <Package className="h-5 w-5 text-gray-400 mt-0.5" />
-                                      <div>
-                                        <p className="text-sm text-gray-400">Quantità ordinata</p>
-                                        <p className="text-lg font-semibold text-white">{order.amount} {formatUOM(order.uom)}</p>
                                       </div>
                                     </div>
                                   </div>
@@ -955,9 +1086,56 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                 })}
               </div>
             )}
+        </div>
+        )}
+
+        {/* Popup di conferma */}
+        {showConfirmPopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-700">
+              <h3 className="text-lg font-semibold text-white mb-4">
+                {selectedOrderForUpdate?.state === 'processing' 
+                  ? 'Contrassegna ordine come completo' 
+                  : 'Riporta ordine in elaborazione'
+                }
+              </h3>
+              <p className="text-gray-300 mb-6">
+                {selectedOrderForUpdate?.state === 'processing' 
+                  ? 'Sei sicuro di voler contrassegnare questo ordine come "In consegna"?'
+                  : 'Sei sicuro di voler riportare questo ordine in "Elaborazione"?'
+                }
+                <br />
+                <span className="text-sm text-gray-400">
+                  Prodotto: {selectedOrderForUpdate?.product_name}
+                </span>
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={handleCancelUpdate}
+                  disabled={updatingOrder}
+                  className="flex-1 px-4 py-2 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={handleConfirmUpdate}
+                  disabled={updatingOrder}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+                >
+                  {updatingOrder ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Aggiornando...
+                    </>
+                  ) : (
+                    'Conferma'
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
     </DashboardLayout>
   );
-}
+} 
