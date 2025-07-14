@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
+import { Mail, Lock, Eye, EyeOff, LogIn, Sparkles, Leaf, Package } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -11,14 +12,16 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   
   const { login, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const { t } = useTranslations('it'); // Default to Italian for login page
 
   // Reindirizza se già autenticato
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      router.push('/it'); // Reindirizza alla dashboard
+      router.push('/it');
     }
   }, [isAuthenticated, isLoading, router]);
 
@@ -28,7 +31,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     if (!email || !password) {
-      setError('Inserisci email e password');
+      setError(t('pages.login.emailRequired') + ' e ' + t('pages.login.passwordRequired'));
       setIsSubmitting(false);
       return;
     }
@@ -36,43 +39,75 @@ export default function LoginPage() {
     try {
       const success = await login(email, password);
       if (success) {
-        router.push('/it'); // Reindirizza alla dashboard
+        router.push('/it');
       } else {
-        setError('Email o password non validi');
+        setError(t('pages.login.invalidCredentials'));
       }
     } catch (err) {
-      setError('Errore durante il login. Riprova.');
+      setError(t('pages.login.loginError'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Non mostra loading durante il controllo autenticazione
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-blue-100">
-            <LogIn className="h-6 w-6 text-blue-600" />
+    <div className="h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Animated Background Circles */}
+        <div className="absolute top-10 left-10 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-64 h-64 bg-green-600/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-56 h-56 bg-purple-600/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 w-full max-w-sm">
+        {/* Logo Section */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-2xl mb-4 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent rounded-2xl"></div>
+            <Package className="h-8 w-8 text-white relative z-10" />
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Accedi al tuo account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            LocalGoods - Console per produttori agricoli
+          
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-1">
+            LocalGoods
+          </h1>
+          <p className="text-gray-400 text-base font-medium">
+            {t('pages.login.subtitle')}
           </p>
+          <div className="flex items-center justify-center mt-2 space-x-2">
+            <Leaf className="h-3 w-3 text-green-400" />
+            <span className="text-xs text-gray-500">Fresco. Fatto a mano. Sostenibile.</span>
+          </div>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
+        {/* Login Card */}
+        <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-800/50 rounded-2xl p-6 shadow-2xl">
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-10 h-10 bg-blue-600/20 rounded-xl mb-3">
+              <LogIn className="h-5 w-5 text-blue-400" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-1">
+              {t('pages.login.title')}
+            </h2>
+            <p className="text-gray-400 text-sm">
+              {t('pages.login.description')}
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email Field */}
+            <div className="space-y-1">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+                {t('pages.login.email')}
               </label>
-              <div className="mt-1 relative">
+              <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-4 w-4 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
                 </div>
                 <input
                   id="email"
@@ -80,21 +115,25 @@ export default function LoginPage() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="La tua email"
+                  className="w-full pl-10 pr-3 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 backdrop-blur-sm text-sm"
+                  placeholder={t('pages.login.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
                 />
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
               </div>
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
+            {/* Password Field */}
+            <div className="space-y-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+                {t('pages.login.password')}
               </label>
-              <div className="mt-1 relative">
+              <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-4 w-4 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
                 </div>
                 <input
                   id="password"
@@ -102,65 +141,87 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
-                  className="appearance-none relative block w-full pl-10 pr-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="La tua password"
+                  className="w-full pl-10 pr-10 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 backdrop-blur-sm text-sm"
+                  placeholder={t('pages.login.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-300 transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <EyeOff className="h-4 w-4" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <Eye className="h-4 w-4" />
                   )}
                 </button>
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
               </div>
             </div>
-          </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-800">{error}</p>
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 backdrop-blur-sm">
+                <div className="flex items-center space-x-2">
+                  <div className="flex-shrink-0">
+                    <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                  </div>
+                  <p className="text-xs text-red-300">{error}</p>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div>
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full relative group py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none text-sm"
             >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Accesso in corso...
-                </>
-              ) : (
-                <>
-                  <LogIn className="h-5 w-5 mr-2" />
-                  Accedi
-                </>
-              )}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+              <div className="relative flex items-center justify-center space-x-2">
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>{t('pages.login.loggingIn')}</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="h-4 w-4" />
+                    <span>{t('pages.login.login')}</span>
+                    <Sparkles className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  </>
+                )}
+              </div>
             </button>
-          </div>
-        </form>
+          </form>
 
-        <div className="text-center">
-          <p className="text-xs text-gray-500">
-            LocalGoods &copy; 2024 - Fresco. Fatto a mano. Sostenibile.
+          {/* Additional Info */}
+          <div className="mt-6 pt-4 border-t border-gray-800/50">
+            <div className="flex items-center justify-center space-x-3 text-xs text-gray-500">
+              <div className="flex items-center space-x-1">
+                <div className="w-1 h-1 bg-green-400 rounded-full"></div>
+                <span>Sicuro</span>
+              </div>
+              <div className="w-px h-3 bg-gray-700"></div>
+              <div className="flex items-center space-x-1">
+                <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
+                <span>Veloce</span>
+              </div>
+              <div className="w-px h-3 bg-gray-700"></div>
+              <div className="flex items-center space-x-1">
+                <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
+                <span>Affidabile</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-4">
+          <p className="text-xs text-gray-600">
+            LocalGoods &copy; 2024 - Gestione intelligente per l&apos;agricoltura sostenibile
           </p>
         </div>
       </div>

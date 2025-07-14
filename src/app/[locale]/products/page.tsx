@@ -71,13 +71,26 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
     isVisible: false
   });
 
-  // Carica l'ultima azienda visitata dal localStorage
+  // Ottieni il ruolo dell'utente corrente
+  const currentUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
+  const isSuperAdmin = currentUser.role === 'superadmin';
+
+  // Carica l'ultima azienda visitata dal localStorage o se l'utente ha una sola azienda
   useEffect(() => {
     const lastCompanyId = localStorage.getItem('lastVisitedCompanyId');
     if (lastCompanyId) {
       setSelectedCompanyId(parseInt(lastCompanyId));
     }
   }, []);
+
+  // Controlla se l'utente ha una sola azienda e la seleziona automaticamente
+  useEffect(() => {
+    if (companies.length === 1 && !selectedCompanyId) {
+      const singleCompany = companies[0];
+      setSelectedCompanyId(singleCompany.id);
+      localStorage.setItem('lastVisitedCompanyId', singleCompany.id.toString());
+    }
+  }, [companies, selectedCompanyId]);
 
   // Carica la lista delle aziende se non c'è una selezionata
   useEffect(() => {
@@ -88,17 +101,49 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
         setLoadingCompanies(true);
         setCompaniesError(null);
         
-        const url = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/companies');
-        url.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+        let response;
+        let apiUrl;
         
-        const response = await fetch(url.toString(), {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
+        if (isSuperAdmin) {
+          // Per superadmin, usa l'API companies per ottenere tutte le aziende
+          apiUrl = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/companies');
+          apiUrl.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+          
+
+          
+          response = await fetch(apiUrl.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+        } else {
+          // Per utenti non superadmin, usa l'API user_company per ottenere le loro aziende
+          apiUrl = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user_company');
+          apiUrl.searchParams.append('user_id', currentUser.id || '');
+          apiUrl.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+          
+
+          
+          response = await fetch(apiUrl.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+        }
+
+
 
         if (!response.ok) {
+          const errorText = await response.text();
+          
+          // Se non è superadmin e l'API dà errore, probabilmente non ha aziende
+          if (!isSuperAdmin) {
+            setCompanies([]);
+            return; // Non lanciare errore, mostra lista vuota
+          }
+          
           throw new Error('Errore nel recupero delle aziende');
         }
 
@@ -112,7 +157,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
     };
 
     fetchCompanies();
-  }, [selectedCompanyId, locale]);
+  }, [selectedCompanyId, locale, isSuperAdmin, currentUser.id]);
 
   // Carica i prodotti quando c'è un'azienda selezionata
   useEffect(() => {
@@ -281,7 +326,7 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
         company_id: selectedCompanyId
       };
 
-      console.log('Payload per creazione prodotto:', payload);
+
 
       const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/product', {
         method: 'POST',
@@ -297,7 +342,6 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
       }
 
       const newProduct = await response.json();
-      console.log('Nuovo prodotto creato:', newProduct);
       
       // Mappa il prodotto per assicurarsi che abbia tutti i campi necessari
       const mappedProduct: Product = {
@@ -456,7 +500,12 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
             {!companiesError && companies.length === 0 && (
               <div className="text-center py-8">
                 <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-400">{t('pages.companies.noCompanies')}</p>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {isSuperAdmin ? 'Nessuna azienda trovata' : 'Non appartieni a nessuna azienda'}
+                </h3>
+                <p className="text-gray-300 mb-6">
+                  {isSuperAdmin ? 'Non ci sono aziende nel sistema.' : 'Contatta un amministratore per essere collegato a un\'azienda.'}
+                </p>
               </div>
             )}
           </div>
@@ -477,15 +526,16 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  setSelectedCompanyId(null);
-                  localStorage.removeItem('lastVisitedCompanyId');
-                }}
-                className="text-sm text-gray-400 hover:text-white transition-colors"
-              >
-                {t('pages.products.changeCompany') || 'Cambia azienda'}
-              </button>
+              {companies.length > 1 && (
+                <button
+                  onClick={() => {
+                    setSelectedCompanyId(null);
+                  }}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                >
+                  {t('pages.products.changeCompany') || 'Cambia azienda'}
+                </button>
+              )}
             </div>
           </div>
         )}

@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Verifica se il token è ancora valido
           if (error instanceof Error && error.message.includes('401')) {
             // Token scaduto, effettua logout
-            console.log('Token scaduto, effettuando logout automatico');
+    
             setUser(null);
             setToken(null);
             localStorage.removeItem('auth_token');

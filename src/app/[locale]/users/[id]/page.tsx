@@ -27,7 +27,11 @@ import {
   Beef,
   Hammer,
   Edit,
-  Check
+  Check,
+  Plus,
+  Search,
+  X,
+  Unlink
 } from 'lucide-react';
 
 interface UserDetail {
@@ -42,6 +46,17 @@ interface UserDetail {
 }
 
 interface UserCompany {
+  id: number;
+  created_at: number;
+  Location: string;
+  type: string;
+  name: string;
+  description: string;
+  cover: string | null;
+  gallery: string[];
+}
+
+interface AvailableCompany {
   id: number;
   created_at: number;
   Location: string;
@@ -96,6 +111,17 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
   const [companies, setCompanies] = useState<UserCompany[]>([]);
   const [loadingCompanies, setLoadingCompanies] = useState(false);
   const [isCompaniesExpanded, setIsCompaniesExpanded] = useState(false);
+  
+  // Stati per il modal di aggiunta azienda
+  const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
+  const [availableCompanies, setAvailableCompanies] = useState<AvailableCompany[]>([]);
+  const [loadingAvailableCompanies, setLoadingAvailableCompanies] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState<AvailableCompany | null>(null);
+  const [addingCompany, setAddingCompany] = useState(false);
+  
+  // Stati per la rimozione azienda
+  const [removingCompany, setRemovingCompany] = useState<number | null>(null);
 
   // Carica i dettagli dell'utente dall'API
   const fetchUser = async () => {
@@ -162,6 +188,99 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
       setCompanies([]);
     } finally {
       setLoadingCompanies(false);
+    }
+  };
+
+  // Carica le aziende disponibili
+  const fetchAvailableCompanies = async () => {
+    try {
+      setLoadingAvailableCompanies(true);
+      
+      // Nella pagina utente, mostra sempre tutte le aziende disponibili
+      const params = new URLSearchParams({
+        lang: locale
+      });
+
+      const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/companies?${params}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore nel recupero delle aziende disponibili');
+      }
+
+      const data = await response.json();
+      setAvailableCompanies(data || []);
+    } catch (err) {
+      console.error('Errore nel caricamento delle aziende disponibili:', err);
+      setAvailableCompanies([]);
+    } finally {
+      setLoadingAvailableCompanies(false);
+    }
+  };
+
+  // Aggiunge un'azienda all'utente
+  const addCompanyToUser = async (companyId: number) => {
+    if (!id) return false;
+    
+    try {
+      setAddingCompany(true);
+      
+      const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user_company', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: id,
+          company_id: companyId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore nell\'aggiunta dell\'azienda');
+      }
+
+      return true;
+    } catch (err) {
+      console.error('Errore nell\'aggiunta dell\'azienda:', err);
+      return false;
+    } finally {
+      setAddingCompany(false);
+    }
+  };
+
+  // Rimuove un'azienda dall'utente
+  const removeCompanyFromUser = async (companyId: number) => {
+    if (!id) return false;
+    
+    try {
+      setRemovingCompany(companyId);
+      
+      const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user_company/${companyId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          company_id: companyId,
+          user_id: id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore nella rimozione dell\'azienda');
+      }
+
+      return true;
+    } catch (err) {
+      console.error('Errore nella rimozione dell\'azienda:', err);
+      return false;
+    } finally {
+      setRemovingCompany(null);
     }
   };
 
@@ -276,6 +395,75 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
   // Funzione per navigare alla pagina azienda
   const handleCompanyClick = (companyId: number) => {
     router.push(`/${locale}/companies/${companyId}`);
+  };
+
+  // Gestisce l'apertura del modal per aggiungere azienda
+  const handleOpenAddCompanyModal = async () => {
+    setShowAddCompanyModal(true);
+    setSearchTerm('');
+    setSelectedCompany(null);
+    await fetchAvailableCompanies();
+  };
+
+  // Gestisce la chiusura del modal
+  const handleCloseAddCompanyModal = () => {
+    setShowAddCompanyModal(false);
+    setSearchTerm('');
+    setSelectedCompany(null);
+  };
+
+  // Gestisce la selezione di un'azienda
+  const handleSelectCompany = (company: AvailableCompany) => {
+    setSelectedCompany(company);
+  };
+
+  // Gestisce la conferma dell'aggiunta dell'azienda
+  const handleConfirmAddCompany = async () => {
+    if (!selectedCompany) return;
+
+    const success = await addCompanyToUser(selectedCompany.id);
+    
+    if (success) {
+      showToast('Azienda collegata con successo!', 'success');
+      handleCloseAddCompanyModal();
+      // Ricarica le aziende dell'utente
+      await fetchUserCompanies();
+    } else {
+      showToast('Errore nel collegamento dell\'azienda', 'error');
+    }
+  };
+
+  // Filtra le aziende disponibili in base alla ricerca e esclude quelle già collegate
+  const filteredAvailableCompanies = availableCompanies.filter(company => {
+    // Controlla se l'azienda è già nella lista dell'utente
+    const isAlreadyLinked = companies.some(userCompany => userCompany.id === company.id);
+    
+    // Se è già collegata, escludila
+    if (isAlreadyLinked) {
+      return false;
+    }
+    
+    // Altrimenti, applica il filtro di ricerca
+    return company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           company.Location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           company.description.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
+  // Gestisce la rimozione di un'azienda con conferma
+  const handleRemoveCompany = async (company: UserCompany) => {
+    const confirmed = confirm(`Sei sicuro di voler scollegare l'azienda "${company.name}" da ${user?.name}?`);
+    
+    if (confirmed) {
+      const success = await removeCompanyFromUser(company.id);
+      
+      if (success) {
+        showToast(`Azienda "${company.name}" scollegata con successo!`, 'success');
+        // Ricarica le aziende dell'utente
+        await fetchUserCompanies();
+      } else {
+        showToast('Errore nello scollegamento dell\'azienda', 'error');
+      }
+    }
   };
 
   const getRoleColor = (role: string) => {
@@ -435,23 +623,13 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
             <span>Indietro</span>
           </button>
           
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
-                Profilo Utente
-              </h1>
-              <p className="text-gray-300">
-                Visualizza e gestisci le informazioni dell&apos;utente
-              </p>
-            </div>
-            <button
-              onClick={handleRefreshData}
-              disabled={isRefreshing}
-              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-xl flex items-center space-x-2 transition-colors"
-            >
-              <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              <span>Aggiorna</span>
-            </button>
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Profilo Utente
+            </h1>
+            <p className="text-gray-300">
+              Visualizza e gestisci le informazioni dell&apos;utente
+            </p>
           </div>
         </div>
 
@@ -602,10 +780,10 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                           backgroundSize: '1.5em 1.5em'
                         }}
                       >
-                        <option value="customer">Customer</option>
-                        <option value="collaborator">Collaborator</option>
-                        <option value="owner">Owner</option>
-                        <option value="superadmin">Super Admin</option>
+                        <option value="customer">{t('pages.users.roles.customer')}</option>
+                        <option value="collaborator">{t('pages.users.roles.collaborator')}</option>
+                        <option value="owner">{t('pages.users.roles.owner')}</option>
+                        <option value="superadmin">{t('pages.users.roles.superadmin')}</option>
                       </select>
                     ) : (
                       <div className={`inline-flex items-center space-x-2 text-sm font-medium rounded-full px-3 py-1 border ${getRoleColor(user.role)}`}>
@@ -660,21 +838,30 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                 <h3 className="text-lg font-semibold text-white">
                   Aziende
                 </h3>
-                {companies.length > 1 && (
+                <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => setIsCompaniesExpanded(!isCompaniesExpanded)}
-                    className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors text-sm"
+                    onClick={handleOpenAddCompanyModal}
+                    className="flex items-center justify-center w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                    title="Aggiungi azienda"
                   >
-                    <span>
-                      {isCompaniesExpanded ? 'Comprimi' : 'Espandi'}
-                    </span>
-                    {isCompaniesExpanded ? (
-                      <ChevronUp className="h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4" />
-                    )}
+                    <Plus className="h-4 w-4" />
                   </button>
-                )}
+                  {companies.length > 1 && (
+                    <button
+                      onClick={() => setIsCompaniesExpanded(!isCompaniesExpanded)}
+                      className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors text-sm"
+                    >
+                      <span>
+                        {isCompaniesExpanded ? 'Comprimi' : 'Espandi'}
+                      </span>
+                      {isCompaniesExpanded ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
               
               <div className={`space-y-3 flex-1 ${isCompaniesExpanded && companies.length > 4 ? 'overflow-y-auto' : ''}`}>
@@ -693,8 +880,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                   (isCompaniesExpanded ? companies : companies.slice(0, 1)).map((company) => (
                     <div
                       key={company.id}
-                      onClick={() => handleCompanyClick(company.id)}
-                      className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
+                      className="group flex items-center space-x-4 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors relative"
                     >
                       {/* Logo/Icona azienda */}
                       <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -710,7 +896,10 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                       </div>
                       
                       {/* Informazioni azienda */}
-                      <div className="flex-1 min-w-0">
+                      <div 
+                        className="flex-1 min-w-0 cursor-pointer"
+                        onClick={() => handleCompanyClick(company.id)}
+                      >
                         <p className="text-white font-medium truncate">
                           {company.name}
                         </p>
@@ -721,6 +910,23 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                           {getCompanyTypeLabel(company.type)}
                         </span>
                       </div>
+
+                      {/* Pulsante rimozione (visibile solo in hover) */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveCompany(company);
+                        }}
+                        disabled={removingCompany === company.id}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={`Scollega ${company.name}`}
+                      >
+                        {removingCompany === company.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Unlink className="h-4 w-4" />
+                        )}
+                      </button>
                     </div>
                   ))
                 )}
@@ -736,6 +942,137 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
             </div>
           </div>
         </div>
+
+        {/* Modal per aggiungere azienda */}
+        {showAddCompanyModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-2xl max-h-[80vh] flex flex-col">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-700">
+                <h3 className="text-xl font-semibold text-white">
+                  Aggiungi azienda a {user.name}
+                </h3>
+                <button
+                  onClick={handleCloseAddCompanyModal}
+                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-400" />
+                </button>
+              </div>
+
+              {/* Search */}
+              <div className="p-6 border-b border-gray-700">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Cerca aziende..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Companies List */}
+              <div className="flex-1 overflow-y-auto p-6">
+                {loadingAvailableCompanies ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+                    <span className="ml-3 text-gray-400">Caricamento aziende...</span>
+                  </div>
+                ) : filteredAvailableCompanies.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-400">
+                      {searchTerm ? 'Nessuna azienda trovata' : 'Nessuna azienda disponibile'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredAvailableCompanies.map((company) => (
+                      <div
+                        key={company.id}
+                        onClick={() => handleSelectCompany(company)}
+                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                          selectedCompany?.id === company.id
+                            ? 'border-blue-500 bg-blue-500/10'
+                            : 'border-gray-700 bg-gray-800 hover:border-gray-600 hover:bg-gray-750'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-4">
+                          {/* Logo/Icona azienda */}
+                          <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                            {company.cover ? (
+                              <img 
+                                src={company.cover} 
+                                alt={company.name}
+                                className="w-8 h-8 rounded object-cover"
+                              />
+                            ) : (
+                              getCompanyTypeIcon(company.type)
+                            )}
+                          </div>
+                          
+                          {/* Informazioni azienda */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-medium">
+                              {company.name}
+                            </p>
+                            <p className="text-gray-400 text-sm">
+                              {company.Location}
+                            </p>
+                            <p className="text-gray-500 text-xs truncate">
+                              {company.description}
+                            </p>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getCompanyTypeColor(company.type)}`}>
+                              {getCompanyTypeLabel(company.type)}
+                            </span>
+                          </div>
+
+                          {/* Checkbox di selezione */}
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                            selectedCompany?.id === company.id
+                              ? 'border-blue-500 bg-blue-500'
+                              : 'border-gray-600'
+                          }`}>
+                            {selectedCompany?.id === company.id && (
+                              <Check className="h-3 w-3 text-white" />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="p-6 border-t border-gray-700 flex items-center justify-end space-x-3">
+                <button
+                  onClick={handleCloseAddCompanyModal}
+                  className="px-6 py-2 text-gray-400 hover:text-white transition-colors"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={handleConfirmAddCompany}
+                  disabled={!selectedCompany || addingCompany}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  {addingCompany ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Collegando...</span>
+                    </>
+                  ) : (
+                    <span>Collega azienda</span>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Toast notification */}
         <Toast

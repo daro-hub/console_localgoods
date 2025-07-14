@@ -43,6 +43,10 @@ export function Sidebar({ locale }: SidebarProps) {
     localStorage.setItem('sidebar-collapsed', JSON.stringify(newState));
   };
 
+  // Ottieni il ruolo dell'utente corrente
+  const currentUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
+  const isSuperAdmin = currentUser.role === 'superadmin';
+
   const navigationSections = [
     {
       title: t('navigation.sections.management'),
@@ -52,11 +56,12 @@ export function Sidebar({ locale }: SidebarProps) {
           href: `/${locale}/companies`,
           icon: Building2,
         },
-        {
+        // Mostra la sezione utenti solo ai superadmin
+        ...(isSuperAdmin ? [{
           name: t('navigation.users'),
           href: `/${locale}/users`,
           icon: Users,
-        },
+        }] : []),
         {
           name: t('navigation.products'),
           href: `/${locale}/products`,

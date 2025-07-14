@@ -71,7 +71,6 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
   // Stati per le aziende
   const [companies, setCompanies] = useState<Company[]>([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [loadingCompanies, setLoadingCompanies] = useState(false);
   const [companiesError, setCompaniesError] = useState<string | null>(null);
   
@@ -91,13 +90,26 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
   const [selectedOrderForUpdate, setSelectedOrderForUpdate] = useState<Order | null>(null);
   const [updatingOrder, setUpdatingOrder] = useState(false);
 
-  // Carica l'ultima azienda visitata dal localStorage
+  // Carica l'ultima azienda visitata dal localStorage o se l'utente ha una sola azienda
   useEffect(() => {
     const lastCompanyId = localStorage.getItem('lastVisitedCompanyId');
     if (lastCompanyId) {
       setSelectedCompanyId(parseInt(lastCompanyId));
     }
   }, []);
+
+  // Controlla se l'utente ha una sola azienda e la seleziona automaticamente
+  useEffect(() => {
+    if (companies.length === 1 && !selectedCompanyId) {
+      const singleCompany = companies[0];
+      setSelectedCompanyId(singleCompany.id);
+      localStorage.setItem('lastVisitedCompanyId', singleCompany.id.toString());
+    }
+  }, [companies, selectedCompanyId]);
+
+  // Ottieni il ruolo dell'utente corrente
+  const currentUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
+  const isSuperAdmin = currentUser.role === 'superadmin';
 
   // Carica la lista delle aziende se non c'è una selezionata
   useEffect(() => {
@@ -108,17 +120,49 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
         setLoadingCompanies(true);
         setCompaniesError(null);
         
-        const url = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/companies');
-        url.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+        let response;
+        let apiUrl;
         
-        const response = await fetch(url.toString(), {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
+        if (isSuperAdmin) {
+          // Per superadmin, usa l'API companies per ottenere tutte le aziende
+          apiUrl = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/companies');
+          apiUrl.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+          
+
+          
+          response = await fetch(apiUrl.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+        } else {
+          // Per utenti non superadmin, usa l'API user_company per ottenere le loro aziende
+          apiUrl = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user_company');
+          apiUrl.searchParams.append('user_id', currentUser.id || '');
+          apiUrl.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+          
+
+          
+          response = await fetch(apiUrl.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+        }
+
+
 
         if (!response.ok) {
+          const errorText = await response.text();
+          
+          // Se non è superadmin e l'API dà errore, probabilmente non ha aziende
+          if (!isSuperAdmin) {
+            setCompanies([]);
+            return; // Non lanciare errore, mostra lista vuota
+          }
+          
           throw new Error('Errore nel recupero delle aziende');
         }
 
@@ -132,38 +176,9 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
     };
 
     fetchCompanies();
-  }, [selectedCompanyId, locale]);
+  }, [selectedCompanyId, locale, isSuperAdmin, currentUser.id]);
 
-  // Carica i dettagli dell'azienda selezionata
-  useEffect(() => {
-    const fetchSelectedCompany = async () => {
-      if (!selectedCompanyId) {
-        setSelectedCompany(null);
-        return;
-      }
-      
-      try {
-        const url = new URL(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/company/${selectedCompanyId}`);
-        url.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
-        
-        const response = await fetch(url.toString(), {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
 
-        if (response.ok) {
-          const companyData = await response.json();
-          setSelectedCompany(companyData);
-        }
-      } catch (err) {
-        console.error('Errore nel recupero dei dettagli azienda:', err);
-      }
-    };
-
-    fetchSelectedCompany();
-  }, [selectedCompanyId, locale]);
 
   // Carica gli ordini quando c'è un'azienda selezionata
   useEffect(() => {
@@ -200,6 +215,8 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
 
     fetchOrders();
   }, [selectedCompanyId, locale]);
+
+  const selectedCompany = companies.find(c => c.id === selectedCompanyId);
 
   const handleCompanySelect = (companyId: number) => {
     setSelectedCompanyId(companyId);
@@ -273,28 +290,28 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
   const getOrderStateName = (state: string) => {
     switch (state) {
       case 'processing':
-        return 'In elaborazione';
+        return t('pages.orders.states.processing');
       case 'delivering':
-        return 'In consegna';
+        return t('pages.orders.states.delivering');
       case 'arrived':
-        return 'Arrivato';
+        return t('pages.orders.states.arrived');
       default:
-        return 'Sconosciuto';
+        return t('pages.orders.states.unknown');
     }
   };
 
   const formatUOM = (uom: string) => {
     switch (uom) {
       case 'unit':
-        return 'unità';
+        return t('units.unit');
       case 'g':
-        return 'g';
+        return t('units.g');
       case 'kg':
-        return 'kg';
+        return t('units.kg');
       case 'ml':
-        return 'ml';
+        return t('units.ml');
       case 'l':
-        return 'l';
+        return t('units.l');
       default:
         return uom;
     }
@@ -439,25 +456,13 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
               </p>
         </div>
 
-        {/* Selezione azienda */}
+        {/* Selettore azienda se non c'è una selezionata */}
         {!selectedCompanyId && (
           <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6 mb-8">
-            <div className="text-center mb-6">
-              <Building2 className="h-12 w-12 text-blue-400 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-white mb-2">
-                Seleziona un&apos;azienda
-              </h2>
-              <p className="text-gray-400">
-                Scegli un&apos;azienda per visualizzare i suoi ordini
-              </p>
-            </div>
-
-            {loadingCompanies && (
-              <div className="text-center py-8">
-                <Loader2 className="h-8 w-8 text-blue-400 mx-auto mb-2 animate-spin" />
-                <p className="text-gray-400">Caricamento aziende...</p>
-              </div>
-            )}
+            <h2 className="text-xl font-semibold text-white mb-4 flex items-center space-x-2">
+              <Building2 className="h-5 w-5" />
+              <span>{t('pages.orders.selectCompany')}</span>
+            </h2>
 
             {companiesError && (
               <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-4">
@@ -516,7 +521,12 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
             {!companiesError && companies.length === 0 && (
               <div className="text-center py-8">
                 <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-400">Nessuna azienda trovata</p>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {isSuperAdmin ? t('pages.companies.noCompanies') : t('pages.companies.noUserCompaniesMessage')}
+                </h3>
+                <p className="text-gray-300 mb-6">
+                  {isSuperAdmin ? t('pages.companies.noCompaniesMessage') : t('pages.companies.contactAdmin')}
+                </p>
               </div>
             )}
           </div>
@@ -533,19 +543,20 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                     {selectedCompany ? selectedCompany.name : `Azienda #${selectedCompanyId}`}
                   </h2>
                   <p className="text-sm text-gray-400">
-                    Ordini dell&apos;azienda
+                    {t('pages.orders.companyOrders')}
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  setSelectedCompanyId(null);
-                  localStorage.removeItem('lastVisitedCompanyId');
-                }}
-                className="text-sm text-gray-400 hover:text-white transition-colors"
-              >
-                Cambia azienda
-              </button>
+              {companies.length > 1 && (
+                <button
+                  onClick={() => {
+                    setSelectedCompanyId(null);
+                  }}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                >
+                  {t('pages.orders.changeCompany')}
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -565,7 +576,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                 <ShoppingCart className="h-8 w-8 text-blue-400" />
                 <div>
                   <p className="text-2xl font-bold text-white">{orderStats.total}</p>
-                  <p className="text-gray-400">Ordini totali</p>
+                  <p className="text-gray-400">{t('pages.orders.totalOrders')}</p>
                 </div>
               </div>
             </div>
@@ -581,7 +592,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                 <Package className="h-8 w-8 text-yellow-400" />
                 <div>
                   <p className="text-2xl font-bold text-white">{orderStats.processing}</p>
-                  <p className="text-gray-400">In elaborazione</p>
+                  <p className="text-gray-400">{t('pages.orders.processing')}</p>
                 </div>
           </div>
         </div>
@@ -597,7 +608,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                 <Truck className="h-8 w-8 text-blue-400" />
               <div>
                   <p className="text-2xl font-bold text-white">{orderStats.delivering}</p>
-                  <p className="text-gray-400">In consegna</p>
+                  <p className="text-gray-400">{t('pages.orders.delivering')}</p>
                 </div>
               </div>
             </div>
@@ -613,7 +624,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                 <CheckCircle className="h-8 w-8 text-green-400" />
                 <div>
                   <p className="text-2xl font-bold text-white">{orderStats.arrived}</p>
-                  <p className="text-gray-400">Arrivati</p>
+                  <p className="text-gray-400">{t('pages.orders.arrived')}</p>
                 </div>
               </div>
             </div>
@@ -628,8 +639,8 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                 <ShoppingCart className="h-5 w-5" />
                 <span>
                   {selectedStateFilter 
-                    ? `Ordini ${getOrderStateName(selectedStateFilter).toLowerCase()}` 
-                    : 'Tutti gli ordini'
+                    ? `${t('pages.orders.title')} ${getOrderStateName(selectedStateFilter).toLowerCase()}` 
+                    : t('pages.orders.allOrders')
                   }
                 </span>
               </h2>
@@ -638,7 +649,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                   onClick={() => setSelectedStateFilter(null)}
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
-                  Mostra tutti
+                  {t('pages.orders.showAll')}
                 </button>
               )}
             </div>
@@ -777,18 +788,8 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                                     <div className="p-6 grid md:grid-cols-2 gap-6">
                                       {/* Sezione 1: Prodotto e Informazioni */}
                                       <div className="space-y-4">
-                                        {/* Immagine prodotto */}
-                                        {((typeof order.cover === 'string' && order.cover) || (typeof order.cover === 'object' && order.cover?.url)) && (
-                                          <div className="mb-4">
-                                            <img 
-                                              src={typeof order.cover === 'string' ? order.cover : order.cover.url} 
-                                              alt={order.product_name}
-                                              className="w-full h-32 object-cover rounded-lg"
-                                            />
-                                          </div>
-                                        )}
                                         <h3 className="text-lg font-semibold text-white mb-3">
-                                          Prodotto e Informazioni
+                                          {t('pages.orders.sections.productInfo')}
                                         </h3>
                                         
                                         <div className="space-y-3">
@@ -796,7 +797,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                                           <div className="flex items-start space-x-3">
                                             <Package className="h-5 w-5 text-blue-400 mt-0.5" />
                                             <div>
-                                              <p className="text-sm text-gray-400">Nome Prodotto</p>
+                                              <p className="text-sm text-gray-400">{t('pages.orders.fields.productName')}</p>
                                               <p className="text-white font-medium">{order.product_name}</p>
                                             </div>
                                           </div>
@@ -974,16 +975,6 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                               <div className="p-6 grid md:grid-cols-2 gap-6">
                                 {/* Sezione 1: Prodotto e Informazioni */}
                                 <div className="space-y-4">
-                                  {/* Immagine prodotto */}
-                                  {((typeof order.cover === 'string' && order.cover) || (typeof order.cover === 'object' && order.cover?.url)) && (
-                                    <div className="mb-4">
-                                      <img 
-                                        src={typeof order.cover === 'string' ? order.cover : order.cover.url}
-                                        alt={order.product_name}
-                                        className="w-full h-32 object-cover rounded-lg"
-                                      />
-                                    </div>
-                                  )}
                                   <h3 className="text-lg font-semibold text-white mb-3">
                                     Prodotto e Informazioni
                                   </h3>
@@ -1095,18 +1086,18 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
             <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-700">
               <h3 className="text-lg font-semibold text-white mb-4">
                 {selectedOrderForUpdate?.state === 'processing' 
-                  ? 'Contrassegna ordine come completo' 
-                  : 'Riporta ordine in elaborazione'
+                  ? t('pages.orders.confirmUpdate.title') 
+                  : t('pages.orders.confirmUpdate.titleReverse')
                 }
               </h3>
               <p className="text-gray-300 mb-6">
                 {selectedOrderForUpdate?.state === 'processing' 
-                  ? 'Sei sicuro di voler contrassegnare questo ordine come "In consegna"?'
-                  : 'Sei sicuro di voler riportare questo ordine in "Elaborazione"?'
+                  ? t('pages.orders.confirmUpdate.message')
+                  : t('pages.orders.confirmUpdate.messageReverse')
                 }
                 <br />
                 <span className="text-sm text-gray-400">
-                  Prodotto: {selectedOrderForUpdate?.product_name}
+                  {t('pages.orders.confirmUpdate.product')} {selectedOrderForUpdate?.product_name}
                 </span>
               </p>
               <div className="flex space-x-3">
@@ -1115,7 +1106,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                   disabled={updatingOrder}
                   className="flex-1 px-4 py-2 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
                 >
-                  Annulla
+                  {t('pages.orders.confirmUpdate.cancel')}
                 </button>
                 <button
                   onClick={handleConfirmUpdate}
@@ -1125,10 +1116,10 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                   {updatingOrder ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      Aggiornando...
+                      {t('pages.orders.confirmUpdate.updating')}
                     </>
                   ) : (
-                    'Conferma'
+                    t('pages.orders.confirmUpdate.confirm')
                   )}
                 </button>
               </div>

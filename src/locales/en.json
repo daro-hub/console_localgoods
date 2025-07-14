@@ -50,7 +50,17 @@
       "description": "Manage your partner companies",
       "addCompany": "Add Company",
       "noCompanies": "No companies found",
-      "createFirst": "Create your first company"
+      "createFirst": "Create your first company",
+      "noCompaniesMessage": "No companies found in the system.",
+      "noUserCompaniesMessage": "You don't belong to any company",
+      "contactAdmin": "Contact an administrator to be connected to a company.",
+      "deleteCompany": "Delete company",
+      "confirmDelete": "Confirm Deletion",
+      "confirmDeleteMessage": "Are you sure you want to delete the company:",
+      "deleteWarning": "This action cannot be undone.",
+      "deleting": "Deleting...",
+      "deleteSuccess": "Company deleted successfully",
+      "deleteError": "Error deleting company"
     },
     "products": {
       "title": "Products",
@@ -70,6 +80,50 @@
       "changeCompany": "Change company",
       "createSuccess": "Product created successfully",
       "createError": "Error creating product"
+    },
+    "orders": {
+      "title": "Orders",
+      "description": "Manage your product orders",
+      "selectCompany": "Select a company to view its orders",
+      "companyOrders": "Company orders",
+      "changeCompany": "Change company",
+      "noOrders": "No orders found",
+      "allOrders": "All orders",
+      "totalOrders": "Total orders",
+      "processing": "Processing",
+      "delivering": "Delivering",
+      "arrived": "Arrived",
+      "showAll": "Show all",
+      "sections": {
+        "productInfo": "Product and Information",
+        "customerDelivery": "Customer and Delivery"
+      },
+      "fields": {
+        "productName": "Product Name",
+        "category": "Category",
+        "additionalInfo": "Additional Information",
+        "quantity": "Ordered Quantity",
+        "customer": "Customer",
+        "orderDate": "Order Date",
+        "deliveryAddress": "Delivery Address",
+        "deliveryWindow": "Delivery Window"
+      },
+      "states": {
+        "processing": "Processing",
+        "delivering": "Delivering",
+        "arrived": "Arrived",
+        "unknown": "Unknown"
+      },
+      "confirmUpdate": {
+        "title": "Mark order as complete",
+        "titleReverse": "Return order to processing",
+        "message": "Are you sure you want to mark this order as \"Delivering\"?",
+        "messageReverse": "Are you sure you want to return this order to \"Processing\"?",
+        "product": "Product:",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "updating": "Updating..."
+      }
     },
     "analytics": {
       "title": "Analytics",
@@ -114,6 +168,64 @@
         "collaborators": "Collaborators",
         "customers": "Customers"
       }
+    },
+    "companyDetail": {
+      "title": "Company Details",
+      "description": "Manage company details",
+      "backToCompanies": "Back to companies",
+      "loading": "Loading company details...",
+      "error": "Error",
+      "companyNotFound": "Company not found",
+      "sections": {
+        "info": "Company Information",
+        "collaborators": "Collaborators",
+        "addCollaborator": "Add Collaborator"
+      },
+      "fields": {
+        "name": "Name",
+        "description": "Description",
+        "location": "Location",
+        "type": "Type",
+        "createdAt": "Creation date"
+      },
+      "addCollaborator": {
+        "title": "Add Collaborator",
+        "emailPlaceholder": "Enter collaborator email...",
+        "add": "Add",
+        "adding": "Adding...",
+        "success": "Collaborator added successfully",
+        "error": "Error adding collaborator",
+        "emailRequired": "Email required",
+        "invalidEmail": "Invalid email"
+      },
+      "collaborators": {
+        "title": "Collaborators",
+        "noCollaborators": "No collaborators found",
+        "loading": "Loading collaborators...",
+        "table": {
+          "user": "User",
+          "email": "Email",
+          "role": "Role",
+          "actions": "Actions",
+          "remove": "Remove"
+        }
+      }
+    },
+    "login": {
+      "title": "Login to LocalGoods",
+      "subtitle": "Console for agricultural producers",
+      "description": "Manage your products and monitor sales in one place.",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "Enter your email...",
+      "passwordPlaceholder": "Enter your password...",
+      "login": "Login",
+      "loggingIn": "Logging in...",
+      "loginError": "Login error",
+      "invalidCredentials": "Invalid credentials",
+      "emailRequired": "Email required",
+      "passwordRequired": "Password required",
+      "invalidEmail": "Invalid email"
     },
     "productDetail": {
       "title": "Product Details",
@@ -259,7 +371,18 @@
     "add": "Add",
     "back": "Back",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "units": {
+    "unit": "unit",
+    "g": "g",
+    "kg": "kg",
+    "ml": "ml",
+    "l": "l"
   },
   "languages": {
     "it": "Italiano",

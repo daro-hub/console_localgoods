@@ -226,7 +226,7 @@ export default function ProductDetailsPage({
         category: editableFields.category
       };
 
-      console.log('Payload inviato all\'API:', payload);
+      
 
       const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/product/${product.id}`, {
         method: 'PUT',
@@ -321,7 +321,7 @@ export default function ProductDetailsPage({
         category: product.category
       };
 
-      console.log('Payload per modifica traduzione prodotto:', payload);
+      
 
       const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/product/${product.id}`, {
         method: 'PUT',
@@ -478,7 +478,7 @@ export default function ProductDetailsPage({
         language_id: selectedLanguageId
       };
 
-      console.log('Payload per creazione traduzione prodotto:', payload);
+      
 
       const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/product_translation', {
         method: 'POST',
@@ -493,8 +493,7 @@ export default function ProductDetailsPage({
         throw new Error(`${t('pages.productDetail.messages.translationCreateError')}: ${response.status} - ${errorText}`);
       }
 
-      const newTranslation = await response.json();
-      console.log('Nuova traduzione prodotto creata:', newTranslation);
+              const newTranslation = await response.json();
       
       // Trova la lingua selezionata per ottenere le informazioni complete
       const selectedLanguage = availableLanguages.find(lang => lang.id === selectedLanguageId);

@@ -5,6 +5,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Building2, Plus, MapPin, Clock, Loader2, X, Trash2, Wheat, Hammer, Beef } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Translation {
   id: number;
@@ -30,6 +31,7 @@ interface Company {
 export default function CompaniesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = use(params);
   const { t } = useTranslations(locale);
+  const router = useRouter();
   const [companies, setCompanies] = useState<Company[]>([]);
 
   const [error, setError] = useState<string | null>(null);
@@ -44,21 +46,84 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
   const [companyToDelete, setCompanyToDelete] = useState<Company | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
+  // Ottieni il ruolo dell'utente corrente
+  const currentUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
+  const isSuperAdmin = currentUser.role === 'superadmin';
 
-        const url = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/companies');
-        url.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+  // Controlla se c'è un'ultima azienda visitata o se l'utente ha una sola azienda e reindirizza
+  useEffect(() => {
+    const lastCompanyId = localStorage.getItem('lastVisitedCompanyId');
+    if (lastCompanyId) {
+      router.push(`/${locale}/companies/${lastCompanyId}`);
+    }
+  }, [locale, router]);
+
+  // Controlla se l'utente ha una sola azienda e reindirizza automaticamente
+  useEffect(() => {
+    const checkSingleCompany = async () => {
+      if (companies.length === 1) {
+        const singleCompany = companies[0];
+        localStorage.setItem('lastVisitedCompanyId', singleCompany.id.toString());
+        router.push(`/${locale}/companies/${singleCompany.id}`);
+      }
+    };
+
+    if (companies.length > 0) {
+      checkSingleCompany();
+    }
+  }, [companies, locale, router]);
+
+  useEffect(() => {
+            const fetchCompanies = async () => {
+      try {
+        // Determina quale API usare in base al ruolo dell'utente corrente
+        // Usa la variabile isSuperAdmin già definita sopra
         
-        const response = await fetch(url.toString(), {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
+        
+        
+        let response;
+        let apiUrl;
+        
+        if (isSuperAdmin) {
+          // Per superadmin, usa l'API companies per ottenere tutte le aziende
+          apiUrl = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/companies');
+          apiUrl.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+          
+
+          
+          response = await fetch(apiUrl.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+        } else {
+          // Per utenti non superadmin, usa l'API user_company per ottenere le loro aziende
+          apiUrl = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user_company');
+          apiUrl.searchParams.append('user_id', currentUser.id || '');
+          apiUrl.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+          
+
+          
+          response = await fetch(apiUrl.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+        }
+
+
 
         if (!response.ok) {
+          const errorText = await response.text();
+          
+          // Se non è superadmin e l'API dà errore, probabilmente non ha aziende
+          if (!isSuperAdmin) {
+            setCompanies([]);
+            return; // Non lanciare errore, mostra lista vuota
+          }
+          
           throw new Error('Errore nel recupero delle aziende');
         }
 
@@ -133,7 +198,6 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
       }
 
       const newCompany = await response.json();
-      console.log('Nuova azienda creata:', newCompany);
       
       // Assicurati che l'oggetto abbia tutti i campi necessari
       const mappedCompany: Company = {
@@ -227,7 +291,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
     <DashboardLayout locale={locale}>
       <div className="p-8">
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">
                 {t('pages.companies.title')}
@@ -236,14 +300,16 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                 {t('pages.companies.description')}
               </p>
             </div>
-            <button 
-              type="button"
-              onClick={handleOpenDialog}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl flex items-center space-x-2 transition-colors"
-            >
-              <Plus className="h-5 w-5" />
-              <span>{t('pages.companies.addCompany')}</span>
-            </button>
+            {isSuperAdmin && (
+              <button 
+                type="button"
+                onClick={handleOpenDialog}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl flex items-center space-x-2 transition-colors"
+              >
+                <Plus className="h-5 w-5" />
+                <span>{t('pages.companies.addCompany')}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -268,19 +334,21 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
             <div className="text-center py-12">
               <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-white mb-2">
-                {t('pages.companies.noCompanies')}
+                {isSuperAdmin ? t('pages.companies.noCompanies') : 'Non appartieni a nessuna azienda'}
               </h3>
               <p className="text-gray-300 mb-6">
-                {t('pages.companies.createFirst')}
+                {isSuperAdmin ? t('pages.companies.createFirst') : 'Contatta un amministratore per essere collegato a un\'azienda.'}
               </p>
-              <button 
-                type="button"
-                onClick={handleOpenDialog}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl flex items-center space-x-2 transition-colors mx-auto"
-              >
-                <Plus className="h-5 w-5" />
-                <span>{t('pages.companies.addCompany')}</span>
-              </button>
+              {isSuperAdmin && (
+                <button 
+                  type="button"
+                  onClick={handleOpenDialog}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl flex items-center space-x-2 transition-colors mx-auto"
+                >
+                  <Plus className="h-5 w-5" />
+                  <span>{t('pages.companies.addCompany')}</span>
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -317,14 +385,16 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                   )}
                 </div>
                 
-                {/* Pulsante di eliminazione - visibile solo al hover */}
-                <button
-                  onClick={(e) => handleDeleteClick(e, company)}
-                  className="absolute top-2 right-2 z-20 bg-red-600/60 hover:bg-red-600/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg"
-                  title="Elimina azienda"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                {/* Pulsante di eliminazione - visibile solo al hover e solo per superadmin */}
+                {isSuperAdmin && (
+                  <button
+                    onClick={(e) => handleDeleteClick(e, company)}
+                    className="absolute top-2 right-2 z-20 bg-red-600/60 hover:bg-red-600/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg"
+                    title="Elimina azienda"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
                 
                 {/* Overlay per il link */}
                 <Link 

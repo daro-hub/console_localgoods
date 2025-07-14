@@ -8,6 +8,7 @@ import { DashboardLayout } from '@/components/DashboardLayout';
 import { Toast } from '@/components/Toast';
 import { Building2, MapPin, Loader2, ArrowLeft, Globe, Calendar, Wheat, Beef, Hammer, Image as ImageIcon, X, Plus, Sparkles, Trash2, ShoppingCart, Package, Users, Unlink, UserPlus, Search } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Translation {
   id: number;
@@ -69,7 +70,12 @@ export default function CompanyDetailsPage({
   const { locale, id } = use(params);
   const { t } = useTranslations(locale);
   const { goBack } = useNavigation();
+  const router = useRouter();
   const [company, setCompany] = useState<Company | null>(null);
+  
+  // Stati per le aziende dell'utente
+  const [userCompanies, setUserCompanies] = useState<any[]>([]);
+  const [loadingUserCompanies, setLoadingUserCompanies] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -126,6 +132,64 @@ export default function CompanyDetailsPage({
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isLinkingUser, setIsLinkingUser] = useState(false);
   const [userSearchQuery, setUserSearchQuery] = useState('');
+  
+  // Stati per il dialog di aggiunta utente tramite email (per utenti non superadmin)
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
+  const [emailToAdd, setEmailToAdd] = useState('');
+  const [isAddingByEmail, setIsAddingByEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  
+  // Ottieni il ruolo dell'utente corrente
+  const currentUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
+  const isSuperAdmin = currentUser.role === 'superadmin';
+
+  // Carica le aziende dell'utente per determinare se mostrare il pulsante "Cambia azienda"
+  useEffect(() => {
+    const fetchUserCompanies = async () => {
+      try {
+        setLoadingUserCompanies(true);
+        
+        let response;
+        let apiUrl;
+        
+        if (isSuperAdmin) {
+          // Per superadmin, usa l'API companies per ottenere tutte le aziende
+          apiUrl = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/companies');
+          apiUrl.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+          
+          response = await fetch(apiUrl.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+        } else {
+          // Per utenti non superadmin, usa l'API user_company per ottenere le loro aziende
+          apiUrl = new URL('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user_company');
+          apiUrl.searchParams.append('user_id', currentUser.id || '');
+          apiUrl.searchParams.append('lang', locale === 'it' ? 'it' : 'en');
+          
+          response = await fetch(apiUrl.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+        }
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserCompanies(data || []);
+        }
+      } catch (err) {
+        console.error('Errore nel caricamento delle aziende utente:', err);
+      } finally {
+        setLoadingUserCompanies(false);
+      }
+    };
+
+    fetchUserCompanies();
+  }, [locale, isSuperAdmin, currentUser.id]);
   
   // Stati per il dialog di aggiunta prodotto
   const [isAddProductDialogOpen, setIsAddProductDialogOpen] = useState(false);
@@ -228,10 +292,10 @@ export default function CompanyDetailsPage({
     fetchProducts();
   }, [company]);
 
-  // Fetch utenti quando l'azienda viene caricata
+  // Fetch utenti quando l'azienda viene caricata (solo per superadmin)
   useEffect(() => {
     const fetchUsers = async () => {
-      if (!company) return;
+      if (!company || !isSuperAdmin) return;
       
       try {
         setUsersLoading(true);
@@ -261,7 +325,7 @@ export default function CompanyDetailsPage({
     };
 
     fetchUsers();
-  }, [company]);
+  }, [company, isSuperAdmin]);
 
   // Salvataggio automatico
   useEffect(() => {
@@ -316,8 +380,7 @@ export default function CompanyDetailsPage({
         translation => translation.language_code === locale
       );
       
-      console.log('Traduzione attuale trovata:', currentTranslation);
-      console.log('Locale attuale:', locale);
+      
       
       const payload = {
         company_id: company.id,
@@ -331,7 +394,7 @@ export default function CompanyDetailsPage({
         gallery: []
       };
       
-      console.log('Payload per la modifica:', payload);
+      
 
       const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/company/${company.id}`, {
         method: 'PUT',
@@ -405,7 +468,7 @@ export default function CompanyDetailsPage({
         gallery: []
       };
 
-      console.log('Payload per modifica traduzione:', payload);
+      
 
       const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/company/${company.id}`, {
         method: 'PUT',
@@ -515,7 +578,7 @@ export default function CompanyDetailsPage({
         company_id: company.id
       };
 
-      console.log('Payload per creazione traduzione:', payload);
+      
 
       const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/company_translation', {
         method: 'POST',
@@ -530,8 +593,7 @@ export default function CompanyDetailsPage({
         throw new Error(`Errore nella creazione traduzione: ${response.status} - ${errorText}`);
       }
 
-      const newTranslation = await response.json();
-      console.log('Nuova traduzione creata:', newTranslation);
+              const newTranslation = await response.json();
       
       // Trova la lingua selezionata per ottenere le informazioni complete
       const selectedLanguage = availableLanguages.find(lang => lang.id === selectedLanguageId);
@@ -682,37 +744,45 @@ export default function CompanyDetailsPage({
   };
 
   const handleLinkUserClick = async () => {
-    try {
-      setLoadingAvailableUsers(true);
-      setIsLinkUserDialogOpen(true);
-      
-      const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+    // Se è superadmin, usa il modal esistente con lista utenti
+    if (isSuperAdmin) {
+      try {
+        setLoadingAvailableUsers(true);
+        setIsLinkUserDialogOpen(true);
+        
+        const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Errore nel recupero degli utenti disponibili');
         }
-      });
 
-      if (!response.ok) {
-        throw new Error('Errore nel recupero degli utenti disponibili');
+        const allUsers = await response.json();
+        
+        // Filtra gli utenti già collegati all'azienda
+        const currentUserIds = users.map(u => u.id);
+        const availableUsersFiltered = allUsers.filter((user: User) => 
+          !currentUserIds.includes(user.id)
+        );
+        
+        setAvailableUsers(availableUsersFiltered);
+        setFilteredUsers(availableUsersFiltered);
+        
+      } catch (err) {
+        setUsersError(err instanceof Error ? err.message : 'Errore sconosciuto');
+        showToast('Errore nel caricamento degli utenti', 'error');
+      } finally {
+        setLoadingAvailableUsers(false);
       }
-
-      const allUsers = await response.json();
-      
-      // Filtra gli utenti già collegati all'azienda
-      const currentUserIds = users.map(u => u.id);
-      const availableUsersFiltered = allUsers.filter((user: User) => 
-        !currentUserIds.includes(user.id)
-      );
-      
-      setAvailableUsers(availableUsersFiltered);
-      setFilteredUsers(availableUsersFiltered);
-      
-    } catch (err) {
-      setUsersError(err instanceof Error ? err.message : 'Errore sconosciuto');
-      showToast('Errore nel caricamento degli utenti', 'error');
-    } finally {
-      setLoadingAvailableUsers(false);
+    } else {
+      // Se non è superadmin, apri il modal per inserire email
+      setIsEmailDialogOpen(true);
+      setEmailToAdd('');
+      setEmailError(null);
     }
   };
 
@@ -722,6 +792,82 @@ export default function CompanyDetailsPage({
     setFilteredUsers([]);
     setSelectedUserId(null);
     setUserSearchQuery('');
+  };
+
+  const handleCloseEmailDialog = () => {
+    setIsEmailDialogOpen(false);
+    setEmailToAdd('');
+    setEmailError(null);
+  };
+
+  const handleAddUserByEmail = async () => {
+    if (!emailToAdd.trim() || !company || isAddingByEmail) return;
+    
+    try {
+      setIsAddingByEmail(true);
+      setEmailError(null);
+      
+      // Prima cerca l'utente tramite email
+      const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore nel recupero degli utenti');
+      }
+
+      const allUsers = await response.json();
+      
+      // Cerca l'utente con l'email specificata
+      const userToAdd = allUsers.find((user: User) => 
+        user.email && user.email.toLowerCase() === emailToAdd.trim().toLowerCase()
+      );
+      
+      if (!userToAdd) {
+        setEmailError('Nessun utente collegato a questa email');
+        return;
+      }
+      
+      // Verifica che l'utente non sia già collegato all'azienda
+      const isAlreadyLinked = users.some(user => user.id === userToAdd.id);
+      if (isAlreadyLinked) {
+        setEmailError('Questo utente è già collegato a questa azienda');
+        return;
+      }
+      
+      // Collega l'utente all'azienda usando l'API esistente
+      const linkResponse = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/user_company', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userToAdd.id,
+          company_id: company.id
+        })
+      });
+
+      if (!linkResponse.ok) {
+        throw new Error('Errore nel collegamento dell\'utente');
+      }
+
+      // Aggiungi l'utente alla lista degli utenti collegati
+      setUsers(prevUsers => [userToAdd, ...prevUsers]);
+      
+      // Chiudi il dialog
+      handleCloseEmailDialog();
+      
+      // Mostra messaggio di successo
+      showToast(`Utente ${userToAdd.name} collegato con successo`, 'success');
+      
+    } catch (err) {
+      setEmailError(err instanceof Error ? err.message : 'Errore sconosciuto');
+    } finally {
+      setIsAddingByEmail(false);
+    }
   };
 
   const handleUserSearch = (query: string) => {
@@ -817,7 +963,7 @@ export default function CompanyDetailsPage({
         company_id: company.id
       };
 
-      console.log('Payload per creazione prodotto:', payload);
+      
 
       const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:vf0i92wT/product', {
         method: 'POST',
@@ -832,8 +978,7 @@ export default function CompanyDetailsPage({
         throw new Error(`Errore nella creazione del prodotto: ${response.status} - ${errorText}`);
       }
 
-      const newProduct = await response.json();
-      console.log('Nuovo prodotto creato:', newProduct);
+              const newProduct = await response.json();
       
       // Mappa il prodotto per assicurarsi che abbia tutti i campi necessari
       const mappedProduct: Product = {
@@ -1017,13 +1162,28 @@ export default function CompanyDetailsPage({
               <span>Indietro</span>
             </button>
             
-            {/* Indicatore di salvataggio */}
-            {isSaving && (
-              <div className="flex items-center space-x-2 text-sm text-blue-400">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Salvando...</span>
-              </div>
-            )}
+            <div className="flex items-center space-x-4">
+              {/* Indicatore di salvataggio */}
+              {isSaving && (
+                <div className="flex items-center space-x-2 text-sm text-blue-400">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Salvando...</span>
+                </div>
+              )}
+              
+              {/* Pulsante Cambia azienda - mostrato solo se l'utente ha più di una azienda */}
+              {userCompanies.length > 1 && (
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('lastVisitedCompanyId');
+                    router.push(`/${locale}/companies`);
+                  }}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                >
+                  Cambia azienda
+                </button>
+              )}
+            </div>
           </div>
           
           <div className="max-w-4xl mx-auto">
@@ -1390,123 +1550,125 @@ export default function CompanyDetailsPage({
               )}
             </div>
 
-            {/* Utenti */}
-            <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-white flex items-center space-x-2">
-                  <Users className="h-5 w-5" />
-                  <span>Utenti Collegati</span>
-                </h2>
-                <div className="flex items-center space-x-3">
-                  {usersLoading && (
-                    <div className="flex items-center space-x-2 text-sm text-blue-400">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Caricamento...</span>
-                    </div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={handleLinkUserClick}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
-                    title="Collega nuovo collaboratore"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                    <span>Collega Collaboratore</span>
-                  </button>
-                </div>
-              </div>
-
-              {usersError && (
-                <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="text-red-400">
-                      <Users className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-red-300 font-semibold">Errore</h3>
-                      <p className="text-red-200">{usersError}</p>
-                    </div>
+            {/* Utenti - visibile solo ai superadmin */}
+            {isSuperAdmin && (
+              <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-white flex items-center space-x-2">
+                    <Users className="h-5 w-5" />
+                    <span>Utenti Collegati</span>
+                  </h2>
+                  <div className="flex items-center space-x-3">
+                    {usersLoading && (
+                      <div className="flex items-center space-x-2 text-sm text-blue-400">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Caricamento...</span>
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleLinkUserClick}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
+                      title="Collega nuovo collaboratore"
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      <span>Collega Collaboratore</span>
+                    </button>
                   </div>
                 </div>
-              )}
 
-              {!usersError && users.length === 0 && !usersLoading && (
-                <div className="text-center py-8">
-                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-400">Nessun utente collegato a questa azienda</p>
-                </div>
-              )}
+                {usersError && (
+                  <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="text-red-400">
+                        <Users className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-red-300 font-semibold">Errore</h3>
+                        <p className="text-red-200">{usersError}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-                             {!usersError && users.length > 0 && (
-                 <div className="space-y-4">
-                   {users.map((user) => (
-                     <div
-                       key={user.id}
-                       className="group relative bg-gray-800 border border-gray-700 rounded-xl p-4 hover:border-gray-600 hover:bg-gray-800/80 transition-all duration-200 cursor-pointer"
-                     >
-                       <div className="flex items-start justify-between">
-                         {/* Header con ID e Nome */}
-                         <div className="flex items-center space-x-4">
-                           <span className="text-gray-500 text-xs font-mono bg-gray-900 px-2 py-1 rounded">
-                             #{user.id.substring(0, 8)}...
-                           </span>
-                           <div className="flex items-center space-x-2">
-                             <span className="text-white font-medium">{user.name}</span>
-                             <div className={`inline-flex items-center text-xs font-medium rounded-full px-2 py-1 border ${getRoleStyles(user.role)}`}>
-                               <span className="capitalize">{user.role}</span>
-                             </div>
-                           </div>
-                         </div>
-                         
-                         {/* Data di creazione e pulsante scollegamento */}
-                         <div className="flex items-center space-x-3">
-                           <div className="text-xs text-gray-400">
-                             {formatDate(user.created_at)}
-                           </div>
-                           
-                           {/* Pulsante di scollegamento - visibile solo al hover */}
-                           <button
-                             onClick={(e) => handleUnlinkUserClick(e, user)}
-                             className="opacity-0 group-hover:opacity-100 bg-red-600/60 hover:bg-red-600/80 text-white p-2 rounded-lg transition-all duration-200 shadow-lg z-20 relative"
-                             title="Scollega utente dall'azienda"
-                           >
-                             <Unlink className="h-4 w-4" />
-                           </button>
-                         </div>
-                       </div>
-                       
-                       {/* Contenuto */}
-                       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                         {/* Email */}
-                         <div>
-                           <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Email</h4>
-                           <p className="text-gray-200 text-sm">{user.email}</p>
-                         </div>
-                         
-                         {/* Telefono */}
-                         <div>
-                           <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Telefono</h4>
-                           <p className="text-gray-200 text-sm">{user.phone || 'Non specificato'}</p>
-                         </div>
-                         
-                         {/* Indirizzo */}
-                         <div>
-                           <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Indirizzo</h4>
-                           <p className="text-gray-200 text-sm">{user.address || 'Non specificato'}</p>
-                         </div>
-                       </div>
-                       
-                       {/* Overlay per il link */}
-                       <Link 
-                         href={`/${locale}/users/${user.id}`}
-                         className="absolute inset-0 z-10"
-                         title={`Visualizza dettagli di ${user.name}`}
-                       />
-                     </div>
-                   ))}
-                 </div>
-               )}
-            </div>
+                {!usersError && users.length === 0 && !usersLoading && (
+                  <div className="text-center py-8">
+                    <Users className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-400">Nessun utente collegato a questa azienda</p>
+                  </div>
+                )}
+
+                {!usersError && users.length > 0 && (
+                  <div className="space-y-4">
+                    {users.map((user) => (
+                      <div
+                        key={user.id}
+                        className="group relative bg-gray-800 border border-gray-700 rounded-xl p-4 hover:border-gray-600 hover:bg-gray-800/80 transition-all duration-200 cursor-pointer"
+                      >
+                        <div className="flex items-start justify-between">
+                          {/* Header con ID e Nome */}
+                          <div className="flex items-center space-x-4">
+                            <span className="text-gray-500 text-xs font-mono bg-gray-900 px-2 py-1 rounded">
+                              #{user.id.substring(0, 8)}...
+                            </span>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-white font-medium">{user.name}</span>
+                              <div className={`inline-flex items-center text-xs font-medium rounded-full px-2 py-1 border ${getRoleStyles(user.role)}`}>
+                                <span className="capitalize">{user.role}</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Data di creazione e pulsante scollegamento */}
+                          <div className="flex items-center space-x-3">
+                            <div className="text-xs text-gray-400">
+                              {formatDate(user.created_at)}
+                            </div>
+                            
+                            {/* Pulsante di scollegamento - visibile solo al hover */}
+                            <button
+                              onClick={(e) => handleUnlinkUserClick(e, user)}
+                              className="opacity-0 group-hover:opacity-100 bg-red-600/60 hover:bg-red-600/80 text-white p-2 rounded-lg transition-all duration-200 shadow-lg z-20 relative"
+                              title="Scollega utente dall'azienda"
+                            >
+                              <Unlink className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                        
+                        {/* Contenuto */}
+                        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {/* Email */}
+                          <div>
+                            <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Email</h4>
+                            <p className="text-gray-200 text-sm">{user.email}</p>
+                          </div>
+                          
+                          {/* Telefono */}
+                          <div>
+                            <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Telefono</h4>
+                            <p className="text-gray-200 text-sm">{user.phone || 'Non specificato'}</p>
+                          </div>
+                          
+                          {/* Indirizzo */}
+                          <div>
+                            <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Indirizzo</h4>
+                            <p className="text-gray-200 text-sm">{user.address || 'Non specificato'}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Overlay per il link */}
+                        <Link 
+                          href={`/${locale}/users/${user.id}`}
+                          className="absolute inset-0 z-10"
+                          title={`Visualizza dettagli di ${user.name}`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Dettagli tecnici */}
             <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
@@ -2110,6 +2272,90 @@ export default function CompanyDetailsPage({
            </div>
          </div>
        )}
+
+      {/* Dialog per aggiungere utente tramite email (per utenti non superadmin) */}
+      {isEmailDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-xl border border-gray-800 w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-800">
+              <div className="flex items-center space-x-3">
+                <UserPlus className="h-6 w-6 text-blue-400" />
+                <h2 className="text-xl font-semibold text-white">
+                  Aggiungi Collaboratore
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={handleCloseEmailDialog}
+                className="text-gray-400 hover:text-white transition-colors"
+                disabled={isAddingByEmail}
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="mb-6">
+                <label htmlFor="user-email" className="block text-sm font-medium text-white mb-2">
+                  Email dell&apos;utente
+                </label>
+                <input
+                  id="user-email"
+                  type="email"
+                  value={emailToAdd}
+                  onChange={(e) => setEmailToAdd(e.target.value)}
+                  placeholder="Inserisci l'email dell'utente da aggiungere"
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={isAddingByEmail}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && emailToAdd.trim()) {
+                      handleAddUserByEmail();
+                    }
+                  }}
+                />
+                <p className="text-sm text-gray-400 mt-2">
+                  Inserisci l&apos;email dell&apos;utente che vuoi aggiungere come collaboratore.
+                </p>
+              </div>
+
+              {emailError && (
+                <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 mb-4">
+                  <p className="text-red-200 text-sm">{emailError}</p>
+                </div>
+              )}
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={handleCloseEmailDialog}
+                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                  disabled={isAddingByEmail}
+                >
+                  Annulla
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAddUserByEmail}
+                  disabled={!emailToAdd.trim() || isAddingByEmail}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isAddingByEmail ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Aggiunta...</span>
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="h-4 w-4" />
+                      <span>Aggiungi</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Toast notification */}
       <Toast

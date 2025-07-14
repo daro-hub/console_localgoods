@@ -43,6 +43,8 @@ interface UserCompany {
   gallery: string[];
 }
 
+
+
 export function ProfilePage({ locale }: ProfilePageProps) {
   const { t } = useTranslations(locale);
   const { user, refreshUserData, logout } = useAuth();
@@ -110,6 +112,8 @@ export function ProfilePage({ locale }: ProfilePageProps) {
       setLoadingCompanies(false);
     }
   };
+
+
 
   // Aggiorna i dati editabili quando l'utente cambia
   useEffect(() => {
@@ -228,6 +232,8 @@ export function ProfilePage({ locale }: ProfilePageProps) {
     alert(t('profile.changePasswordComingSoon'));
   };
 
+
+
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString(locale, {
       year: 'numeric',
@@ -312,23 +318,13 @@ export function ProfilePage({ locale }: ProfilePageProps) {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              {t('profile.title')}
-            </h1>
-            <p className="text-gray-300">
-              {t('profile.description')}
-            </p>
-          </div>
-          <button
-            onClick={handleRefreshData}
-            disabled={isRefreshing}
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-xl flex items-center space-x-2 transition-colors"
-          >
-            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span>{t('profile.refresh')}</span>
-          </button>
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            {t('profile.title')}
+          </h1>
+          <p className="text-gray-300">
+            {t('profile.description')}
+          </p>
         </div>
       </div>
 
@@ -630,6 +626,8 @@ export function ProfilePage({ locale }: ProfilePageProps) {
           </div>
         </div>
       </div>
+
+
 
       {/* Toast Notifications */}
       <Toast
