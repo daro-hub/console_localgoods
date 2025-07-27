@@ -501,10 +501,10 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
               <div className="text-center py-8">
                 <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                 <h3 className="text-lg font-semibold text-white mb-2">
-                  {isSuperAdmin ? 'Nessuna azienda trovata' : 'Non appartieni a nessuna azienda'}
+                  {isSuperAdmin ? t('pages.products.noCompaniesFound') : t('pages.products.noCompany')}
                 </h3>
                 <p className="text-gray-300 mb-6">
-                  {isSuperAdmin ? 'Non ci sono aziende nel sistema.' : 'Contatta un amministratore per essere collegato a un\'azienda.'}
+                  {isSuperAdmin ? t('pages.products.noCompaniesDescription') : t('pages.products.noCompanyDescription')}
                 </p>
               </div>
             )}
@@ -588,13 +588,13 @@ export default function ProductsPage({ params }: { params: Promise<{ locale: str
             {!productsError && products.length > 0 && filteredProducts.length === 0 && debouncedSearchTerm.trim() && (
               <div className="text-center py-8">
                 <Search className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-400 mb-2">{t('navigation.searchNoResults') || 'Nessun prodotto trovato per la ricerca:'}</p>
+                <p className="text-gray-400 mb-2">{t('pages.products.searchNoResults')}</p>
                 <p className="text-white font-medium mb-4">&quot;{debouncedSearchTerm}&quot;</p>
                 <button
                   onClick={() => setSearchTerm('')}
                   className="text-blue-400 hover:text-blue-300 transition-colors text-sm"
                 >
-                  {t('navigation.clearSearch') || 'Cancella ricerca'}
+                  {t('pages.products.clearSearch')}
           </button>
         </div>
             )}

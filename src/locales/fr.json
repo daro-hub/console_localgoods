@@ -2,6 +2,7 @@
   "navigation": {
     "title": "LocalGoods",
     "tagline": "Frais. Fait main. Durable.",
+    "brandName": "LocalGoods",
     "companies": "Entreprises",
     "users": "Utilisateurs",
     "products": "Produits",
@@ -43,6 +44,20 @@
           "title": "Informations",
           "description": "Accédez aux informations de votre compte et aux paramètres"
         }
+      },
+      "stats": {
+        "managedProducts": {
+          "name": "Produits Gérés",
+          "value": "250+"
+        },
+        "monitoredSales": {
+          "name": "Ventes Surveillées",
+          "value": "1.2K+"
+        },
+        "activeProducers": {
+          "name": "Producteurs Actifs",
+          "value": "150+"
+        }
       }
     },
     "companies": {
@@ -60,7 +75,13 @@
       "deleteWarning": "Cette action ne peut pas être annulée.",
       "deleting": "Suppression...",
       "deleteSuccess": "Entreprise supprimée avec succès",
-      "deleteError": "Erreur lors de la suppression de l'entreprise"
+      "deleteError": "Erreur lors de la suppression de l'entreprise",
+      "addNewCompany": "Ajouter une nouvelle entreprise",
+      "companyName": "Nom de l'entreprise",
+      "enterCompanyName": "Entrez le nom de l'entreprise",
+      "creating": "Création...",
+      "viewCompany": "Voir {name}",
+      "deleteCompanyTitle": "Supprimer l'entreprise"
     },
     "products": {
       "title": "Produits",
@@ -79,7 +100,13 @@
       "companyProducts": "Produits de l'entreprise",
       "changeCompany": "Changer d'entreprise",
       "createSuccess": "Produit créé avec succès",
-      "createError": "Erreur lors de la création du produit"
+      "createError": "Erreur lors de la création du produit",
+      "noCompany": "Vous n'appartenez à aucune entreprise",
+      "noCompanyDescription": "Contactez un administrateur pour être associé à une entreprise.",
+      "noCompaniesFound": "Aucune entreprise trouvée",
+      "noCompaniesDescription": "Il n'y a pas d'entreprises dans le système.",
+      "searchNoResults": "Aucun produit trouvé pour la recherche :",
+      "clearSearch": "Effacer la recherche"
     },
     "orders": {
       "title": "Commandes",
@@ -88,6 +115,8 @@
       "companyOrders": "Commandes de l'entreprise",
       "changeCompany": "Changer d'entreprise",
       "noOrders": "Aucune commande trouvée",
+      "noOrdersForCompany": "Aucune commande trouvée pour cette entreprise",
+      "noOrdersForState": "Aucune commande {state} trouvée",
       "allOrders": "Toutes les commandes",
       "totalOrders": "Total des commandes",
       "processing": "En traitement",
@@ -129,13 +158,49 @@
       "title": "Analytique",
       "description": "Visualisez les statistiques de vos ventes",
       "noData": "Aucune donnée disponible",
-      "comingSoon": "Fonctionnalité à venir"
+      "comingSoon": "Fonctionnalité à venir",
+      "pageTitle": "Page Analytique",
+      "availableInFuture": "Disponible dans le futur",
+      "description": "Nous travaillons pour vous offrir une section analytique complète avec des graphiques détaillés, des métriques avancées et des rapports personnalisés pour surveiller vos ventes et optimiser vos stratégies commerciales.",
+      "features": {
+        "advancedCharts": {
+          "title": "Graphiques Avancés",
+          "description": "Visualisations interactives pour analyser les tendances"
+        },
+        "realTimeMetrics": {
+          "title": "Métriques en Temps Réel",
+          "description": "Données mises à jour instantanément pour des décisions rapides"
+        },
+        "customReports": {
+          "title": "Rapports Personnalisés",
+          "description": "Analyse sur mesure pour vos besoins spécifiques"
+        }
+      },
+      "comingSoonBadge": "Bientôt disponible"
     },
     "information": {
       "title": "Informations",
       "description": "Gérez les informations de votre compte",
       "accountInfo": "Informations du compte",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "companyInfo": {
+        "headquarters": "Siège Social",
+        "supportHours": "Heures de Support"
+      },
+      "features": {
+        "security": {
+          "title": "Sécurité",
+          "description": "Vos données sont protégées avec un chiffrement de bout en bout et des sauvegardes automatiques."
+        },
+        "support": {
+          "title": "Support",
+          "description": "Équipe de support dédiée pour vous aider à gérer vos produits."
+        },
+        "quality": {
+          "title": "Qualité",
+          "description": "Plateforme testée et utilisée par des centaines de producteurs agricoles."
+        }
+      }
     },
     "users": {
       "title": "Utilisateurs",
@@ -143,7 +208,25 @@
       "addUser": "Ajouter Utilisateur",
       "searchUsers": "Rechercher utilisateurs...",
       "noUsersFound": "Aucun utilisateur trouvé",
+      "noUsersForFilter": "Aucun utilisateur trouvé pour le filtre sélectionné",
       "searchDifferentTerm": "Essayez un terme de recherche différent",
+      "userDetail": {
+        "title": "Profil Utilisateur",
+        "description": "Afficher et gérer les informations de l'utilisateur",
+        "back": "Retour",
+        "goBack": "Retourner",
+        "userNotFound": "Utilisateur non trouvé",
+        "userNotFoundDescription": "L'utilisateur demandé n'existe pas ou n'est plus disponible.",
+        "personalInfo": "Informations personnelles",
+        "fullName": "Nom complet",
+        "saving": "Enregistrement...",
+        "confirmUnlinkCompany": "Êtes-vous sûr de vouloir dissocier l'entreprise \"{companyName}\" de {userName} ?",
+        "noCompanyFound": "Aucune entreprise trouvée",
+        "noCompanyAvailable": "Aucune entreprise disponible",
+        "searchCompanies": "Rechercher des entreprises...",
+        "linking": "Association...",
+        "linkCompany": "Associer l'entreprise"
+      },
       "loadingUsers": "Chargement des utilisateurs...",
       "fetchingData": "Récupération des données du serveur",
       "table": {
@@ -176,10 +259,17 @@
       "loading": "Chargement des détails de l'entreprise...",
       "error": "Erreur",
       "companyNotFound": "Entreprise non trouvée",
+      "addCompany": "Ajouter une entreprise",
+      "addCompanyToUser": "Ajouter une entreprise à {name}",
+      "back": "Retour",
+      "saving": "Enregistrement...",
+      "changeCompany": "Changer d'entreprise",
+      "coverImage": "Couverture de l'entreprise",
       "sections": {
         "info": "Informations de l'Entreprise",
         "collaborators": "Collaborateurs",
-        "addCollaborator": "Ajouter un Collaborateur"
+        "addCollaborator": "Ajouter un Collaborateur",
+        "technicalDetails": "Détails techniques"
       },
       "fields": {
         "name": "Nom",
@@ -187,6 +277,91 @@
         "location": "Emplacement",
         "type": "Type",
         "createdAt": "Date de création"
+      },
+      "fields": {
+        "companyName": "Nom de l'entreprise",
+        "location": "Emplacement",
+        "description": "Description",
+        "descriptionPlaceholder": "Description de l'entreprise...",
+        "createdAt": "Date de création"
+      },
+      "gallery": {
+        "title": "Galerie d'images",
+        "noImages": "Aucune image dans la galerie",
+        "galleryItem": "Galerie {index}"
+      },
+      "translations": {
+        "title": "Traductions",
+        "add": "Ajouter",
+        "addManually": "Ajouter une traduction manuellement",
+        "addWithAI": "IA",
+        "clickToEdit": "Cliquez pour modifier cette traduction",
+        "deleteTranslation": "Supprimer la traduction",
+        "selectLanguage": "Sélectionner la langue",
+        "creating": "Création...",
+        "allLanguagesUsed": "Toutes les langues disponibles ont déjà été traduites"
+      },
+      "companyTypes": {
+        "agriculture": "Agriculture",
+        "artisanal": "Artisanal",
+        "livestock": "Élevage"
+      },
+      "translationFields": {
+        "name": "Nom",
+        "description": "Description",
+        "notCompiled": "Non compilé",
+        "notCompiledDesc": "Non compilée"
+      },
+      "products": {
+        "title": "Produits",
+        "addProduct": "Ajouter un produit",
+        "addNewProduct": "Ajouter un nouveau produit",
+        "noProducts": "Aucun produit trouvé",
+        "addFirstProduct": "Ajouter le premier produit",
+        "viewProductDetails": "Voir les détails de {name}",
+        "productNumber": "Produit #{id}"
+      },
+      "users": {
+        "title": "Utilisateurs connectés",
+        "loading": "Chargement...",
+        "linkCollaborator": "Lier un collaborateur",
+        "linkNewCollaborator": "Lier un nouveau collaborateur",
+        "noUsers": "Aucun utilisateur connecté à cette entreprise",
+        "unlinkUser": "Dissocier l'utilisateur de l'entreprise",
+        "viewUserDetails": "Voir les détails de {name}"
+      },
+      "noTranslations": "Aucune traduction disponible",
+      "dialogs": {
+        "deleteTranslation": {
+          "title": "Supprimer la traduction",
+          "message": "Êtes-vous sûr de vouloir supprimer cette traduction ? Cette action ne peut pas être annulée.",
+          "contentToDelete": "Contenu à supprimer :",
+          "name": "Nom :",
+          "description": "Description :",
+          "deleting": "Suppression..."
+        },
+        "addProduct": {
+          "title": "Ajouter un nouveau produit",
+          "productName": "Nom du produit",
+          "enterProductName": "Entrez le nom du produit",
+          "creating": "Création..."
+        },
+        "unlinkUser": {
+          "title": "Dissocier l'utilisateur",
+          "message": "Êtes-vous sûr de vouloir dissocier cet utilisateur de cette entreprise ? Cette action ne peut pas être annulée.",
+          "unlinking": "Dissociation..."
+        },
+        "loadingUsers": "Chargement des utilisateurs...",
+        "noUsersFound": "Aucun utilisateur trouvé avec ces critères.",
+        "allUsersConnected": "Tous les utilisateurs sont déjà connectés à cette entreprise.",
+        "searchUserPlaceholder": "Entrez le nom, email ou rôle de l'utilisateur",
+        "searchUserLabel": "Rechercher utilisateur par nom, email ou rôle",
+        "linkUserTitle": "Associer Utilisateur",
+        "unlinkUserWarning": "Attention : L'utilisateur perdra l'accès à toutes les données et fonctionnalités liées à cette entreprise.",
+        "unlinkUserTitle": "Dissocier Utilisateur",
+        "unlinkUserMessage": "Êtes-vous sûr de vouloir dissocier cet utilisateur de cette entreprise ? Cette action ne peut pas être annulée.",
+        "unlinking": "Dissociation...",
+        "unlink": "Dissocier"
       },
       "addCollaborator": {
         "title": "Ajouter un Collaborateur",
@@ -196,7 +371,8 @@
         "success": "Collaborateur ajouté avec succès",
         "error": "Erreur lors de l'ajout du collaborateur",
         "emailRequired": "Email requis",
-        "invalidEmail": "Email invalide"
+        "invalidEmail": "Email invalide",
+        "noUserFound": "Aucun utilisateur trouvé avec cet email"
       },
       "collaborators": {
         "title": "Collaborateurs",
@@ -313,7 +489,25 @@
         "changesSaved": "Modifications sauvegardées automatiquement",
         "saveError": "Erreur de sauvegarde",
         "translationDeleted": "Traduction supprimée avec succès",
-        "translationDeleteError": "Erreur lors de la suppression de la traduction"
+        "translationDeleteError": "Erreur lors de la suppression de la traduction",
+        "changesSavedSuccess": "Modifications sauvegardées avec succès",
+        "saveChangesError": "Erreur lors de la sauvegarde",
+        "translationSavedSuccess": "Traduction sauvegardée avec succès",
+        "translationSaveError": "Erreur lors de la sauvegarde de la traduction",
+        "translationCreatedSuccess": "Traduction créée avec succès",
+        "translationCreateError": "Erreur lors de la création de la traduction",
+        "translationDeletedSuccess": "Traduction supprimée avec succès",
+        "translationDeleteError": "Erreur lors de la suppression de la traduction",
+        "languagesLoadError": "Erreur lors du chargement des langues disponibles",
+        "userUnlinkedSuccess": "Utilisateur dissocié avec succès",
+        "userUnlinkError": "Erreur lors de la dissociation de l'utilisateur",
+        "userLinkedSuccess": "Utilisateur associé avec succès",
+        "userLinkError": "Erreur lors de l'association de l'utilisateur",
+        "userLinkedByNameSuccess": "Utilisateur {name} associé avec succès",
+        "usersLoadError": "Erreur lors du chargement des utilisateurs",
+        "productCreatedSuccess": "Produit créé avec succès",
+        "productCreateError": "Erreur lors de la création du produit",
+        "userAlreadyLinked": "Cet utilisateur est déjà associé à cette entreprise"
       }
     }
   },
@@ -358,7 +552,8 @@
     "securityNote": "Gardez votre compte sécurisé. Changez votre mot de passe régulièrement et ne le partagez jamais.",
     "saving": "Enregistrement...",
     "saved": "Modifications enregistrées avec succès",
-    "saveError": "Erreur lors de l'enregistrement des modifications"
+    "saveError": "Erreur lors de l'enregistrement des modifications",
+    "noCompaniesAssociated": "Aucune entreprise associée"
   },
   "common": {
     "loading": "Chargement...",
@@ -375,7 +570,28 @@
     "close": "Fermer",
     "confirm": "Confirmer",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "language": "Langue",
+    "flag": "Drapeau",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "id": "ID",
+    "notSpecified": "Non spécifiée",
+    "unknownError": "Erreur inconnue",
+    "errorOccurred": "Une erreur s'est produite",
+    "actionCannotBeUndone": "Cette action ne peut pas être annulée",
+    "areYouSure": "Êtes-vous sûr de vouloir supprimer",
+    "viewDetails": "Voir les détails de"
+  },
+  "notifications": {
+    "changesSavedSuccess": "Modifications sauvegardées avec succès",
+    "saveChangesError": "Erreur lors de la sauvegarde",
+    "userCreatedSuccess": "Utilisateur \"{name}\" créé avec succès",
+    "userCreateError": "Erreur lors de la création de l'utilisateur: {error}",
+    "userDeletedSuccess": "Utilisateur \"{name}\" supprimé avec succès",
+    "userDeleteError": "Erreur lors de la suppression de l'utilisateur: {error}",
+    "companyLinkedSuccess": "Entreprise associée avec succès!",
+    "companyUnlinkedSuccess": "Entreprise \"{name}\" dissociée avec succès!"
   },
   "units": {
     "unit": "unité",

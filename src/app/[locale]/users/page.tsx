@@ -128,13 +128,13 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
       setAddUserError(null);
       
       // Mostra notifica di successo
-      showToast(`Utente "${newUserName.trim()}" creato con successo`, 'success');
+      showToast(t('common.notifications.userCreatedSuccess', newUserName.trim()), 'success');
       
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Errore sconosciuto';
+      const errorMessage = err instanceof Error ? err.message : t('common.unknownError');
       setAddUserError(errorMessage);
       // Mostra anche notifica di errore
-      showToast(`Errore nella creazione dell'utente: ${errorMessage}`, 'error');
+      showToast(t('common.notifications.userCreateError', errorMessage), 'error');
     } finally {
       setIsAddingUser(false);
     }
@@ -302,14 +302,14 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
       setUsers(prevUsers => prevUsers.filter(user => user.id !== deleteConfirmation.userId));
       
       // Mostra notifica di successo
-      showToast(`Utente "${deleteConfirmation.userName}" eliminato con successo`, 'success');
+      showToast(t('common.notifications.userDeletedSuccess', deleteConfirmation.userName), 'success');
       
       // Chiudi il dialog di conferma
       setDeleteConfirmation({ isOpen: false, userId: '', userName: '' });
       
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Errore sconosciuto';
-      showToast(`Errore nell'eliminazione dell'utente: ${errorMessage}`, 'error');
+      const errorMessage = err instanceof Error ? err.message : t('common.unknownError');
+      showToast(t('common.notifications.userDeleteError', errorMessage), 'error');
     } finally {
       setIsDeletingUser(false);
     }
@@ -486,7 +486,7 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
                             <button
                               onClick={(e) => handleDeleteClick(e, user.id, user.name)}
                               className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg"
-                              title="Elimina utente"
+                              title={t('pages.users.deleteUserTitle')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -507,7 +507,7 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
                   </h3>
                   <p className="text-gray-300">
                     {selectedFilter !== 'all' 
-                      ? 'Nessun utente trovato per il filtro selezionato'
+                      ? t('pages.users.noUsersForFilter')
                       : t('pages.users.searchDifferentTerm')
                     }
                   </p>
@@ -581,7 +581,7 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
                   className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
                   disabled={isAddingUser}
                 >
-                  Annulla
+                  {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleAddUser}
@@ -589,7 +589,7 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
                   className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                 >
                   {isAddingUser && <Loader2 className="h-4 w-4 animate-spin" />}
-                  <span>{isAddingUser ? 'Aggiungendo...' : 'Aggiungi'}</span>
+                  <span>{isAddingUser ? t('pages.users.adding') : t('common.add')}</span>
                 </button>
               </div>
             </div>
@@ -610,7 +610,7 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-800">
                 <h3 className="text-lg font-semibold text-white">
-                  Conferma eliminazione
+                  {t('pages.users.confirmDelete')}
                 </h3>
                 <button
                   onClick={handleDeleteCancel}
@@ -629,11 +629,10 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
                   </div>
                   <div>
                     <h4 className="text-white font-medium mb-2">
-                      Sei sicuro di voler eliminare questo utente?
+                      {t('pages.users.confirmDeleteMessage')}
                     </h4>
                     <p className="text-gray-300 text-sm">
-                      L&apos;utente <span className="font-semibold text-white">&quot;{deleteConfirmation.userName}&quot;</span> verrà eliminato definitivamente. 
-                      Questa azione non può essere annullata.
+                      {t('pages.users.deleteUserMessage', deleteConfirmation.userName)}
                     </p>
                   </div>
                 </div>
@@ -646,7 +645,7 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
                   className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
                   disabled={isDeletingUser}
                 >
-                  Annulla
+                  {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleDeleteConfirm}
@@ -654,7 +653,7 @@ export default function UsersPage({ params }: { params: Promise<{ locale: string
                   className="bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:text-gray-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                 >
                   {isDeletingUser && <Loader2 className="h-4 w-4 animate-spin" />}
-                  <span>{isDeletingUser ? 'Eliminando...' : 'Elimina'}</span>
+                  <span>{isDeletingUser ? t('pages.users.deleting') : t('common.delete')}</span>
                 </button>
               </div>
             </div>

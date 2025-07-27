@@ -322,7 +322,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                 <Building2 className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-red-300 font-semibold">Errore</h3>
+                <h3 className="text-red-300 font-semibold">{t('common.error')}</h3>
                 <p className="text-red-200">{error}</p>
               </div>
             </div>
@@ -334,10 +334,10 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
             <div className="text-center py-12">
               <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-white mb-2">
-                {isSuperAdmin ? t('pages.companies.noCompanies') : 'Non appartieni a nessuna azienda'}
+                {isSuperAdmin ? t('pages.companies.noCompanies') : t('pages.companies.noUserCompaniesMessage')}
               </h3>
               <p className="text-gray-300 mb-6">
-                {isSuperAdmin ? t('pages.companies.createFirst') : 'Contatta un amministratore per essere collegato a un\'azienda.'}
+                {isSuperAdmin ? t('pages.companies.createFirst') : t('pages.companies.contactAdmin')}
               </p>
               {isSuperAdmin && (
                 <button 
@@ -390,7 +390,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                   <button
                     onClick={(e) => handleDeleteClick(e, company)}
                     className="absolute top-2 right-2 z-20 bg-red-600/60 hover:bg-red-600/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg"
-                    title="Elimina azienda"
+                    title={t('pages.companies.deleteCompanyTitle')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -400,7 +400,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                 <Link 
                   href={`/${locale}/companies/${company.id}`}
                   className="absolute inset-0 z-10"
-                  title={`Visualizza ${company.name}`}
+                  title={t('pages.companies.viewCompany', company.name)}
                 />
               </div>
             ))}
@@ -414,7 +414,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
           <div className="bg-gray-900 rounded-xl border border-gray-800 w-full max-w-md">
             <div className="flex items-center justify-between p-6 border-b border-gray-800">
               <h2 className="text-xl font-semibold text-white">
-                Aggiungi Nuova Azienda
+                {t('pages.companies.addNewCompany')}
               </h2>
               <button
                 type="button"
@@ -428,14 +428,14 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
             <div className="p-6">
               <div className="mb-4">
                 <label htmlFor="company-name" className="block text-sm font-medium text-white mb-2">
-                  Nome dell&apos;azienda
+                  {t('pages.companies.companyName')}
                 </label>
                 <input
                   id="company-name"
                   type="text"
                   value={newCompanyName}
                   onChange={(e) => setNewCompanyName(e.target.value)}
-                  placeholder="Inserisci il nome dell&apos;azienda"
+                  placeholder={t('pages.companies.enterCompanyName')}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isCreating}
                   onKeyPress={(e) => {
@@ -455,7 +455,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                   className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
                   disabled={isCreating}
                 >
-                  Annulla
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="button"
@@ -466,12 +466,12 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                   {isCreating ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Creazione...</span>
+                      <span>{t('pages.companies.creating')}</span>
                     </>
                   ) : (
                     <>
                       <Plus className="h-4 w-4" />
-                      <span>Aggiungi</span>
+                      <span>{t('common.add')}</span>
                     </>
                   )}
                 </button>
@@ -487,7 +487,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
           <div className="bg-gray-900 rounded-xl border border-gray-800 w-full max-w-md">
             <div className="flex items-center justify-between p-6 border-b border-gray-800">
               <h2 className="text-xl font-semibold text-white">
-                Conferma Eliminazione
+                {t('pages.companies.confirmDelete')}
               </h2>
               <button
                 type="button"
@@ -502,13 +502,13 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
             <div className="p-6">
               <div className="mb-6">
                 <p className="text-white mb-2">
-                  Sei sicuro di voler eliminare l&apos;azienda:
+                  {t('pages.companies.confirmDeleteMessage')}
                 </p>
                 <p className="text-lg font-semibold text-blue-400">
                   {companyToDelete.name}
                 </p>
                 <p className="text-sm text-gray-400 mt-2">
-                  Questa azione non pu&ograve; essere annullata.
+                  {t('pages.companies.deleteWarning')}
                 </p>
               </div>
               
@@ -519,7 +519,7 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                   className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
                   disabled={isDeleting}
                 >
-                  Annulla
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="button"
@@ -530,12 +530,12 @@ export default function CompaniesPage({ params }: { params: Promise<{ locale: st
                   {isDeleting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Eliminazione...</span>
+                      <span>{t('pages.companies.deleting')}</span>
                     </>
                   ) : (
                     <>
                       <Trash2 className="h-4 w-4" />
-                      <span>Elimina</span>
+                      <span>{t('common.delete')}</span>
                     </>
                   )}
                 </button>

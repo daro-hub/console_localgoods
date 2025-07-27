@@ -657,7 +657,7 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
             {loadingOrders && (
               <div className="text-center py-8">
                 <Loader2 className="h-8 w-8 text-blue-400 mx-auto mb-2 animate-spin" />
-                <p className="text-gray-400">Caricamento ordini...</p>
+                <p className="text-gray-400">{t('common.loadingOrders')}</p>
               </div>
             )}
 
@@ -672,8 +672,8 @@ export default function OrdersPage({ params }: { params: Promise<{ locale: strin
                 <ShoppingCart className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                 <p className="text-gray-400 mb-4">
                   {selectedStateFilter 
-                    ? `Nessun ordine ${getOrderStateName(selectedStateFilter).toLowerCase()} trovato`
-                    : 'Nessun ordine trovato per questa azienda'
+                    ? t('pages.orders.noOrdersForState', getOrderStateName(selectedStateFilter).toLowerCase())
+                    : t('pages.orders.noOrdersForCompany')
                   }
                 </p>
               </div>

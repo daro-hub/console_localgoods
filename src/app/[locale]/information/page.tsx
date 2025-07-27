@@ -11,22 +11,22 @@ export default function InformationPage({ params }: { params: Promise<{ locale: 
   const companyInfo = [
     {
       icon: MapPin,
-      title: 'Sede Principale',
-             content: 'Via dell&apos;Agricoltura 123, 00100 Roma, Italia'
+      title: t('pages.information.companyInfo.headquarters'),
+      content: 'Via dell&apos;Agricoltura 123, 00100 Roma, Italia'
     },
     {
       icon: Mail,
-      title: 'Email',
+      title: t('profile.fields.email'),
       content: 'info@localgoods.com'
     },
     {
       icon: Phone,
-      title: 'Telefono',
+      title: t('profile.fields.phone'),
       content: '+39 06 1234 5678'
     },
     {
       icon: Clock,
-      title: 'Orari di Supporto',
+      title: t('pages.information.companyInfo.supportHours'),
       content: 'Lun-Ven 9:00-18:00, Sab 9:00-13:00'
     }
   ];
@@ -34,18 +34,18 @@ export default function InformationPage({ params }: { params: Promise<{ locale: 
   const features = [
     {
       icon: Shield,
-      title: 'Sicurezza',
-      description: 'I tuoi dati sono protetti con crittografia end-to-end e backup automatici.'
+      title: t('pages.information.features.security.title'),
+      description: t('pages.information.features.security.description')
     },
     {
       icon: Users,
-      title: 'Supporto',
-      description: 'Team di supporto dedicato per aiutarti nella gestione dei tuoi prodotti.'
+      title: t('pages.information.features.support.title'),
+      description: t('pages.information.features.support.description')
     },
     {
       icon: Award,
-      title: 'Qualità',
-      description: 'Piattaforma testata e utilizzata da centinaia di produttori agricoli.'
+      title: t('pages.information.features.quality.title'),
+      description: t('pages.information.features.quality.description')
     }
   ];
 
@@ -60,11 +60,11 @@ export default function InformationPage({ params }: { params: Promise<{ locale: 
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white bg-opacity-20 rounded-full mb-4">
             <Info className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-4">
-            Benvenuto in LocalGoods
-          </h1>
+                  <h1 className="text-3xl font-bold text-white mb-4">
+          {t('pages.information.welcome')}
+        </h1>
           <p className="text-blue-100 max-w-2xl mx-auto">
-            La piattaforma completa per produttori agricoli che vogliono gestire i loro prodotti e monitorare le vendite in modo semplice ed efficace.
+            {t('pages.information.description')}
           </p>
         </div>
 
@@ -93,7 +93,7 @@ export default function InformationPage({ params }: { params: Promise<{ locale: 
 
         {/* Features Section */}
         <div>
-          <h2 className="text-2xl font-bold text-white mb-6">Perché Scegliere LocalGoods</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">{t('pages.information.whyChoose')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {features.map((feature) => {
               const Icon = feature.icon;
@@ -112,16 +112,16 @@ export default function InformationPage({ params }: { params: Promise<{ locale: 
 
         {/* About Section */}
         <div className="bg-gray-900 rounded-xl p-8 border border-gray-800">
-          <h2 className="text-2xl font-bold text-white mb-6">Chi Siamo</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">{t('pages.information.aboutUs')}</h2>
           <div className="space-y-4 text-gray-300">
             <p>
-              LocalGoods è una piattaforma innovativa progettata specificamente per i produttori agricoli che vogliono modernizzare la gestione dei loro prodotti e avere controllo completo sulle loro vendite.
+              {t('pages.information.description')}
             </p>
             <p>
-              Fondata nel 2024, la nostra missione è quella di fornire strumenti semplici ma potenti che permettano ai produttori di concentrarsi su ciò che sanno fare meglio: coltivare prodotti di qualità.
+              {t('pages.information.founded')}
             </p>
             <p>
-              Con LocalGoods, puoi gestire il tuo catalogo prodotti, monitorare le vendite, analizzare le performance e molto altro, tutto da un&apos;unica piattaforma intuitiva e moderna.
+              {t('pages.information.features')}
             </p>
           </div>
         </div>
@@ -130,12 +130,12 @@ export default function InformationPage({ params }: { params: Promise<{ locale: 
         <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-white">LocalGoods Console</h3>
-              <p className="text-gray-400">Versione 1.0.0 - Dicembre 2024</p>
+              <h3 className="text-lg font-semibold text-white">{t('pages.information.console')}</h3>
+              <p className="text-gray-400">{t('pages.information.version')}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-500">© 2024 LocalGoods</p>
-              <p className="text-sm text-gray-500">Tutti i diritti riservati</p>
+              <p className="text-sm text-gray-500">{t('pages.information.copyright')}</p>
+              <p className="text-sm text-gray-500">{t('pages.information.allRightsReserved')}</p>
             </div>
           </div>
         </div>

@@ -74,14 +74,14 @@ export default function LoginPage() {
           </div>
           
           <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-1">
-            LocalGoods
+            {t('navigation.brandName')}
           </h1>
           <p className="text-gray-400 text-base font-medium">
             {t('pages.login.subtitle')}
           </p>
           <div className="flex items-center justify-center mt-2 space-x-2">
             <Leaf className="h-3 w-3 text-green-400" />
-            <span className="text-xs text-gray-500">Fresco. Fatto a mano. Sostenibile.</span>
+            <span className="text-xs text-gray-500">{t('navigation.tagline')}</span>
           </div>
         </div>
 
@@ -221,7 +221,7 @@ export default function LoginPage() {
         {/* Footer */}
         <div className="text-center mt-4">
           <p className="text-xs text-gray-600">
-            LocalGoods &copy; 2024 - Gestione intelligente per l&apos;agricoltura sostenibile
+            {t('pages.login.footer')}
           </p>
         </div>
       </div>

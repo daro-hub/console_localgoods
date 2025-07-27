@@ -2,6 +2,7 @@
 import { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { useNavigation } from '@/contexts/NavigationContext';
+import { useTranslations } from '@/hooks/useTranslations';
 import { Loader2 } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -17,6 +18,7 @@ export function DashboardLayout({
   title
 }: DashboardLayoutProps) {
   const { isLoading } = useNavigation();
+  const { t } = useTranslations(locale);
 
   return (
     <div className="flex h-screen bg-gray-950">
@@ -30,7 +32,7 @@ export function DashboardLayout({
           <div className="absolute inset-0 bg-gray-950/80 backdrop-blur-sm z-50 flex items-center justify-center">
             <div className="flex flex-col items-center space-y-4">
               <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
-              <p className="text-white font-medium">Caricamento...</p>
+                              <p className="text-white font-medium">{t('common.loading')}</p>
             </div>
           </div>
         )}

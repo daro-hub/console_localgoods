@@ -2,6 +2,7 @@
   "navigation": {
     "title": "LocalGoods",
     "tagline": "Fresh. Handmade. Sustainable.",
+    "brandName": "LocalGoods",
     "companies": "Companies",
     "users": "Users",
     "products": "Products",
@@ -28,6 +29,7 @@
       "title": "Welcome to LocalGoods",
       "subtitle": "Console for agricultural producers",
       "description": "Manage your products and monitor sales in one place.",
+      "joinHundreds": "Join hundreds of agricultural producers who are already using LocalGoods to manage their products and monitor sales.",
       "getStarted": "Get Started",
       "features": {
         "title": "Key Features",
@@ -42,6 +44,20 @@
         "information": {
           "title": "Information",
           "description": "Access your account information and settings"
+        }
+      },
+      "stats": {
+        "managedProducts": {
+          "name": "Managed Products",
+          "value": "250+"
+        },
+        "monitoredSales": {
+          "name": "Monitored Sales",
+          "value": "1.2K+"
+        },
+        "activeProducers": {
+          "name": "Active Producers",
+          "value": "150+"
         }
       }
     },
@@ -60,7 +76,13 @@
       "deleteWarning": "This action cannot be undone.",
       "deleting": "Deleting...",
       "deleteSuccess": "Company deleted successfully",
-      "deleteError": "Error deleting company"
+      "deleteError": "Error deleting company",
+      "addNewCompany": "Add New Company",
+      "companyName": "Company name",
+      "enterCompanyName": "Enter company name",
+      "creating": "Creating...",
+      "viewCompany": "View {name}",
+      "deleteCompanyTitle": "Delete company"
     },
     "products": {
       "title": "Products",
@@ -79,7 +101,13 @@
       "companyProducts": "Company products",
       "changeCompany": "Change company",
       "createSuccess": "Product created successfully",
-      "createError": "Error creating product"
+      "createError": "Error creating product",
+      "noCompany": "You don't belong to any company",
+      "noCompanyDescription": "Contact an administrator to be linked to a company.",
+      "noCompaniesFound": "No companies found",
+      "noCompaniesDescription": "There are no companies in the system.",
+      "searchNoResults": "No products found for search:",
+      "clearSearch": "Clear search"
     },
     "orders": {
       "title": "Orders",
@@ -88,6 +116,8 @@
       "companyOrders": "Company orders",
       "changeCompany": "Change company",
       "noOrders": "No orders found",
+      "noOrdersForCompany": "No orders found for this company",
+      "noOrdersForState": "No {state} orders found",
       "allOrders": "All orders",
       "totalOrders": "Total orders",
       "processing": "Processing",
@@ -129,13 +159,55 @@
       "title": "Analytics",
       "description": "View your sales statistics",
       "noData": "No data available",
-      "comingSoon": "Feature coming soon"
+      "comingSoon": "Feature coming soon",
+      "pageTitle": "Analytics Page",
+      "availableInFuture": "Available in the future",
+      "description": "We are working to provide you with a complete analytics section with detailed charts, advanced metrics and personalized reports to monitor your sales and optimize your business strategies.",
+      "features": {
+        "advancedCharts": {
+          "title": "Advanced Charts",
+          "description": "Interactive visualizations to analyze trends"
+        },
+        "realTimeMetrics": {
+          "title": "Real-Time Metrics",
+          "description": "Data updated instantly for quick decisions"
+        },
+        "customReports": {
+          "title": "Custom Reports",
+          "description": "Tailored analysis for your specific needs"
+        }
+      },
+      "comingSoonBadge": "Coming soon"
     },
     "information": {
       "title": "Information",
       "description": "Manage your account information",
       "accountInfo": "Account Information",
-      "settings": "Settings"
+      "settings": "Settings",
+      "welcome": "Welcome to LocalGoods",
+      "whyChoose": "Why Choose LocalGoods",
+      "description": "LocalGoods is an innovative platform specifically designed for agricultural producers who want to modernize their product management and have complete control over their sales.",
+      "features": "With LocalGoods, you can manage your product catalog, monitor sales, analyze performance and much more, all from a single intuitive and modern platform.",
+      "console": "LocalGoods Console",
+      "copyright": "© 2024 LocalGoods",
+      "companyInfo": {
+        "headquarters": "Headquarters",
+        "supportHours": "Support Hours"
+      },
+      "features": {
+        "security": {
+          "title": "Security",
+          "description": "Your data is protected with end-to-end encryption and automatic backups."
+        },
+        "support": {
+          "title": "Support",
+          "description": "Dedicated support team to help you manage your products."
+        },
+        "quality": {
+          "title": "Quality",
+          "description": "Platform tested and used by hundreds of agricultural producers."
+        }
+      }
     },
     "users": {
       "title": "Users",
@@ -143,7 +215,25 @@
       "addUser": "Add User",
       "searchUsers": "Search users...",
       "noUsersFound": "No users found",
+      "noUsersForFilter": "No users found for the selected filter",
       "searchDifferentTerm": "Try a different search term",
+      "userDetail": {
+        "title": "User Profile",
+        "description": "View and manage user information",
+        "back": "Back",
+        "goBack": "Go back",
+        "userNotFound": "User not found",
+        "userNotFoundDescription": "The requested user does not exist or is no longer available.",
+        "personalInfo": "Personal information",
+        "fullName": "Full name",
+        "saving": "Saving...",
+        "confirmUnlinkCompany": "Are you sure you want to unlink the company \"{companyName}\" from {userName}?",
+        "noCompanyFound": "No company found",
+        "noCompanyAvailable": "No company available",
+        "searchCompanies": "Search companies...",
+        "linking": "Linking...",
+        "linkCompany": "Link company"
+      },
       "loadingUsers": "Loading users...",
       "fetchingData": "Fetching data from server",
       "table": {
@@ -176,10 +266,17 @@
       "loading": "Loading company details...",
       "error": "Error",
       "companyNotFound": "Company not found",
+      "addCompany": "Add company",
+      "addCompanyToUser": "Add company to {name}",
+      "back": "Back",
+      "saving": "Saving...",
+      "changeCompany": "Change company",
+      "coverImage": "Company cover",
       "sections": {
         "info": "Company Information",
         "collaborators": "Collaborators",
-        "addCollaborator": "Add Collaborator"
+        "addCollaborator": "Add Collaborator",
+        "technicalDetails": "Technical Details"
       },
       "fields": {
         "name": "Name",
@@ -187,6 +284,91 @@
         "location": "Location",
         "type": "Type",
         "createdAt": "Creation date"
+      },
+      "fields": {
+        "companyName": "Company name",
+        "location": "Location",
+        "description": "Description",
+        "descriptionPlaceholder": "Company description...",
+        "createdAt": "Creation date"
+      },
+      "gallery": {
+        "title": "Image gallery",
+        "noImages": "No images in gallery",
+        "galleryItem": "Gallery {index}"
+      },
+      "translations": {
+        "title": "Translations",
+        "add": "Add",
+        "addManually": "Add translation manually",
+        "addWithAI": "AI",
+        "clickToEdit": "Click to edit this translation",
+        "deleteTranslation": "Delete translation",
+        "selectLanguage": "Select language",
+        "creating": "Creating...",
+        "allLanguagesUsed": "All available languages have already been translated"
+      },
+      "companyTypes": {
+        "agriculture": "Agriculture",
+        "artisanal": "Artisanal",
+        "livestock": "Livestock"
+      },
+      "translationFields": {
+        "name": "Name",
+        "description": "Description",
+        "notCompiled": "Not compiled",
+        "notCompiledDesc": "Not compiled"
+      },
+      "products": {
+        "title": "Products",
+        "addProduct": "Add Product",
+        "addNewProduct": "Add new product",
+        "noProducts": "No products found",
+        "addFirstProduct": "Add first product",
+        "viewProductDetails": "View details of {name}",
+        "productNumber": "Product #{id}"
+      },
+      "users": {
+        "title": "Connected Users",
+        "loading": "Loading...",
+        "linkCollaborator": "Link Collaborator",
+        "linkNewCollaborator": "Link new collaborator",
+        "noUsers": "No users connected to this company",
+        "unlinkUser": "Unlink user from company",
+        "viewUserDetails": "View details of {name}"
+      },
+      "noTranslations": "No translations available",
+      "dialogs": {
+        "deleteTranslation": {
+          "title": "Delete Translation",
+          "message": "Are you sure you want to delete this translation? This action cannot be undone.",
+          "contentToDelete": "Content to delete:",
+          "name": "Name:",
+          "description": "Description:",
+          "deleting": "Deleting..."
+        },
+        "addProduct": {
+          "title": "Add New Product",
+          "productName": "Product name",
+          "enterProductName": "Enter product name",
+          "creating": "Creating..."
+        },
+        "unlinkUser": {
+          "title": "Unlink User",
+          "message": "Are you sure you want to unlink this user from this company? This action cannot be undone.",
+          "unlinking": "Unlinking..."
+        },
+        "loadingUsers": "Loading users...",
+        "noUsersFound": "No users found with these criteria.",
+        "allUsersConnected": "All users are already connected to this company.",
+        "searchUserPlaceholder": "Enter user name, email or role",
+        "searchUserLabel": "Search user by name, email or role",
+        "linkUserTitle": "Link User",
+        "unlinkUserWarning": "Warning: The user will lose access to all data and functionality related to this company.",
+        "unlinkUserTitle": "Unlink User",
+        "unlinkUserMessage": "Are you sure you want to unlink this user from this company? This action cannot be undone.",
+        "unlinking": "Unlinking...",
+        "unlink": "Unlink"
       },
       "addCollaborator": {
         "title": "Add Collaborator",
@@ -196,7 +378,8 @@
         "success": "Collaborator added successfully",
         "error": "Error adding collaborator",
         "emailRequired": "Email required",
-        "invalidEmail": "Invalid email"
+        "invalidEmail": "Invalid email",
+        "noUserFound": "No user found with this email"
       },
       "collaborators": {
         "title": "Collaborators",
@@ -214,6 +397,7 @@
     "login": {
       "title": "Login to LocalGoods",
       "subtitle": "Console for agricultural producers",
+      "footer": "LocalGoods © 2024 - Intelligent management for sustainable agriculture",
       "description": "Manage your products and monitor sales in one place.",
       "email": "Email",
       "password": "Password",
@@ -313,7 +497,25 @@
         "changesSaved": "Changes saved automatically",
         "saveError": "Error saving",
         "translationDeleted": "Translation deleted successfully",
-        "translationDeleteError": "Error deleting translation"
+        "translationDeleteError": "Error deleting translation",
+        "changesSavedSuccess": "Changes saved successfully",
+        "saveChangesError": "Error during save",
+        "translationSavedSuccess": "Translation saved successfully",
+        "translationSaveError": "Error saving translation",
+        "translationCreatedSuccess": "Translation created successfully",
+        "translationCreateError": "Error creating translation",
+        "translationDeletedSuccess": "Translation deleted successfully",
+        "translationDeleteError": "Error deleting translation",
+        "languagesLoadError": "Error loading available languages",
+        "userUnlinkedSuccess": "User unlinked successfully",
+        "userUnlinkError": "Error unlinking user",
+        "userLinkedSuccess": "User linked successfully",
+        "userLinkError": "Error linking user",
+        "userLinkedByNameSuccess": "User {name} linked successfully",
+        "usersLoadError": "Error loading users",
+        "productCreatedSuccess": "Product created successfully",
+        "productCreateError": "Error creating product",
+        "userAlreadyLinked": "This user is already linked to this company"
       }
     }
   },
@@ -358,7 +560,8 @@
     "securityNote": "Keep your account secure. Change your password regularly and never share it.",
     "saving": "Saving...",
     "saved": "Changes saved successfully",
-    "saveError": "Error saving changes"
+    "saveError": "Error saving changes",
+    "noCompaniesAssociated": "No companies associated"
   },
   "common": {
     "loading": "Loading...",
@@ -375,7 +578,28 @@
     "close": "Close",
     "confirm": "Confirm",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "language": "Language",
+    "flag": "Flag",
+    "phone": "Phone",
+    "address": "Address",
+    "id": "ID",
+    "notSpecified": "Not specified",
+    "unknownError": "Unknown error",
+    "errorOccurred": "An error occurred",
+    "actionCannotBeUndone": "This action cannot be undone",
+    "areYouSure": "Are you sure you want to delete",
+    "viewDetails": "View details of"
+  },
+  "notifications": {
+    "changesSavedSuccess": "Changes saved successfully",
+    "saveChangesError": "Error during save",
+    "userCreatedSuccess": "User \"{name}\" created successfully",
+    "userCreateError": "Error creating user: {error}",
+    "userDeletedSuccess": "User \"{name}\" deleted successfully",
+    "userDeleteError": "Error deleting user: {error}",
+    "companyLinkedSuccess": "Company linked successfully!",
+    "companyUnlinkedSuccess": "Company \"{name}\" unlinked successfully!"
   },
   "units": {
     "unit": "unit",

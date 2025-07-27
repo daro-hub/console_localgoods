@@ -542,7 +542,7 @@ export function ProfilePage({ locale }: ProfilePageProps) {
                 <div className="text-center py-8">
                   <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-400 text-sm">
-                    Nessuna azienda associata
+                    {t('profile.noCompaniesAssociated')}
                   </p>
                 </div>
               ) : (

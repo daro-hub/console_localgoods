@@ -2,6 +2,7 @@
   "navigation": {
     "title": "LocalGoods",
     "tagline": "Fresco. Artesanal. Sostenible.",
+    "brandName": "LocalGoods",
     "companies": "Empresas",
     "users": "Usuarios",
     "products": "Productos",
@@ -43,6 +44,20 @@
           "title": "Información",
           "description": "Accede a la información de tu cuenta y configuraciones"
         }
+      },
+      "stats": {
+        "managedProducts": {
+          "name": "Productos Gestionados",
+          "value": "250+"
+        },
+        "monitoredSales": {
+          "name": "Ventas Monitoreadas",
+          "value": "1.2K+"
+        },
+        "activeProducers": {
+          "name": "Productores Activos",
+          "value": "150+"
+        }
       }
     },
     "companies": {
@@ -60,7 +75,13 @@
       "deleteWarning": "Esta acción no se puede deshacer.",
       "deleting": "Eliminando...",
       "deleteSuccess": "Empresa eliminada exitosamente",
-      "deleteError": "Error al eliminar la empresa"
+      "deleteError": "Error al eliminar la empresa",
+      "addNewCompany": "Agregar Nueva Empresa",
+      "companyName": "Nombre de la empresa",
+      "enterCompanyName": "Ingresa el nombre de la empresa",
+      "creating": "Creando...",
+      "viewCompany": "Ver {name}",
+      "deleteCompanyTitle": "Eliminar empresa"
     },
     "products": {
       "title": "Productos",
@@ -79,7 +100,13 @@
       "companyProducts": "Productos de la empresa",
       "changeCompany": "Cambiar empresa",
       "createSuccess": "Producto creado exitosamente",
-      "createError": "Error al crear el producto"
+      "createError": "Error al crear el producto",
+      "noCompany": "No perteneces a ninguna empresa",
+      "noCompanyDescription": "Contacta a un administrador para ser vinculado a una empresa.",
+      "noCompaniesFound": "No se encontraron empresas",
+      "noCompaniesDescription": "No hay empresas en el sistema.",
+      "searchNoResults": "No se encontraron productos para la búsqueda:",
+      "clearSearch": "Limpiar búsqueda"
     },
     "orders": {
       "title": "Pedidos",
@@ -88,6 +115,8 @@
       "companyOrders": "Pedidos de la empresa",
       "changeCompany": "Cambiar empresa",
       "noOrders": "No se encontraron pedidos",
+      "noOrdersForCompany": "No se encontraron pedidos para esta empresa",
+      "noOrdersForState": "No se encontraron pedidos {state}",
       "allOrders": "Todos los pedidos",
       "totalOrders": "Total de pedidos",
       "processing": "En procesamiento",
@@ -129,13 +158,49 @@
       "title": "Analítica",
       "description": "Visualiza las estadísticas de tus ventas",
       "noData": "No hay datos disponibles",
-      "comingSoon": "Función próximamente"
+      "comingSoon": "Función próximamente",
+      "pageTitle": "Página de Analítica",
+      "availableInFuture": "Disponible en el futuro",
+      "description": "Estamos trabajando para ofrecerte una sección de analítica completa con gráficos detallados, métricas avanzadas y reportes personalizados para monitorear tus ventas y optimizar tus estrategias comerciales.",
+      "features": {
+        "advancedCharts": {
+          "title": "Gráficos Avanzados",
+          "description": "Visualizaciones interactivas para analizar tendencias"
+        },
+        "realTimeMetrics": {
+          "title": "Métricas en Tiempo Real",
+          "description": "Datos actualizados instantáneamente para decisiones rápidas"
+        },
+        "customReports": {
+          "title": "Reportes Personalizados",
+          "description": "Análisis a medida para tus necesidades específicas"
+        }
+      },
+      "comingSoonBadge": "Próximamente"
     },
     "information": {
       "title": "Información",
       "description": "Gestiona la información de tu cuenta",
       "accountInfo": "Información de la cuenta",
-      "settings": "Configuraciones"
+      "settings": "Configuraciones",
+      "companyInfo": {
+        "headquarters": "Sede Principal",
+        "supportHours": "Horarios de Soporte"
+      },
+      "features": {
+        "security": {
+          "title": "Seguridad",
+          "description": "Tus datos están protegidos con encriptación de extremo a extremo y respaldos automáticos."
+        },
+        "support": {
+          "title": "Soporte",
+          "description": "Equipo de soporte dedicado para ayudarte a gestionar tus productos."
+        },
+        "quality": {
+          "title": "Calidad",
+          "description": "Plataforma probada y utilizada por cientos de productores agrícolas."
+        }
+      }
     },
     "users": {
       "title": "Usuarios",
@@ -143,7 +208,25 @@
       "addUser": "Agregar Usuario",
       "searchUsers": "Buscar usuarios...",
       "noUsersFound": "No se encontraron usuarios",
+      "noUsersForFilter": "No se encontraron usuarios para el filtro seleccionado",
       "searchDifferentTerm": "Prueba con un término de búsqueda diferente",
+      "userDetail": {
+        "title": "Perfil de Usuario",
+        "description": "Ver y gestionar la información del usuario",
+        "back": "Atrás",
+        "goBack": "Volver",
+        "userNotFound": "Usuario no encontrado",
+        "userNotFoundDescription": "El usuario solicitado no existe o ya no está disponible.",
+        "personalInfo": "Información personal",
+        "fullName": "Nombre completo",
+        "saving": "Guardando...",
+        "confirmUnlinkCompany": "¿Estás seguro de que quieres desvincular la empresa \"{companyName}\" de {userName}?",
+        "noCompanyFound": "No se encontró empresa",
+        "noCompanyAvailable": "No hay empresa disponible",
+        "searchCompanies": "Buscar empresas...",
+        "linking": "Vinculando...",
+        "linkCompany": "Vincular empresa"
+      },
       "loadingUsers": "Cargando usuarios...",
       "fetchingData": "Obteniendo datos del servidor",
       "table": {
@@ -176,10 +259,17 @@
       "loading": "Cargando detalles de la empresa...",
       "error": "Error",
       "companyNotFound": "Empresa no encontrada",
+      "addCompany": "Agregar empresa",
+      "addCompanyToUser": "Agregar empresa a {name}",
+      "back": "Atrás",
+      "saving": "Guardando...",
+      "changeCompany": "Cambiar empresa",
+      "coverImage": "Portada de la empresa",
       "sections": {
         "info": "Información de la Empresa",
         "collaborators": "Colaboradores",
-        "addCollaborator": "Agregar Colaborador"
+        "addCollaborator": "Agregar Colaborador",
+        "technicalDetails": "Detalles técnicos"
       },
       "fields": {
         "name": "Nombre",
@@ -187,6 +277,91 @@
         "location": "Ubicación",
         "type": "Tipo",
         "createdAt": "Fecha de creación"
+      },
+      "fields": {
+        "companyName": "Nombre de la empresa",
+        "location": "Ubicación",
+        "description": "Descripción",
+        "descriptionPlaceholder": "Descripción de la empresa...",
+        "createdAt": "Fecha de creación"
+      },
+      "gallery": {
+        "title": "Galería de imágenes",
+        "noImages": "No hay imágenes en la galería",
+        "galleryItem": "Galería {index}"
+      },
+      "translations": {
+        "title": "Traducciones",
+        "add": "Agregar",
+        "addManually": "Agregar traducción manualmente",
+        "addWithAI": "IA",
+        "clickToEdit": "Haz clic para editar esta traducción",
+        "deleteTranslation": "Eliminar traducción",
+        "selectLanguage": "Seleccionar idioma",
+        "creating": "Creando...",
+        "allLanguagesUsed": "Todos los idiomas disponibles ya han sido traducidos"
+      },
+      "companyTypes": {
+        "agriculture": "Agricultura",
+        "artisanal": "Artesanal",
+        "livestock": "Ganadería"
+      },
+      "translationFields": {
+        "name": "Nombre",
+        "description": "Descripción",
+        "notCompiled": "No compilado",
+        "notCompiledDesc": "No compilada"
+      },
+      "products": {
+        "title": "Productos",
+        "addProduct": "Agregar Producto",
+        "addNewProduct": "Agregar nuevo producto",
+        "noProducts": "No se encontraron productos",
+        "addFirstProduct": "Agregar el primer producto",
+        "viewProductDetails": "Ver detalles de {name}",
+        "productNumber": "Producto #{id}"
+      },
+      "users": {
+        "title": "Usuarios Conectados",
+        "loading": "Cargando...",
+        "linkCollaborator": "Vincular Colaborador",
+        "linkNewCollaborator": "Vincular nuevo colaborador",
+        "noUsers": "No hay usuarios conectados a esta empresa",
+        "unlinkUser": "Desvincular usuario de la empresa",
+        "viewUserDetails": "Ver detalles de {name}"
+      },
+      "noTranslations": "No hay traducciones disponibles",
+      "dialogs": {
+        "deleteTranslation": {
+          "title": "Eliminar Traducción",
+          "message": "¿Estás seguro de que quieres eliminar esta traducción? Esta acción no se puede deshacer.",
+          "contentToDelete": "Contenido a eliminar:",
+          "name": "Nombre:",
+          "description": "Descripción:",
+          "deleting": "Eliminando..."
+        },
+        "addProduct": {
+          "title": "Agregar Nuevo Producto",
+          "productName": "Nombre del producto",
+          "enterProductName": "Ingresa el nombre del producto",
+          "creating": "Creando..."
+        },
+        "unlinkUser": {
+          "title": "Desvincular Usuario",
+          "message": "¿Estás seguro de que quieres desvincular este usuario de esta empresa? Esta acción no se puede deshacer.",
+          "unlinking": "Desvinculando..."
+        },
+        "loadingUsers": "Cargando usuarios...",
+        "noUsersFound": "No se encontraron usuarios con estos criterios.",
+        "allUsersConnected": "Todos los usuarios ya están conectados a esta empresa.",
+        "searchUserPlaceholder": "Ingresa el nombre, email o rol del usuario",
+        "searchUserLabel": "Buscar usuario por nombre, email o rol",
+        "linkUserTitle": "Vincular Usuario",
+        "unlinkUserWarning": "Advertencia: El usuario perderá acceso a todos los datos y funcionalidades relacionadas con esta empresa.",
+        "unlinkUserTitle": "Desvincular Usuario",
+        "unlinkUserMessage": "¿Estás seguro de que quieres desvincular este usuario de esta empresa? Esta acción no se puede deshacer.",
+        "unlinking": "Desvinculando...",
+        "unlink": "Desvincular"
       },
       "addCollaborator": {
         "title": "Agregar Colaborador",
@@ -196,7 +371,8 @@
         "success": "Colaborador agregado exitosamente",
         "error": "Error al agregar colaborador",
         "emailRequired": "Email requerido",
-        "invalidEmail": "Email inválido"
+        "invalidEmail": "Email inválido",
+        "noUserFound": "No se encontró usuario con este email"
       },
       "collaborators": {
         "title": "Colaboradores",
@@ -313,7 +489,25 @@
         "changesSaved": "Cambios guardados automáticamente",
         "saveError": "Error al guardar",
         "translationDeleted": "Traducción eliminada con éxito",
-        "translationDeleteError": "Error al eliminar la traducción"
+        "translationDeleteError": "Error al eliminar la traducción",
+        "changesSavedSuccess": "Cambios guardados exitosamente",
+        "saveChangesError": "Error durante el guardado",
+        "translationSavedSuccess": "Traducción guardada exitosamente",
+        "translationSaveError": "Error al guardar la traducción",
+        "translationCreatedSuccess": "Traducción creada exitosamente",
+        "translationCreateError": "Error al crear la traducción",
+        "translationDeletedSuccess": "Traducción eliminada con éxito",
+        "translationDeleteError": "Error al eliminar la traducción",
+        "languagesLoadError": "Error al cargar los idiomas disponibles",
+        "userUnlinkedSuccess": "Usuario desvinculado exitosamente",
+        "userUnlinkError": "Error al desvincular usuario",
+        "userLinkedSuccess": "Usuario vinculado exitosamente",
+        "userLinkError": "Error al vincular usuario",
+        "userLinkedByNameSuccess": "Usuario {name} vinculado exitosamente",
+        "usersLoadError": "Error al cargar usuarios",
+        "productCreatedSuccess": "Producto creado exitosamente",
+        "productCreateError": "Error al crear producto",
+        "userAlreadyLinked": "Este usuario ya está vinculado a esta empresa"
       }
     }
   },
@@ -358,7 +552,8 @@
     "securityNote": "Mantén tu cuenta segura. Cambia tu contraseña regularmente y nunca la compartas.",
     "saving": "Guardando...",
     "saved": "Cambios guardados exitosamente",
-    "saveError": "Error al guardar los cambios"
+    "saveError": "Error al guardar los cambios",
+    "noCompaniesAssociated": "No hay empresas asociadas"
   },
   "common": {
     "loading": "Cargando...",
@@ -375,7 +570,28 @@
     "close": "Cerrar",
     "confirm": "Confirmar",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "language": "Idioma",
+    "flag": "Bandera",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "id": "ID",
+    "notSpecified": "No especificada",
+    "unknownError": "Error desconocido",
+    "errorOccurred": "Ocurrió un error",
+    "actionCannotBeUndone": "Esta acción no se puede deshacer",
+    "areYouSure": "¿Estás seguro de que quieres eliminar",
+    "viewDetails": "Ver detalles de"
+  },
+  "notifications": {
+    "changesSavedSuccess": "Cambios guardados exitosamente",
+    "saveChangesError": "Error durante el guardado",
+    "userCreatedSuccess": "Usuario \"{name}\" creado exitosamente",
+    "userCreateError": "Error al crear usuario: {error}",
+    "userDeletedSuccess": "Usuario \"{name}\" eliminado exitosamente",
+    "userDeleteError": "Error al eliminar usuario: {error}",
+    "companyLinkedSuccess": "¡Empresa vinculada exitosamente!",
+    "companyUnlinkedSuccess": "¡Empresa \"{name}\" desvinculada exitosamente!"
   },
   "units": {
     "unit": "unidad",

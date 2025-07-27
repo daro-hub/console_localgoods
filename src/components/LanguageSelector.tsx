@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronDown, Globe } from 'lucide-react';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface LanguageSelectorProps {
   locale: string;
@@ -13,12 +14,13 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslations(locale);
 
   const languages = [
-    { code: 'it', name: 'Italiano', flag: 'it' },
-    { code: 'en', name: 'English', flag: 'us' },
-    { code: 'fr', name: 'Français', flag: 'fr' },
-    { code: 'es', name: 'Español', flag: 'es' },
+    { code: 'it', name: t('languages.it'), flag: 'it' },
+    { code: 'en', name: t('languages.en'), flag: 'us' },
+    { code: 'fr', name: t('languages.fr'), flag: 'fr' },
+    { code: 'es', name: t('languages.es'), flag: 'es' },
   ];
 
   const currentLanguage = languages.find(lang => lang.code === locale) || languages[0];
@@ -53,7 +55,7 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="p-2 rounded-xl hover:bg-gray-800 transition-colors text-gray-400 hover:text-gray-200"
-          title="Lingua"
+          title={t('common.language')}
         >
           <Globe className="h-6 w-6" />
         </button>
@@ -75,7 +77,7 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
                 >
                   <img 
                     src={`https://flagcdn.com/w40/${language.flag}.png`} 
-                    alt={`Bandiera ${language.name}`}
+                    alt={`${t('common.flag')} ${language.name}`}
                     className="w-6 h-4 object-cover rounded-sm"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -104,7 +106,7 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
           <Globe className="h-6 w-6 text-gray-400" />
           <img 
             src={`https://flagcdn.com/w40/${currentLanguage.flag}.png`} 
-            alt={`Bandiera ${currentLanguage.name}`}
+            alt={`${t('common.flag')} ${currentLanguage.name}`}
             className="w-6 h-4 object-cover rounded-sm"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
@@ -132,20 +134,20 @@ export function LanguageSelector({ locale, collapsed = false }: LanguageSelector
                     : 'text-gray-200'
                   }
                 `}
-                              >
-                  <img 
-                    src={`https://flagcdn.com/w40/${language.flag}.png`} 
-                    alt={`Bandiera ${language.name}`}
-                    className="w-6 h-4 object-cover rounded-sm"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      target.nextElementSibling?.classList.remove('hidden');
-                    }}
-                  />
-                  <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded hidden">{language.flag.toUpperCase()}</span>
-                  <span className="font-medium">{language.name}</span>
-                </button>
+              >
+                <img 
+                  src={`https://flagcdn.com/w40/${language.flag}.png`} 
+                  alt={`${t('common.flag')} ${language.name}`}
+                  className="w-6 h-4 object-cover rounded-sm"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+                <span className="text-xs font-bold bg-gray-600 text-white px-2 py-1 rounded hidden">{language.flag.toUpperCase()}</span>
+                <span className="font-medium">{language.name}</span>
+              </button>
             ))}
           </div>
         </div>

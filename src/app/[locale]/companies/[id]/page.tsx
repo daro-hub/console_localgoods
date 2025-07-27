@@ -418,10 +418,10 @@ export default function CompanyDetailsPage({
         type: editableFields.type
       } : null);
 
-      showToast('Modifiche salvate con successo', 'success');
+      showToast(t('pages.companyDetail.messages.changesSavedSuccess'), 'success');
       
     } catch (error) {
-      showToast('Errore durante il salvataggio', 'error');
+      showToast(t('pages.companyDetail.messages.saveChangesError'), 'error');
     } finally {
       setIsSaving(false);
     }
@@ -516,11 +516,11 @@ export default function CompanyDetailsPage({
         description: translationFields.description
       } : null);
 
-      showToast('Traduzione salvata con successo', 'success');
+      showToast(t('pages.companyDetail.messages.translationSavedSuccess'), 'success');
       
     } catch (error) {
       console.error('Errore nel salvataggio traduzione:', error);
-      showToast('Errore durante il salvataggio della traduzione', 'error');
+      showToast(t('pages.companyDetail.messages.translationSaveError'), 'error');
     } finally {
       setIsTranslationSaving(false);
     }
@@ -553,7 +553,7 @@ export default function CompanyDetailsPage({
       
     } catch (error) {
       console.error('Errore nel caricamento delle lingue:', error);
-      showToast('Errore nel caricamento delle lingue disponibili', 'error');
+      showToast(t('pages.companyDetail.messages.languagesLoadError'), 'error');
     } finally {
       setLoadingLanguages(false);
     }
@@ -617,11 +617,11 @@ export default function CompanyDetailsPage({
       // Chiudi il dialog
       handleCloseAddTranslationDialog();
       
-      showToast('Traduzione creata con successo', 'success');
+      showToast(t('pages.companyDetail.messages.translationCreatedSuccess'), 'success');
       
     } catch (error) {
       console.error('Errore nella creazione traduzione:', error);
-      showToast('Errore durante la creazione della traduzione', 'error');
+      showToast(t('pages.companyDetail.messages.translationCreateError'), 'error');
     } finally {
       setIsAddingTranslation(false);
     }
@@ -669,11 +669,11 @@ export default function CompanyDetailsPage({
       setIsDeleteTranslationDialogOpen(false);
       setTranslationToDelete(null);
       
-      showToast('Traduzione eliminata con successo', 'success');
+      showToast(t('pages.companyDetail.messages.translationDeletedSuccess'), 'success');
       
     } catch (error) {
       console.error('Errore nell\'eliminazione della traduzione:', error);
-      showToast('Errore nell\'eliminazione della traduzione', 'error');
+      showToast(t('pages.companyDetail.messages.translationDeleteError'), 'error');
     } finally {
       setIsDeletingTranslation(false);
     }
@@ -733,11 +733,11 @@ export default function CompanyDetailsPage({
       setUserToUnlink(null);
       
       // Mostra messaggio di successo
-      showToast('Utente scollegato con successo', 'success');
+      showToast(t('pages.companyDetail.messages.userUnlinkedSuccess'), 'success');
       
     } catch (err) {
-      setUsersError(err instanceof Error ? err.message : 'Errore sconosciuto');
-      showToast('Errore nello scollegamento dell\'utente', 'error');
+      setUsersError(err instanceof Error ? err.message : t('common.unknownError'));
+      showToast(t('pages.companyDetail.messages.userUnlinkError'), 'error');
     } finally {
       setIsUnlinkingUser(false);
     }
@@ -773,8 +773,8 @@ export default function CompanyDetailsPage({
         setFilteredUsers(availableUsersFiltered);
         
       } catch (err) {
-        setUsersError(err instanceof Error ? err.message : 'Errore sconosciuto');
-        showToast('Errore nel caricamento degli utenti', 'error');
+        setUsersError(err instanceof Error ? err.message : t('common.unknownError'));
+        showToast(t('pages.companyDetail.messages.usersLoadError'), 'error');
       } finally {
         setLoadingAvailableUsers(false);
       }
@@ -827,14 +827,14 @@ export default function CompanyDetailsPage({
       );
       
       if (!userToAdd) {
-        setEmailError('Nessun utente collegato a questa email');
+        setEmailError(t('pages.companyDetail.addCollaborator.noUserFound'));
         return;
       }
       
       // Verifica che l'utente non sia già collegato all'azienda
       const isAlreadyLinked = users.some(user => user.id === userToAdd.id);
       if (isAlreadyLinked) {
-        setEmailError('Questo utente è già collegato a questa azienda');
+        setEmailError(t('pages.companyDetail.messages.userAlreadyLinked'));
         return;
       }
       
@@ -861,10 +861,10 @@ export default function CompanyDetailsPage({
       handleCloseEmailDialog();
       
       // Mostra messaggio di successo
-      showToast(`Utente ${userToAdd.name} collegato con successo`, 'success');
+      showToast(t('pages.companyDetail.messages.userLinkedByNameSuccess', userToAdd.name), 'success');
       
     } catch (err) {
-      setEmailError(err instanceof Error ? err.message : 'Errore sconosciuto');
+      setEmailError(err instanceof Error ? err.message : t('common.unknownError'));
     } finally {
       setIsAddingByEmail(false);
     }
@@ -914,11 +914,11 @@ export default function CompanyDetailsPage({
       handleCloseLinkUserDialog();
       
       // Mostra messaggio di successo
-      showToast('Utente collegato con successo', 'success');
+      showToast(t('pages.companyDetail.messages.userLinkedSuccess'), 'success');
       
     } catch (err) {
-      setUsersError(err instanceof Error ? err.message : 'Errore sconosciuto');
-      showToast('Errore nel collegamento dell\'utente', 'error');
+      setUsersError(err instanceof Error ? err.message : t('common.unknownError'));
+      showToast(t('pages.companyDetail.messages.userLinkError'), 'error');
     } finally {
       setIsLinkingUser(false);
     }
@@ -1000,11 +1000,11 @@ export default function CompanyDetailsPage({
       // Chiudi il dialog
       handleCloseProductDialog();
       
-      showToast('Prodotto creato con successo', 'success');
+      showToast(t('pages.companyDetail.messages.productCreatedSuccess'), 'success');
       
     } catch (err) {
-      setProductsError(err instanceof Error ? err.message : 'Errore sconosciuto');
-      showToast('Errore durante la creazione del prodotto', 'error');
+      setProductsError(err instanceof Error ? err.message : t('common.unknownError'));
+      showToast(t('pages.companyDetail.messages.productCreateError'), 'error');
     } finally {
       setIsAddingProduct(false);
     }
@@ -1125,7 +1125,7 @@ export default function CompanyDetailsPage({
               className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>Indietro</span>
+              <span>{t('pages.companyDetail.back')}</span>
             </button>
           </div>
           <div className="bg-red-900/20 border border-red-800 rounded-xl p-6">
@@ -1159,7 +1159,7 @@ export default function CompanyDetailsPage({
               className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>Indietro</span>
+              <span>{t('pages.companyDetail.back')}</span>
             </button>
             
             <div className="flex items-center space-x-4">
@@ -1167,7 +1167,7 @@ export default function CompanyDetailsPage({
               {isSaving && (
                 <div className="flex items-center space-x-2 text-sm text-blue-400">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Salvando...</span>
+                  <span>{t('pages.companyDetail.saving')}</span>
                 </div>
               )}
               
@@ -1180,7 +1180,7 @@ export default function CompanyDetailsPage({
                   }}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
                 >
-                  Cambia azienda
+                  {t('pages.companyDetail.changeCompany')}
                 </button>
               )}
             </div>
@@ -1217,14 +1217,14 @@ export default function CompanyDetailsPage({
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
                   <span className="text-lg font-mono text-gray-400 bg-gray-800 px-3 py-1 rounded-lg">
-                    #{company.id}
+                    {t('common.id')}: {company.id}
                   </span>
                   <input
                     type="text"
                     value={editableFields.name}
                     onChange={(e) => handleFieldChange('name', e.target.value)}
                     className="text-3xl font-bold text-white bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 flex-1"
-                    placeholder="Nome azienda"
+                    placeholder={t('pages.companyDetail.fields.companyName')}
                   />
                 </div>
                 <div className="mt-2 mb-3 flex items-center space-x-2">
@@ -1234,7 +1234,7 @@ export default function CompanyDetailsPage({
                     value={editableFields.Location}
                     onChange={(e) => handleFieldChange('Location', e.target.value)}
                     className="text-lg text-gray-300 bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 flex-1"
-                    placeholder="Posizione"
+                    placeholder={t('pages.companyDetail.fields.location')}
                   />
                 </div>
                 <div className="relative inline-block group">
@@ -1244,13 +1244,13 @@ export default function CompanyDetailsPage({
                     className={`appearance-none text-sm font-medium rounded-full pl-4 pr-12 py-1 border transition-colors hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${getCompanyTypeStyles(editableFields.type)}`}
                   >
                     <option value="agriculture" className="bg-white text-gray-900">
-                      Agriculture
+                      {t('pages.companyDetail.companyTypes.agriculture')}
                     </option>
                     <option value="artisanal" className="bg-white text-gray-900">
-                      Artisanal
+                      {t('pages.companyDetail.companyTypes.artisanal')}
                     </option>
                     <option value="livestock" className="bg-white text-gray-900">
-                      Livestock
+                      {t('pages.companyDetail.companyTypes.livestock')}
                     </option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -1273,13 +1273,13 @@ export default function CompanyDetailsPage({
             {/* Descrizione */}
             <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
               <h2 className="text-xl font-semibold text-white mb-4">
-                Descrizione
+                {t('pages.companyDetail.fields.description')}
               </h2>
               <textarea
                 value={editableFields.description}
                 onChange={(e) => handleFieldChange('description', e.target.value)}
                 className="w-full h-32 text-gray-300 bg-gray-800 border border-gray-700 rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
-                placeholder="Descrizione dell'azienda..."
+                placeholder={t('pages.companyDetail.fields.descriptionPlaceholder')}
               />
             </div>
 
@@ -1287,7 +1287,7 @@ export default function CompanyDetailsPage({
             <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
               <h2 className="text-xl font-semibold text-white mb-4 flex items-center space-x-2">
                 <ImageIcon className="h-5 w-5" />
-                <span>Galleria immagini</span>
+                <span>{t('pages.companyDetail.gallery.title')}</span>
               </h2>
               
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -1315,7 +1315,7 @@ export default function CompanyDetailsPage({
                 ) : (
                   <div className="col-span-full text-center py-8 text-gray-400">
                     <ImageIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p>Nessuna immagine nella galleria</p>
+                    <p>{t('pages.companyDetail.gallery.noImages')}</p>
                   </div>
                 )}
               </div>
@@ -1326,26 +1326,26 @@ export default function CompanyDetailsPage({
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-white flex items-center space-x-2">
                   <Globe className="h-5 w-5" />
-                  <span>Traduzioni</span>
+                  <span>{t('pages.companyDetail.translations.title')}</span>
                 </h2>
                 <div className="flex items-center space-x-2">
                   <button
                     type="button"
                     onClick={handleAddTranslationClick}
-                                            disabled={false}
+                    disabled={false}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Aggiungi traduzione manualmente"
+                    title={t('pages.companyDetail.translations.addManually')}
                   >
-                                          <Plus className="h-4 w-4" />
-                    <span>Aggiungi</span>
+                    <Plus className="h-4 w-4" />
+                    <span>{t('pages.companyDetail.translations.add')}</span>
                   </button>
                   <button
                     type="button"
                     className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
-                    title="Aggiungi traduzione con AI"
+                    title={t('pages.companyDetail.translations.addWithAI')}
                   >
                     <Sparkles className="h-4 w-4" />
-                    <span>AI</span>
+                    <span>{t('pages.companyDetail.translations.addWithAI')}</span>
                   </button>
                 </div>
               </div>
@@ -1357,13 +1357,13 @@ export default function CompanyDetailsPage({
                       key={index} 
                       className="bg-gray-800 border border-gray-700 rounded-xl p-4 hover:border-gray-600 hover:bg-gray-800/80 cursor-pointer transition-all duration-200 group"
                       onClick={() => handleTranslationClick(translation)}
-                      title="Clicca per modificare questa traduzione"
+                      title={t('pages.companyDetail.translations.clickToEdit')}
                     >
                       <div className="flex items-start justify-between">
                         {/* Header con ID e Lingua */}
                         <div className="flex items-center space-x-4">
                           <span className="text-gray-500 text-xs font-mono bg-gray-900 px-2 py-1 rounded">
-                            #{translation.id}
+                            {t('common.id')}: {translation.id}
                           </span>
                           <div className="flex items-center space-x-2">
                             <img 
@@ -1393,7 +1393,7 @@ export default function CompanyDetailsPage({
                           <button
                             onClick={(e) => handleDeleteTranslationClick(e, translation)}
                             className="bg-red-600/60 hover:bg-red-600/80 text-white p-1.5 rounded-lg transition-colors shadow-lg"
-                            title="Elimina traduzione"
+                            title={t('pages.companyDetail.translations.deleteTranslation')}
                           >
                             <Trash2 className="h-3 w-3" />
                           </button>
@@ -1404,26 +1404,26 @@ export default function CompanyDetailsPage({
                       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Nome */}
                         <div>
-                          <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Nome</h4>
+                          <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">{t('pages.companyDetail.translationFields.name')}</h4>
                           {translation.name && translation.name.trim() ? (
                             <p className="text-gray-200 text-sm">{translation.name}</p>
                           ) : (
                             <div className="flex items-center space-x-2">
                               <X className="h-4 w-4 text-gray-500" />
-                              <span className="text-gray-500 text-sm italic">Non compilato</span>
+                              <span className="text-gray-500 text-sm italic">{t('pages.companyDetail.translationFields.notCompiled')}</span>
                             </div>
                           )}
                         </div>
                         
                         {/* Descrizione */}
                         <div>
-                          <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Descrizione</h4>
+                          <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">{t('pages.companyDetail.translationFields.description')}</h4>
                           {translation.description && translation.description.trim() ? (
                             <p className="text-gray-200 text-sm line-clamp-2">{translation.description}</p>
                           ) : (
                             <div className="flex items-center space-x-2">
                               <X className="h-4 w-4 text-gray-500" />
-                              <span className="text-gray-500 text-sm italic">Non compilata</span>
+                              <span className="text-gray-500 text-sm italic">{t('pages.companyDetail.translationFields.notCompiledDesc')}</span>
                             </div>
                           )}
                         </div>
@@ -1432,7 +1432,7 @@ export default function CompanyDetailsPage({
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-400">Nessuna traduzione disponibile</p>
+                <p className="text-gray-400">{t('pages.companyDetail.noTranslations')}</p>
               )}
             </div>
 
@@ -1441,16 +1441,16 @@ export default function CompanyDetailsPage({
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-white flex items-center space-x-2">
                   <Package className="h-5 w-5" />
-                  <span>Prodotti</span>
+                  <span>{t('pages.companyDetail.products.title')}</span>
                 </h2>
                 <button
                   type="button"
                   onClick={handleAddProductClick}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
-                  title="Aggiungi nuovo prodotto"
+                  title={t('pages.companyDetail.products.addNewProduct')}
                 >
                   <Plus className="h-4 w-4" />
-                  <span>Aggiungi Prodotto</span>
+                  <span>{t('pages.companyDetail.products.addProduct')}</span>
                 </button>
               </div>
               
@@ -1473,14 +1473,14 @@ export default function CompanyDetailsPage({
               {!productsError && products.length === 0 && (
                 <div className="text-center py-8">
                   <Package className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-400 mb-4">Nessun prodotto trovato</p>
+                  <p className="text-gray-400 mb-4">{t('pages.companyDetail.products.noProducts')}</p>
                   <button
                     type="button"
                     onClick={handleAddProductClick}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors mx-auto"
                   >
                     <Plus className="h-4 w-4" />
-                    <span>Aggiungi il primo prodotto</span>
+                    <span>{t('pages.companyDetail.products.addFirstProduct')}</span>
                   </button>
                 </div>
               )}
@@ -1509,7 +1509,7 @@ export default function CompanyDetailsPage({
                         {/* ID del prodotto in alto a sinistra */}
                         <div className="absolute top-2 left-2 z-10">
                           <span className="bg-gray-900/90 text-gray-300 text-xs px-2 py-1 rounded font-mono backdrop-blur-sm">
-                            #{product.id}
+                            {t('common.id')}: {product.id}
                           </span>
                         </div>
                         
@@ -1527,7 +1527,7 @@ export default function CompanyDetailsPage({
                       {/* Informazioni prodotto - 1/4 dell'altezza */}
                       <div className="p-4 flex flex-col justify-center min-h-0">
                         <h3 className="text-lg font-semibold text-white truncate mb-1">
-                          {(product.name && product.name.trim()) || `Prodotto #${product.id}`}
+                          {(product.name && product.name.trim()) || t('pages.companyDetail.products.productNumber', product.id)}
                         </h3>
                         
                         {/* Categoria prodotto */}
@@ -1542,7 +1542,7 @@ export default function CompanyDetailsPage({
                       <Link 
                         href={`/${locale}/products/${product.id}`}
                         className="absolute inset-0 z-20"
-                        title={`Visualizza dettagli di ${(product.name && product.name.trim()) || `Prodotto #${product.id}`}`}
+                        title={t('pages.companyDetail.products.viewProductDetails', (product.name && product.name.trim()) || t('pages.companyDetail.products.productNumber', product.id))}
                       />
                     </div>
                   ))}
@@ -1556,23 +1556,23 @@ export default function CompanyDetailsPage({
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-semibold text-white flex items-center space-x-2">
                     <Users className="h-5 w-5" />
-                    <span>Utenti Collegati</span>
+                    <span>{t('pages.companyDetail.users.title')}</span>
                   </h2>
                   <div className="flex items-center space-x-3">
                     {usersLoading && (
                       <div className="flex items-center space-x-2 text-sm text-blue-400">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        <span>Caricamento...</span>
+                        <span>{t('pages.companyDetail.users.loading')}</span>
                       </div>
                     )}
                     <button
                       type="button"
                       onClick={handleLinkUserClick}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
-                      title="Collega nuovo collaboratore"
+                      title={t('pages.companyDetail.users.linkNewCollaborator')}
                     >
                       <UserPlus className="h-4 w-4" />
-                      <span>Collega Collaboratore</span>
+                      <span>{t('pages.companyDetail.users.linkCollaborator')}</span>
                     </button>
                   </div>
                 </div>
@@ -1594,7 +1594,7 @@ export default function CompanyDetailsPage({
                 {!usersError && users.length === 0 && !usersLoading && (
                   <div className="text-center py-8">
                     <Users className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-400">Nessun utente collegato a questa azienda</p>
+                    <p className="text-gray-400">{t('pages.companyDetail.users.noUsers')}</p>
                   </div>
                 )}
 
@@ -1629,7 +1629,7 @@ export default function CompanyDetailsPage({
                             <button
                               onClick={(e) => handleUnlinkUserClick(e, user)}
                               className="opacity-0 group-hover:opacity-100 bg-red-600/60 hover:bg-red-600/80 text-white p-2 rounded-lg transition-all duration-200 shadow-lg z-20 relative"
-                              title="Scollega utente dall'azienda"
+                              title={t('pages.companyDetail.users.unlinkUser')}
                             >
                               <Unlink className="h-4 w-4" />
                             </button>
@@ -1640,20 +1640,20 @@ export default function CompanyDetailsPage({
                         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                           {/* Email */}
                           <div>
-                            <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Email</h4>
+                            <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">{t('common.email')}</h4>
                             <p className="text-gray-200 text-sm">{user.email}</p>
                           </div>
                           
                           {/* Telefono */}
                           <div>
-                            <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Telefono</h4>
-                            <p className="text-gray-200 text-sm">{user.phone || 'Non specificato'}</p>
+                            <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">{t('common.phone')}</h4>
+                            <p className="text-gray-200 text-sm">{user.phone || t('common.notSpecified')}</p>
                           </div>
                           
                           {/* Indirizzo */}
                           <div>
-                            <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Indirizzo</h4>
-                            <p className="text-gray-200 text-sm">{user.address || 'Non specificato'}</p>
+                            <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">{t('common.address')}</h4>
+                            <p className="text-gray-200 text-sm">{user.address || t('common.notSpecified')}</p>
                           </div>
                         </div>
                         
@@ -1661,7 +1661,7 @@ export default function CompanyDetailsPage({
                         <Link 
                           href={`/${locale}/users/${user.id}`}
                           className="absolute inset-0 z-10"
-                          title={`Visualizza dettagli di ${user.name}`}
+                          title={t('pages.companyDetail.users.viewUserDetails', user.name)}
                         />
                       </div>
                     ))}
@@ -1673,14 +1673,14 @@ export default function CompanyDetailsPage({
             {/* Dettagli tecnici */}
             <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
               <h2 className="text-xl font-semibold text-white mb-6">
-                Dettagli tecnici
+                {t('pages.companyDetail.sections.technicalDetails')}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Data di creazione */}
                 <div className="flex items-start space-x-3">
                   <Calendar className="h-5 w-5 text-indigo-400 mt-1" />
                   <div>
-                    <p className="text-sm font-medium text-gray-400">Data di creazione</p>
+                    <p className="text-sm font-medium text-gray-400">{t('pages.companyDetail.fields.createdAt')}</p>
                     <p className="text-white">{formatDate(company.created_at)}</p>
                   </div>
                 </div>
@@ -1715,7 +1715,7 @@ export default function CompanyDetailsPage({
                 {isTranslationSaving && (
                   <div className="flex items-center space-x-2 text-sm text-blue-400">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Salvando...</span>
+                    <span>{t('pages.companyDetail.saving')}</span>
                   </div>
                 )}
                 <button
@@ -1770,9 +1770,9 @@ export default function CompanyDetailsPage({
           <div className="bg-gray-900 rounded-xl border border-gray-800 w-full max-w-md">
             <div className="flex items-center justify-between p-6 border-b border-gray-800">
               <div className="flex items-center space-x-3">
-                <Plus className="h-6 w-6 text-blue-400" />
+                <Globe className="h-6 w-6 text-blue-400" />
                 <h2 className="text-xl font-semibold text-white">
-                  Aggiungi Traduzione
+                  {t('pages.companyDetail.translations.addManually')}
                 </h2>
               </div>
               <button
@@ -1783,90 +1783,60 @@ export default function CompanyDetailsPage({
                 <X className="h-6 w-6" />
               </button>
             </div>
-            
             <div className="p-6">
               <div className="mb-6">
                 <label htmlFor="language-select" className="block text-sm font-medium text-white mb-3">
-                  Seleziona lingua per la nuova traduzione
+                  {t('pages.companyDetail.translations.selectLanguage')}
                 </label>
-                
-                {availableLanguages.length === 0 ? (
+                {loadingLanguages ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <Loader2 className="h-8 w-8 mx-auto mb-2 animate-spin" />
+                    <p>{t('common.loading')}</p>
+                  </div>
+                ) : availableLanguages.length === 0 ? (
                   <div className="text-center py-8 text-gray-400">
                     <Globe className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p>Tutte le lingue disponibili sono già state tradotte</p>
+                    <p>{t('pages.companyDetail.translations.allLanguagesUsed')}</p>
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    {availableLanguages.map((language) => (
-                      <label
-                        key={language.id}
-                        className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                          selectedLanguageId === language.id
-                            ? 'border-blue-500 bg-blue-600/10'
-                            : 'border-gray-700 hover:border-gray-600 hover:bg-gray-800/50'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="language"
-                          value={language.id}
-                          checked={selectedLanguageId === language.id}
-                          onChange={() => setSelectedLanguageId(language.id)}
-                          className="sr-only"
-                        />
-                        <img 
-                          src={`https://flagcdn.com/w40/${language.language_code === 'en' ? 'us' : language.language_code}.png`} 
-                          alt={`Bandiera ${language.language_name}`}
-                          className="w-6 h-4 object-cover rounded-sm"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            target.nextElementSibling?.classList.remove('hidden');
-                          }}
-                        />
-                        <span className="text-xl hidden">
-                          {language.language_code === 'it' ? '🇮🇹' : 
-                           language.language_code === 'en' ? '🇺🇸' : 
-                           language.language_code === 'fr' ? '🇫🇷' : 
-                           language.language_code === 'es' ? '🇪🇸' : '🌐'}
-                        </span>
-                        <span className="text-white font-medium">{language.language_name}</span>
-                      </label>
+                  <select
+                    id="language-select"
+                    value={selectedLanguageId || ''}
+                    onChange={e => setSelectedLanguageId(Number(e.target.value))}
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="" disabled>{t('pages.companyDetail.translations.selectLanguage')}</option>
+                    {availableLanguages.map(lang => (
+                      <option key={lang.id} value={lang.id}>{lang.language_name}</option>
                     ))}
-                  </div>
+                  </select>
                 )}
               </div>
-              
-              {availableLanguages.length > 0 && (
-                <div className="flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    onClick={handleCloseAddTranslationDialog}
-                    className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
-                    disabled={isAddingTranslation}
-                  >
-                    Annulla
-                  </button>
-                  <button
-                    type="button"
-                    onClick={createTranslation}
-                    disabled={!selectedLanguageId || isAddingTranslation}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isAddingTranslation ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span>Creazione...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="h-4 w-4" />
-                        <span>Aggiungi</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              )}
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={handleCloseAddTranslationDialog}
+                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                  disabled={isAddingTranslation}
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  type="button"
+                  onClick={createTranslation}
+                  disabled={!selectedLanguageId || isAddingTranslation}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isAddingTranslation ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>{t('pages.companyDetail.translations.creating')}</span>
+                    </>
+                  ) : (
+                    <span>{t('pages.companyDetail.translations.add')}</span>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1904,21 +1874,21 @@ export default function CompanyDetailsPage({
                   <span className="text-white font-medium">{translationToDelete.language_name}</span>
                 </div>
                 <p className="text-gray-300 mb-4">
-                  Sei sicuro di voler eliminare questa traduzione? Questa azione non può essere annullata.
+                  {t('pages.companyDetail.dialogs.deleteTranslation.message')}
                 </p>
                 <div className="bg-red-900/20 border border-red-800 rounded-lg p-4">
-                  <h4 className="text-red-300 font-medium mb-2">Contenuto da eliminare:</h4>
+                  <h4 className="text-red-300 font-medium mb-2">{t('pages.companyDetail.dialogs.deleteTranslation.contentToDelete')}</h4>
                   <div className="space-y-2 text-sm">
                     <div>
-                      <span className="text-red-400">Nome:</span> 
+                      <span className="text-red-400">{t('pages.companyDetail.dialogs.deleteTranslation.name')}</span> 
                       <span className="text-red-200 ml-2">
-                        {translationToDelete.name || 'Non compilato'}
+                        {translationToDelete.name || t('pages.companyDetail.translationFields.notCompiled')}
                       </span>
                     </div>
                     <div>
-                      <span className="text-red-400">Descrizione:</span> 
+                      <span className="text-red-400">{t('pages.companyDetail.dialogs.deleteTranslation.description')}</span> 
                       <span className="text-red-200 ml-2">
-                        {translationToDelete.description || 'Non compilata'}
+                        {translationToDelete.description || t('pages.companyDetail.translationFields.notCompiledDesc')}
                       </span>
                     </div>
                   </div>
@@ -1943,7 +1913,7 @@ export default function CompanyDetailsPage({
                   {isDeletingTranslation ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Eliminando...</span>
+                      <span>{t('pages.companyDetail.dialogs.deleteTranslation.deleting')}</span>
                     </>
                   ) : (
                     <>
@@ -1966,7 +1936,7 @@ export default function CompanyDetailsPage({
               <div className="flex items-center space-x-3">
                 <Package className="h-6 w-6 text-blue-400" />
                 <h2 className="text-xl font-semibold text-white">
-                  Aggiungi Nuovo Prodotto
+                  {t('pages.companyDetail.dialogs.addProduct.title')}
                 </h2>
               </div>
               <button
@@ -1981,14 +1951,14 @@ export default function CompanyDetailsPage({
             <div className="p-6">
               <div className="mb-6">
                 <label htmlFor="product-name" className="block text-sm font-medium text-white mb-2">
-                  Nome del prodotto
+                  {t('pages.companyDetail.dialogs.addProduct.productName')}
                 </label>
                 <input
                   id="product-name"
                   type="text"
                   value={newProductName}
                   onChange={(e) => setNewProductName(e.target.value)}
-                  placeholder="Inserisci il nome del prodotto"
+                  placeholder={t('pages.companyDetail.dialogs.addProduct.enterProductName')}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isAddingProduct}
                   onKeyPress={(e) => {
@@ -2071,11 +2041,11 @@ export default function CompanyDetailsPage({
                    <p className="text-gray-400 text-sm">{userToUnlink.email}</p>
                  </div>
                  <p className="text-gray-300 mb-4">
-                   Sei sicuro di voler scollegare questo utente da questa azienda? Questa azione non può essere annullata.
+                   {t('pages.companyDetail.dialogs.unlinkUserMessage')}
                  </p>
                  <div className="bg-red-900/20 border border-red-800 rounded-lg p-4">
                    <p className="text-red-200 text-sm">
-                     <strong>Attenzione:</strong> L&apos;utente perderà l&apos;accesso a tutti i dati e funzionalità relative a questa azienda.
+                     <strong>Attenzione:</strong> {t('pages.companyDetail.dialogs.unlinkUserWarning')}
                    </p>
                  </div>
                </div>
@@ -2098,12 +2068,12 @@ export default function CompanyDetailsPage({
                   {isUnlinkingUser ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Scollegamento...</span>
+                      <span>{t('pages.companyDetail.dialogs.unlinking')}</span>
                     </>
                   ) : (
                     <>
                       <Unlink className="h-4 w-4" />
-                      <span>Scollega</span>
+                      <span>{t('pages.companyDetail.dialogs.unlink')}</span>
                     </>
                   )}
                 </button>
@@ -2121,7 +2091,7 @@ export default function CompanyDetailsPage({
               <div className="flex items-center space-x-3">
                 <UserPlus className="h-6 w-6 text-blue-400" />
                 <h2 className="text-xl font-semibold text-white">
-                  Collega Utente
+                  {t('pages.companyDetail.dialogs.linkUserTitle')}
                 </h2>
               </div>
               <button
@@ -2136,7 +2106,7 @@ export default function CompanyDetailsPage({
              <div className="flex-1 overflow-y-auto p-6">
                <div className="mb-6">
                  <label htmlFor="user-search" className="block text-sm font-medium text-white mb-2">
-                   Cerca utente per nome, email o ruolo
+                   {t('pages.companyDetail.dialogs.searchUserLabel')}
                  </label>
                  <div className="relative">
                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -2145,7 +2115,7 @@ export default function CompanyDetailsPage({
                      type="text"
                      value={userSearchQuery}
                      onChange={(e) => handleUserSearch(e.target.value)}
-                     placeholder="Inserisci il nome, email o ruolo dell&apos;utente"
+                     placeholder={t('pages.companyDetail.dialogs.searchUserPlaceholder')}
                      className="w-full pl-10 pr-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                    />
                  </div>
@@ -2154,21 +2124,21 @@ export default function CompanyDetailsPage({
               {loadingAvailableUsers && (
                 <div className="text-center py-8">
                   <Loader2 className="h-12 w-12 text-blue-400 mx-auto mb-2 animate-spin" />
-                  <p className="text-gray-400">Caricamento utenti...</p>
+                  <p className="text-gray-400">{t('pages.companyDetail.dialogs.loadingUsers')}</p>
                 </div>
               )}
 
                              {!loadingAvailableUsers && availableUsers.length === 0 && !userSearchQuery.trim() && (
                  <div className="text-center py-8 text-gray-400">
                    <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                   <p>Tutti gli utenti sono già collegati a questa azienda.</p>
+                   <p>{t('pages.companyDetail.dialogs.allUsersConnected')}</p>
                  </div>
                )}
 
                {!loadingAvailableUsers && filteredUsers.length === 0 && userSearchQuery.trim() && (
                  <div className="text-center py-8 text-gray-400">
                    <Search className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                   <p>Nessun utente trovato con questi criteri.</p>
+                   <p>{t('pages.companyDetail.dialogs.noUsersFound')}</p>
                  </div>
                )}
 
@@ -2204,13 +2174,13 @@ export default function CompanyDetailsPage({
                                </div>
                              </div>
                              <p className="text-gray-400 text-sm mt-1">
-                               {user.email || 'Email non specificata'}
+                               {user.email || t('common.notSpecified')}
                              </p>
                              {user.phone && user.phone !== '0' && user.phone.trim() !== '' && (
-                               <p className="text-gray-400 text-xs">Tel: {user.phone}</p>
+                               <p className="text-gray-400 text-xs">{t('common.phone')}: {user.phone}</p>
                              )}
                              {user.address && user.address.trim() && (
-                               <p className="text-gray-400 text-xs">📍 {user.address}</p>
+                               <p className="text-gray-400 text-xs">{t('common.address')}: {user.address}</p>
                              )}
                            </div>
                          </div>
@@ -2230,7 +2200,7 @@ export default function CompanyDetailsPage({
                {selectedUserId && (
                  <div className="mt-4 p-3 bg-blue-900/20 border border-blue-800 rounded-lg">
                    <p className="text-blue-200 text-sm">
-                     ✓ Utente selezionato. Premi &quot;Collega&quot; per aggiungere questo utente all&apos;azienda.
+                     ✓ {t('pages.companyDetail.dialogs.userSelected')}
                    </p>
                  </div>
                )}
@@ -2246,7 +2216,7 @@ export default function CompanyDetailsPage({
                      className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
                      disabled={isLinkingUser}
                    >
-                     Annulla
+                     {t('common.cancel')}
                    </button>
                    <button
                      type="button"

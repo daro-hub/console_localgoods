@@ -136,7 +136,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
       });
 
       if (!response.ok) {
-        throw new Error('Errore nel recupero dei dettagli utente');
+        throw new Error(t('common.errors.fetchUserDetails'));
       }
 
       const data = await response.json();
@@ -178,7 +178,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
       });
 
       if (!response.ok) {
-        throw new Error('Errore nel recupero delle aziende');
+        throw new Error(t('common.errors.fetchCompanies'));
       }
 
       const data = await response.json();
@@ -209,7 +209,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
       });
 
       if (!response.ok) {
-        throw new Error('Errore nel recupero delle aziende disponibili');
+        throw new Error(t('common.errors.fetchAvailableCompanies'));
       }
 
       const data = await response.json();
@@ -272,7 +272,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
       });
 
       if (!response.ok) {
-        throw new Error('Errore nella rimozione dell\'azienda');
+        throw new Error(t('common.errors.removeCompanyError'));
       }
 
       return true;
@@ -375,10 +375,10 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
 
       // Aggiorna i dati dell'utente
       await fetchUser();
-      showToast('Modifiche salvate con successo', 'success');
+      showToast(t('common.notifications.changesSavedSuccess'), 'success');
       
     } catch (error) {
-      showToast('Errore durante il salvataggio', 'error');
+      showToast(t('common.notifications.saveChangesError'), 'error');
     } finally {
       setIsSaving(false);
     }
@@ -424,12 +424,12 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
     const success = await addCompanyToUser(selectedCompany.id);
     
     if (success) {
-      showToast('Azienda collegata con successo!', 'success');
+      showToast(t('common.notifications.companyLinkedSuccess'), 'success');
       handleCloseAddCompanyModal();
       // Ricarica le aziende dell'utente
       await fetchUserCompanies();
     } else {
-      showToast('Errore nel collegamento dell\'azienda', 'error');
+      showToast(t('common.errors.linkCompanyError'), 'error');
     }
   };
 
@@ -451,17 +451,17 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
 
   // Gestisce la rimozione di un'azienda con conferma
   const handleRemoveCompany = async (company: UserCompany) => {
-    const confirmed = confirm(`Sei sicuro di voler scollegare l'azienda "${company.name}" da ${user?.name}?`);
+          const confirmed = confirm(t('pages.users.userDetail.confirmUnlinkCompany', company.name, user?.name));
     
     if (confirmed) {
       const success = await removeCompanyFromUser(company.id);
       
       if (success) {
-        showToast(`Azienda "${company.name}" scollegata con successo!`, 'success');
+        showToast(t('common.notifications.companyUnlinkedSuccess', company.name), 'success');
         // Ricarica le aziende dell'utente
         await fetchUserCompanies();
       } else {
-        showToast('Errore nello scollegamento dell\'azienda', 'error');
+        showToast(t('common.errors.unlinkCompanyError'), 'error');
       }
     }
   };
@@ -558,7 +558,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <Loader2 className="h-8 w-8 animate-spin text-blue-400 mx-auto mb-4" />
-              <p className="text-gray-300">Caricamento profilo utente...</p>
+              <p className="text-gray-300">{t('common.loadingUserProfile')}</p>
             </div>
           </div>
         </div>
@@ -582,7 +582,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
               onClick={() => goBack()}
               className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
-              Torna indietro
+              {t('pages.users.userDetail.goBack')}
             </button>
           </div>
         </div>
@@ -596,8 +596,8 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
         <div className="p-8">
           <div className="text-center py-8">
             <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">Utente non trovato</h3>
-            <p className="text-gray-300 mb-4">L&apos;utente richiesto non esiste o non è più disponibile.</p>
+            <h3 className="text-lg font-semibold text-white mb-2">{t('pages.users.userDetail.userNotFound')}</h3>
+            <p className="text-gray-300 mb-4">{t('pages.users.userDetail.userNotFoundDescription')}</p>
             <button
               onClick={() => goBack()}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
@@ -620,15 +620,15 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
             className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="h-5 w-5" />
-            <span>Indietro</span>
+            <span>{t('pages.users.userDetail.back')}</span>
           </button>
           
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              Profilo Utente
+              {t('pages.users.userDetail.title')}
             </h1>
             <p className="text-gray-300">
-              Visualizza e gestisci le informazioni dell&apos;utente
+              {t('pages.users.userDetail.description')}
             </p>
           </div>
         </div>
@@ -639,13 +639,13 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
             <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-700 p-6 h-full">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-white">
-                  Informazioni personali
+                  {t('pages.users.userDetail.personalInfo')}
                 </h2>
                 <div className="flex items-center space-x-2">
                   {isSaving && (
                     <div className="flex items-center space-x-2 text-blue-400">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-sm">Salvando...</span>
+                      <span className="text-sm">{t('pages.users.userDetail.saving')}</span>
                     </div>
                   )}
                   <button
@@ -674,7 +674,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Nome completo
+                      {t('pages.users.userDetail.fullName')}
                     </label>
                     {isEditing ? (
                       <input
@@ -697,7 +697,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Email
+                      {t('pages.users.table.email')}
                     </label>
                     {isEditing ? (
                       <input
@@ -705,10 +705,10 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                         value={editableData.email}
                         onChange={(e) => handleFieldChange('email', e.target.value)}
                         className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Email"
+                        placeholder={t('pages.users.table.email')}
                       />
                     ) : (
-                      <p className="text-white font-medium">{user.email || 'Non specificata'}</p>
+                                              <p className="text-white font-medium">{user.email || t('common.notSpecified')}</p>
                     )}
                   </div>
                 </div>
@@ -720,7 +720,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Telefono
+                      {t('pages.users.table.phone')}
                     </label>
                     {isEditing ? (
                       <input
@@ -728,7 +728,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                         value={editableData.phone}
                         onChange={(e) => handleFieldChange('phone', e.target.value)}
                         className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Telefono"
+                        placeholder={t('pages.users.table.phone')}
                       />
                     ) : (
                       <p className="text-white font-medium">{user.phone ? formatPhone(user.phone) : 'Non specificato'}</p>
@@ -842,7 +842,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                   <button
                     onClick={handleOpenAddCompanyModal}
                     className="flex items-center justify-center w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                    title="Aggiungi azienda"
+                    title={t('pages.companyDetail.addCompany')}
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -873,7 +873,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                   <div className="text-center py-8">
                     <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                     <p className="text-gray-400 text-sm">
-                      Nessuna azienda associata
+                      {t('profile.noCompaniesAssociated')}
                     </p>
                   </div>
                 ) : (
@@ -950,7 +950,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-700">
                 <h3 className="text-xl font-semibold text-white">
-                  Aggiungi azienda a {user.name}
+                  {t('pages.companyDetail.addCompanyToUser', user.name)}
                 </h3>
                 <button
                   onClick={handleCloseAddCompanyModal}
@@ -966,7 +966,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <input
                     type="text"
-                    placeholder="Cerca aziende..."
+                    placeholder={t('pages.users.userDetail.searchCompanies')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -979,13 +979,13 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                 {loadingAvailableCompanies ? (
                   <div className="flex items-center justify-center py-12">
                     <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
-                    <span className="ml-3 text-gray-400">Caricamento aziende...</span>
+                    <span className="ml-3 text-gray-400">{t('common.loadingCompanies')}</span>
                   </div>
                 ) : filteredAvailableCompanies.length === 0 ? (
                   <div className="text-center py-12">
                     <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-400">
-                      {searchTerm ? 'Nessuna azienda trovata' : 'Nessuna azienda disponibile'}
+                      {searchTerm ? t('pages.users.userDetail.noCompanyFound') : t('pages.users.userDetail.noCompanyAvailable')}
                     </p>
                   </div>
                 ) : (
@@ -1063,10 +1063,10 @@ export default function UserDetailPage({ params }: { params: Promise<{ locale: s
                   {addingCompany ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Collegando...</span>
+                      <span>{t('pages.users.userDetail.linking')}</span>
                     </>
                   ) : (
-                    <span>Collega azienda</span>
+                    <span>{t('pages.users.userDetail.linkCompany')}</span>
                   )}
                 </button>
               </div>

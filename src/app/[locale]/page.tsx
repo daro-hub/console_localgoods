@@ -35,20 +35,20 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
 
   const stats = [
     {
-      name: 'Prodotti Gestiti',
-      value: '250+',
+      name: t('pages.home.stats.managedProducts.name'),
+      value: t('pages.home.stats.managedProducts.value'),
       icon: ShoppingBag,
       color: 'text-blue-400'
     },
     {
-      name: 'Vendite Monitorate',
-      value: '1.2K+',
+      name: t('pages.home.stats.monitoredSales.name'),
+      value: t('pages.home.stats.monitoredSales.value'),
       icon: TrendingUp,
       color: 'text-green-400'
     },
     {
-      name: 'Produttori Attivi',
-      value: '150+',
+      name: t('pages.home.stats.activeProducers.name'),
+      value: t('pages.home.stats.activeProducers.value'),
       icon: Users,
       color: 'text-purple-400'
     }
@@ -82,7 +82,7 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
                 className="inline-flex items-center px-6 py-3 bg-gray-800 text-gray-200 font-medium rounded-lg hover:bg-gray-700 transition-all duration-200 border border-gray-700"
               >
                 <BarChart3 className="h-5 w-5 mr-2" />
-                Visualizza Report
+                {t('pages.home.viewReport')}
               </Link>
             </div>
           </div>
@@ -147,14 +147,14 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
             Pronto per iniziare?
           </h3>
           <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-            Unisciti a centinaia di produttori agricoli che stanno già utilizzando LocalGoods per gestire i loro prodotti e monitorare le vendite.
+            {t('pages.home.joinHundreds')}
           </p>
           <Link
             href={`/${locale}/products`}
             className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <Package className="h-5 w-5 mr-2" />
-            Aggiungi il tuo primo prodotto
+                          {t('pages.home.addFirstProduct')}
           </Link>
         </div>
       </div>
