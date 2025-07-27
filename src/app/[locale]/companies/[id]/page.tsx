@@ -1360,11 +1360,8 @@ export default function CompanyDetailsPage({
                       title={t('pages.companyDetail.translations.clickToEdit')}
                     >
                       <div className="flex items-start justify-between">
-                        {/* Header con ID e Lingua */}
+                        {/* Header con Lingua */}
                         <div className="flex items-center space-x-4">
-                          <span className="text-gray-500 text-xs font-mono bg-gray-900 px-2 py-1 rounded">
-                            {t('common.id')}: {translation.id}
-                          </span>
                           <div className="flex items-center space-x-2">
                             <img 
                               src={`https://flagcdn.com/w40/${translation.language_code === 'en' ? 'us' : translation.language_code}.png`} 
@@ -1383,7 +1380,9 @@ export default function CompanyDetailsPage({
                                translation.language_code === 'es' ? '🇪🇸' : '🌐'}
                             </span>
                             <span className="text-white font-medium">{translation.language_name}</span>
-                            <span className="text-gray-400 text-sm">({translation.language_code})</span>
+                            <span className="text-gray-400 text-xs font-mono bg-gray-700 px-2 py-1 rounded">
+                              {translation.language_code.toUpperCase()}
+                            </span>
                           </div>
                         </div>
                         
